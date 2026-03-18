@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>mi tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --surface: #ffffff;
+      --surface2: #f0ede8;
+      --border: rgba(0,0,0,0.08);
+      --border2: rgba(0,0,0,0.15);
+      --text: #1a1916;
+      --text2: #6a6760;
+      --text3: #aaa89f;
+      --accent: #8a6a4a;
+      --accent2: #b09070;
+      --urgent: #b84030;
+      --important: #9a7030;
+      --normal: #3a6a52;
+      --mood1: #4a6080;
+      --mood2: #5a6878;
+      --mood3: #707870;
+      --mood4: #7a9070;
+      --mood5: #8aaa78;
+      --mood6: #c0b060;
+      --mood7: #d4956a;
+      --r: 10px;
+      --r-sm: 6px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #141414;
+      --surface: #1e1e1e;
+      --surface2: #282828;
+      --border: rgba(255,255,255,0.09);
+      --border2: rgba(255,255,255,0.18);
+      --text: #f0ede6;
+      --text2: #c9a96e;
+      --text3: #7a6a55;
+      --accent: #c9a96e;
+      --accent2: #a08050;
+      --urgent: #d4694a;
+      --important: #c9a96e;
+      --normal: #6aaa82;
+    }
+
+    [data-theme="dark"] .item-name,
+    [data-theme="dark"] .habit-name,
+    [data-theme="dark"] .task-text,
+    [data-theme="dark"] .nav-title,
+    [data-theme="dark"] .section-label,
+    [data-theme="dark"] .mood-track-label,
+    [data-theme="dark"] .day-name,
+    [data-theme="dark"] .full-date,
+    [data-theme="dark"] .streak-num,
+    [data-theme="dark"] .time-display { font-weight: 500; }
+
+    html, body { transition: background 0.2s, color 0.2s; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html { font-size: 24px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      padding: 0 0 6rem;
+    }
+
+    /* ── HEADER ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem 1rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .top-bar .date-block {}
+
+    .top-bar .day-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+    }
+
+    .top-bar .full-date {
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-config {
+      background: none;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-config:hover { border-color: var(--accent2); color: var(--accent); }
+
+    /* ── MODAL CONFIG ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r);
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .modal h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .modal label {
+      display: block;
+      font-size: 11px;
+      color: var(--text2);
+      margin-bottom: 4px;
+      margin-top: 12px;
+    }
+
+    .modal input {
+      width: 100%;
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 8px 10px;
+      outline: none;
+    }
+
+    .modal input:focus { border-color: var(--accent2); }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 1.25rem;
+    }
+
+    .btn-save {
+      flex: 1;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--r-sm);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 10px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-save:hover { opacity: 0.85; }
+
+    .btn-cancel {
+      flex: 1;
+      background: none;
+      color: var(--text2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .content {
+      padding: 1.25rem 1.25rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r);
+      padding: 1rem 1.125rem;
+    }
+
+    /* ── MOOD SECTION ── */
+    .mood-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+
+    .mood-track {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mood-track-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .mood-track-label {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    .mood-value-label {
+      color: var(--accent);
+      font-style: italic;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+    }
+
+    .mood-slider-wrap {
+      position: relative;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--surface);
+      box-shadow: 0 0 0 1px var(--accent2);
+    }
+
+    input[type=range]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--surface);
+    }
+
+    .mood-scale-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    .mood-scale-labels span {
+      font-size: 9px;
+      color: var(--text3);
+      letter-spacing: 0.03em;
+    }
+
+    /* ── JOURNAL ── */
+    .journal-area {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .journal-textarea {
+      width: 100%;
+      min-height: 90px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 300;
+      line-height: 1.6;
+      padding: 10px 12px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .journal-textarea:focus { border-color: var(--border2); }
+    .journal-textarea::placeholder { color: var(--text3); font-style: italic; }
+
+    .journal-bottom {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .tag-field {
+      flex: 1;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      padding: 7px 10px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .tag-field:focus { border-color: var(--border2); }
+    .tag-field::placeholder { color: var(--text3); }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    .btn-guardar {
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      color: var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-guardar:hover { background: var(--accent); color: var(--surface); }
+
+    /* ── GRAPHS ── */
+    .graphs-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .chart-wrap {
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 10px;
+      min-height: 100px;
+      position: relative;
+    }
+
+    .chart-wrap canvas { width: 100% !important; height: 80px !important; }
+
+    .streak-box {
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-width: 72px;
+    }
+
+    .streak-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .streak-label {
+      font-size: 9px;
+      color: var(--text3);
+      text-align: center;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1.4;
+    }
+
+    /* ── TASKS ── */
+    .task-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .task-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      padding: 8px 10px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .task-input:focus { border-color: var(--border2); }
+    .task-input::placeholder { color: var(--text3); }
+
+    .priority-select {
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      padding: 8px 10px;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--r-sm);
+      border-left: 2.5px solid transparent;
+      background: var(--surface2);
+      transition: opacity 0.2s;
+    }
+
+    .task-item.done { opacity: 0.4; }
+    .task-item.done .task-text { text-decoration: line-through; }
+
+    .p-urgente { border-left-color: var(--urgent); }
+    .p-importante { border-left-color: var(--important); }
+    .p-normal { border-left-color: var(--normal); }
+
+    .task-text {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .task-del {
+      background: none;
+      border: none;
+      color: var(--text3);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .task-del:hover { color: var(--urgent); }
+
+    .task-priority-label {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      color: var(--text3);
+      background: transparent;
+    }
+
+    .tasks-empty {
+      font-size: 14px;
+      color: var(--text3);
+      text-align: center;
+      padding: 1.5rem 0;
+      font-style: italic;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* ── NAV GRID ── */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .nav-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r);
+      padding: 1.125rem 1rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-card:hover {
+      border-color: var(--border2);
+      background: var(--surface2);
+    }
+
+    .nav-card:active { transform: scale(0.98); }
+
+    .nav-icon {
+      font-size: 16px;
+      line-height: 1;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      letter-spacing: -0.05em;
+    }
+
+    .nav-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .nav-sub {
+      font-size: 11px;
+      color: var(--text3);
+      line-height: 1.4;
+    }
+
+    /* ── STATUS MSG ── */
+    .save-status {
+      font-size: 12px;
+      color: var(--normal);
+      text-align: center;
+      min-height: 18px;
+      transition: opacity 0.3s;
+    }
+
+    .save-status.hidden { opacity: 0; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- CONFIG MODAL -->
+<div class="modal-overlay" id="configModal">
+  <div class="modal">
+    <h3>configuración</h3>
+    <label>github token</label>
+    <input type="password" id="cfg-token" placeholder="ghp_..." />
+    <label>repositorio (usuario/repo)</label>
+    <input type="text" id="cfg-repo" placeholder="vd159817/mi_tracker" value="vd159817/mi_tracker" />
+    <label>tu nombre (para el saludo)</label>
+    <input type="text" id="cfg-name" placeholder="nombre" />
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeConfig()">cancelar</button>
+      <button class="btn-save" onclick="saveConfig()">guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="date-block">
+    <div class="day-name" id="day-name"></div>
+    <div class="full-date" id="full-date"></div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <button class="btn-config" id="theme-btn" onclick="toggleTheme()">◐</button>
+    <button class="btn-config" onclick="openConfig()">⚙ config</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="content">
+
+  <!-- ÁNIMO Y ENERGÍA -->
+  <div>
+    <div class="section-label">registro del día</div>
+    <div class="card">
+      <div class="mood-row">
+
+        <div class="mood-track">
+          <div class="mood-track-header">
+            <span class="mood-track-label">ánimo</span>
+            <span class="mood-value-label" id="mood-label">—</span>
+          </div>
+          <div class="mood-slider-wrap">
+            <input type="range" id="mood-slider" min="1" max="10" value="5" step="1"
+              style="background: linear-gradient(to right, #6a4040, #8a5050, #7a6060, #707878, #7a9070, #8aaa78, #c0b060, #d4956a, #e0805a, #d06040);"
+              oninput="updateMood(this.value)" />
+          </div>
+          <div class="mood-scale-labels">
+            <span>depresión</span><span>tristeza</span><span>apatía</span><span>indiferencia</span><span>calma</span><span>bienestar</span><span>alegría</span><span>euforia</span><span>irritación</span><span>enojo</span>
+          </div>
+        </div>
+
+        <div class="mood-track">
+          <div class="mood-track-header">
+            <span class="mood-track-label">energía</span>
+            <span class="mood-value-label" id="energy-label">—</span>
+          </div>
+          <div class="mood-slider-wrap">
+            <input type="range" id="energy-slider" min="1" max="10" value="5" step="1"
+              style="background: linear-gradient(to right, #3a5068, #4a6070, #607868, #6a9058, #90b048, #c0a830, #d07030);"
+              oninput="updateEnergy(this.value)" />
+          </div>
+          <div class="mood-scale-labels">
+            <span>agotado</span><span>cansado</span><span>neutro</span><span>activo</span><span>enfocado</span><span>alerta</span><span>flujo</span>
+          </div>
+        </div>
+
+        <div class="mood-track">
+          <div class="mood-track-header">
+            <span class="mood-track-label">reactividad</span>
+            <span class="mood-value-label" id="react-label">—</span>
+          </div>
+          <div class="mood-slider-wrap">
+            <input type="range" id="react-slider" min="1" max="10" value="5" step="1"
+              style="background: linear-gradient(to right, #5a7a8a, #7a9a8a, #9aaa80, #c0b060, #d09050, #c06040, #a04030);"
+              oninput="updateReact(this.value)" />
+          </div>
+          <div class="mood-scale-labels">
+            <span>nula</span><span></span><span>baja</span><span></span><span>media</span><span></span><span>alta reactividad</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- JOURNAL -->
+  <div>
+    <div class="section-label">frase del día</div>
+    <div class="card">
+      <div class="journal-area">
+        <textarea class="journal-textarea" id="journal-text" placeholder="escribe algo sobre hoy..."></textarea>
+        <div class="journal-bottom">
+          <input class="tag-field" id="journal-tag" placeholder="#etiqueta" />
+          <button class="icon-btn" title="borrar" onclick="clearJournal()">✕</button>
+          <button class="icon-btn" title="pegar" onclick="pasteJournal()">⎘</button>
+          <button class="btn-guardar" onclick="saveDay()">guardar</button>
+        </div>
+        <div class="save-status hidden" id="save-status">guardado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div>
+    <div class="section-label">último mes</div>
+    <div class="card">
+      <div class="graphs-row">
+        <div class="chart-wrap">
+          <canvas id="moodChart"></canvas>
+        </div>
+        <div class="streak-box">
+          <div class="streak-num" id="streak-num">0</div>
+          <div class="streak-label">días con<br>frase</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAREAS DEL DÍA -->
+  <div>
+    <div class="section-label">pendientes de hoy</div>
+    <div class="card">
+      <div class="task-input-row">
+        <input class="task-input" id="task-input" placeholder="nueva tarea..." onkeydown="if(event.key==='Enter') addTask()" />
+        <button class="icon-btn" title="borrar campo" onclick="document.getElementById('task-input').value=''">✕</button>
+        <button class="icon-btn" title="pegar" onclick="pasteTask()">⎘</button>
+        <select class="priority-select" id="task-priority">
+          <option value="urgente">urgente</option>
+          <option value="importante" selected>importante</option>
+          <option value="normal">normal</option>
+        </select>
+        <button class="icon-btn" onclick="addTask()">+</button>
+      </div>
+      <div class="task-list" id="task-list">
+        <div class="tasks-empty" id="tasks-empty">sin pendientes por ahora</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVEGACIÓN -->
+  <div>
+    <div class="section-label">secciones</div>
+    <div class="nav-grid">
+      <a class="nav-card" href="hoy.html">
+        <div class="nav-icon">01</div>
+        <div class="nav-title">hoy</div>
+        <div class="nav-sub">registro diario completo</div>
+      </a>
+      <a class="nav-card" href="registros.html">
+        <div class="nav-icon">02</div>
+        <div class="nav-title">registros</div>
+        <div class="nav-sub">hábitos, ejercicio, finanzas, chess</div>
+      </a>
+      <a class="nav-card" href="planeacion.html">
+        <div class="nav-icon">03</div>
+        <div class="nav-title">planeación</div>
+        <div class="nav-sub">mensual, anual, revisión semanal</div>
+      </a>
+      <a class="nav-card" href="listas.html">
+        <div class="nav-icon">04</div>
+        <div class="nav-title">listas</div>
+        <div class="nav-sub">películas, podcasts, temas, tareas</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- CHART.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+<script>
+// ── CONFIG ──
+const REPO = 'vd159817/mi_tracker';
+const FILES = {
+  diary: 'data/diary.json',
+  tasks: 'data/tasks.json'
+};
+
+let config = JSON.parse(localStorage.getItem('tracker_config') || '{}');
+let diaryData = JSON.parse(localStorage.getItem('tracker_diary') || '[]');
+let tasksData = JSON.parse(localStorage.getItem('tracker_tasks') || '[]');
+
+// ── DATE ──
+function initDate() {
+  const now = new Date();
+  const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('day-name').textContent = days[now.getDay()];
+  document.getElementById('full-date').textContent = `${now.getDate()} de ${months[now.getMonth()]}, ${now.getFullYear()}`;
+}
+
+// ── MOOD ──
+const moodLabels = ['','depresión','tristeza','apatía','indiferencia','calma','bienestar','alegría','euforia','irritación','enojo'];
+const energyLabels = ['','agotado','agotado','cansado','cansado','neutro','activo','activo','enfocado','alerta','flujo'];
+const reactLabels = ['','nula','nula','baja','baja','media','media','media-alta','media-alta','alta','alta reactividad'];
+
+function updateMood(v) {
+  document.getElementById('mood-label').textContent = moodLabels[v] + ' · ' + v;
+}
+
+function updateEnergy(v) {
+  document.getElementById('energy-label').textContent = energyLabels[v] + ' · ' + v;
+}
+
+function updateReact(v) {
+  document.getElementById('react-label').textContent = reactLabels[v] + ' · ' + v;
+}
+
+// init sliders
+updateMood(document.getElementById('mood-slider').value);
+updateEnergy(document.getElementById('energy-slider').value);
+updateReact(document.getElementById('react-slider').value);
+
+// ── JOURNAL ACTIONS ──
+function clearJournal() {
+  document.getElementById('journal-text').value = '';
+  document.getElementById('journal-tag').value = '';
+}
+
+async function pasteTask() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('task-input').value = text;
+    document.getElementById('task-input').focus();
+  } catch(e) {
+    alert('Permite el acceso al portapapeles en tu navegador.');
+  }
+}
+
+async function pasteJournal() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('journal-text').value = text;
+  } catch(e) {
+    alert('Permite el acceso al portapapeles en tu navegador.');
+  }
+}
+
+// ── SAVE DAY ──
+async function saveDay() {
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0];
+  const timeStr = now.toTimeString().slice(0,5);
+
+  const entry = {
+    date: dateStr,
+    time: timeStr,
+    mood: parseInt(document.getElementById('mood-slider').value),
+    energy: parseInt(document.getElementById('energy-slider').value),
+    reactivity: parseInt(document.getElementById('react-slider').value),
+    journal: document.getElementById('journal-text').value.trim(),
+    tag: document.getElementById('journal-tag').value.replace(/^#/,'').trim()
+  };
+
+  // Update or add today's entry
+  const idx = diaryData.findIndex(d => d.date === dateStr);
+  if (idx >= 0) diaryData[idx] = entry;
+  else diaryData.push(entry);
+
+  localStorage.setItem('tracker_diary', JSON.stringify(diaryData));
+
+  // Save to GitHub if configured
+  if (config.token) {
+    await saveToGitHub(FILES.diary, diaryData);
+  }
+
+  showStatus();
+  renderChart();
+  renderStreak();
+
+  // Limpiar campos después de guardar
+  document.getElementById('journal-text').value = '';
+  document.getElementById('journal-tag').value = '';
+}
+
+function showStatus() {
+  const el = document.getElementById('save-status');
+  el.textContent = config.token ? 'guardado en github ✓' : 'guardado localmente ✓';
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 2500);
+}
+
+// ── GITHUB ──
+async function saveToGitHub(path, data) {
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+  // Get current SHA
+  let sha = '';
+  try {
+    const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
+    if (r.ok) { const j = await r.json(); sha = j.sha; }
+  } catch(e) {}
+
+  const body = { message: `update ${path}`, content };
+  if (sha) body.sha = sha;
+
+  await fetch(url, {
+    method: 'PUT',
+    headers: { Authorization: `token ${config.token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+}
+
+async function loadFromGitHub(path) {
+  if (!config.token) return null;
+  try {
+    const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+    const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
+    if (!r.ok) return null;
+    const j = await r.json();
+    return JSON.parse(decodeURIComponent(escape(atob(j.content))));
+  } catch(e) { return null; }
+}
+
+// ── CHART ──
+let chartInstance = null;
+
+function renderChart() {
+  const last30 = getLast30();
+  const labels = last30.map(d => d.date.slice(5));
+  const moods = last30.map(d => d.mood || null);
+  const energies = last30.map(d => d.energy || null);
+  const reacts = last30.map(d => d.reactivity || null);
+
+  const ctx = document.getElementById('moodChart').getContext('2d');
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'ánimo',
+          data: moods,
+          borderColor: '#8a6a4a',
+          backgroundColor: 'rgba(138,106,74,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          pointBackgroundColor: '#8a6a4a',
+          tension: 0.4,
+          spanGaps: true
+        },
+        {
+          label: 'energía',
+          data: energies,
+          borderColor: '#3a6a52',
+          backgroundColor: 'rgba(58,106,82,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          pointBackgroundColor: '#3a6a52',
+          tension: 0.4,
+          spanGaps: true
+        },
+        {
+          label: 'reactividad',
+          data: reacts,
+          borderColor: '#b84030',
+          backgroundColor: 'rgba(184,64,48,0.06)',
+          borderWidth: 1,
+          pointRadius: 2,
+          pointBackgroundColor: '#b84030',
+          tension: 0.4,
+          spanGaps: true,
+          borderDash: [3,3]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#6a6760',
+            font: { family: 'DM Mono', size: 9 },
+            boxWidth: 10,
+            padding: 8
+          }
+        },
+        tooltip: {
+          backgroundColor: '#ffffff',
+          titleColor: '#8a6a4a',
+          bodyColor: '#6a6760',
+          borderColor: 'rgba(0,0,0,0.1)',
+          borderWidth: 0.5,
+          titleFont: { family: 'DM Mono', size: 10 },
+          bodyFont: { family: 'DM Mono', size: 10 }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 }, maxRotation: 0, maxTicksLimit: 8 },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          border: { color: 'rgba(0,0,0,0.08)' }
+        },
+        y: {
+          min: 1, max: 10,
+          ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 }, stepSize: 3 },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          border: { color: 'rgba(0,0,0,0.08)' }
+        }
+      }
+    }
+  });
+}
+
+function getLast30() {
+  const result = [];
+  const today = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const entry = diaryData.find(e => e.date === dateStr) || { date: dateStr };
+    result.push(entry);
+  }
+  return result;
+}
+
+function renderStreak() {
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const entry = diaryData.find(e => e.date === dateStr && e.journal && e.journal.length > 0);
+    if (entry) streak++;
+    else if (i > 0) break;
+  }
+  document.getElementById('streak-num').textContent = streak;
+}
+
+// ── TASKS ──
+function addTask() {
+  const input = document.getElementById('task-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const priority = document.getElementById('task-priority').value;
+  const now = new Date();
+  const task = {
+    id: Date.now(),
+    text,
+    priority,
+    done: false,
+    date: now.toISOString().split('T')[0]
+  };
+
+  tasksData.unshift(task);
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+  if (config.token) saveToGitHub(FILES.tasks, tasksData);
+
+  input.value = '';
+  renderTasks();
+}
+
+function toggleTask(id) {
+  const t = tasksData.find(t => t.id === id);
+  if (t) { t.done = !t.done; }
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+  renderTasks();
+}
+
+function deleteTask(id) {
+  tasksData = tasksData.filter(t => t.id !== id);
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+  renderTasks();
+}
+
+function renderTasks() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayTasks = tasksData.filter(t => t.date === today || !t.done);
+
+  // Sort: urgente → importante → normal, done at bottom
+  const order = { urgente: 0, importante: 1, normal: 2 };
+  todayTasks.sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return order[a.priority] - order[b.priority];
+  });
+
+  const list = document.getElementById('task-list');
+  const empty = document.getElementById('tasks-empty');
+
+  if (todayTasks.length === 0) {
+    list.innerHTML = '';
+    list.appendChild(empty);
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.innerHTML = todayTasks.map(t => `
+    <div class="task-item p-${t.priority} ${t.done ? 'done' : ''}">
+      <div class="task-text" onclick="toggleTask(${t.id})">${t.text.replace(/</g,'&lt;')}</div>
+      <span class="task-priority-label">${t.priority}</span>
+      <button class="task-del" onclick="deleteTask(${t.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+// ── THEME ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('tracker_theme', next);
+}
+
+(function applyTheme() {
+  const saved = localStorage.getItem('tracker_theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+
+// ── CONFIG ──
+function openConfig() {
+  document.getElementById('cfg-token').value = config.token || '';
+  document.getElementById('cfg-name').value = config.name || '';
+  document.getElementById('configModal').classList.add('open');
+}
+
+function closeConfig() {
+  document.getElementById('configModal').classList.remove('open');
+}
+
+function saveConfig() {
+  config.token = document.getElementById('cfg-token').value.trim();
+  config.name = document.getElementById('cfg-name').value.trim();
+  config.repo = document.getElementById('cfg-repo').value.trim();
+  localStorage.setItem('tracker_config', JSON.stringify(config));
+  closeConfig();
+  if (config.token) syncFromGitHub();
+}
+
+// ── SYNC FROM GITHUB ──
+async function syncFromGitHub() {
+  const remote = await loadFromGitHub(FILES.diary);
+  if (remote && remote.length > 0) {
+    diaryData = remote;
+    localStorage.setItem('tracker_diary', JSON.stringify(diaryData));
+  }
+  const remoteTasks = await loadFromGitHub(FILES.tasks);
+  if (remoteTasks && remoteTasks.length > 0) {
+    tasksData = remoteTasks;
+    localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+  }
+  renderChart();
+  renderStreak();
+  renderTasks();
+}
+
+// ── INIT ──
+initDate();
+renderChart();
+renderStreak();
+renderTasks();
+
+// Load today's saved values if exist
+const todayStr = new Date().toISOString().split('T')[0];
+const todayEntry = diaryData.find(e => e.date === todayStr);
+if (todayEntry) {
+  if (todayEntry.mood) {
+    document.getElementById('mood-slider').value = todayEntry.mood;
+    updateMood(todayEntry.mood);
+  }
+  if (todayEntry.energy) {
+    document.getElementById('energy-slider').value = todayEntry.energy;
+    updateEnergy(todayEntry.energy);
+  }
+  if (todayEntry.reactivity) {
+    document.getElementById('react-slider').value = todayEntry.reactivity;
+    updateReact(todayEntry.reactivity);
+  }
+  if (todayEntry.journal) document.getElementById('journal-text').value = todayEntry.journal;
+  if (todayEntry.tag) document.getElementById('journal-tag').value = '#' + todayEntry.tag;
+}
+
+if (config.token) syncFromGitHub();
+</script>
+</body>
+</html>
