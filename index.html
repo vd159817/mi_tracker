@@ -602,9 +602,159 @@
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ── HAMBURGER MENU ── */
+    .menu-btn {
+      background: none; border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm); color: var(--text2);
+      font-family: 'DM Mono', monospace; font-size: 16px;
+      padding: 5px 10px; cursor: pointer; transition: all 0.2s;
+      line-height: 1;
+    }
+    .menu-btn:hover { color: var(--accent); border-color: var(--accent2); }
+
+    .menu-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 300;
+    }
+    .menu-overlay.open { display: block; }
+
+    .menu-drawer {
+      position: fixed; top: 0; right: -280px; bottom: 0;
+      width: 260px; background: var(--surface);
+      border-left: 0.5px solid var(--border2);
+      z-index: 301; padding: 0;
+      transition: right 0.25s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    .menu-drawer.open { right: 0; }
+
+    .menu-drawer-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 0.5px solid var(--border);
+      flex-shrink: 0;
+    }
+    .menu-drawer-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 18px;
+      font-weight: 300; color: var(--accent); font-style: italic;
+    }
+    .menu-close {
+      background: none; border: none; color: var(--text3);
+      font-size: 18px; cursor: pointer; padding: 0; transition: color 0.15s;
+    }
+    .menu-close:hover { color: var(--text); }
+
+    .menu-section { padding: 0.75rem 0; border-bottom: 0.5px solid var(--border); }
+    .menu-section:last-child { border-bottom: none; }
+    .menu-section-label {
+      font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text3); padding: 0 1.25rem; margin-bottom: 4px;
+    }
+
+    .menu-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 1.25rem; text-decoration: none;
+      color: var(--text2); font-family: 'DM Mono', monospace;
+      font-size: 13px; transition: all 0.15s; cursor: pointer;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .menu-link:hover { background: var(--surface2); color: var(--text); }
+    .menu-link:active { transform: scale(0.98); }
+    .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
+    .menu-link-text { flex: 1; }
+    .menu-link-sub { font-size: 10px; color: var(--text3); }
   </style>
 </head>
 <body>
+
+<!-- MENU OVERLAY -->
+<div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
+
+<!-- MENU DRAWER -->
+<div class="menu-drawer" id="menu-drawer">
+  <div class="menu-drawer-header">
+    <span class="menu-drawer-title">mi tracker</span>
+    <button class="menu-close" onclick="closeMenu()">✕</button>
+  </div>
+
+  <div class="menu-section">
+    <div class="menu-section-label">diario</div>
+    <a class="menu-link" href="index.html">
+      <span class="menu-link-num">00</span>
+      <span class="menu-link-text">inicio</span>
+      <span class="menu-link-sub">dashboard</span>
+    </a>
+    <a class="menu-link" href="hoy.html">
+      <span class="menu-link-num">01</span>
+      <span class="menu-link-text">hoy</span>
+      <span class="menu-link-sub">registro del día</span>
+    </a>
+    <a class="menu-link" href="higiene.html">
+      <span class="menu-link-num">02</span>
+      <span class="menu-link-text">higiene</span>
+      <span class="menu-link-sub">rutinas de higiene</span>
+    </a>
+    <a class="menu-link" href="alimentacion.html">
+      <span class="menu-link-num">03</span>
+      <span class="menu-link-text">alimentación</span>
+      <span class="menu-link-sub">dieta y macros</span>
+    </a>
+    <a class="menu-link" href="estudio.html">
+      <span class="menu-link-num">04</span>
+      <span class="menu-link-text">estudio</span>
+      <span class="menu-link-sub">sesiones de estudio</span>
+    </a>
+  </div>
+
+  <div class="menu-section">
+    <div class="menu-section-label">registros</div>
+    <a class="menu-link" href="registros.html">
+      <span class="menu-link-num">05</span>
+      <span class="menu-link-text">registros</span>
+      <span class="menu-link-sub">hábitos anuales · chess</span>
+    </a>
+    <a class="menu-link" href="finanzas.html">
+      <span class="menu-link-num">06</span>
+      <span class="menu-link-text">finanzas</span>
+      <span class="menu-link-sub">presupuesto y gastos</span>
+    </a>
+  </div>
+
+  <div class="menu-section">
+    <div class="menu-section-label">planeación</div>
+    <a class="menu-link" href="planeacion.html">
+      <span class="menu-link-num">07</span>
+      <span class="menu-link-text">planeación</span>
+      <span class="menu-link-sub">década · calendario · mallas</span>
+    </a>
+    <a class="menu-link" href="planeacion_anual.html">
+      <span class="menu-link-num">08</span>
+      <span class="menu-link-text">planeación anual</span>
+      <span class="menu-link-sub">tabla 2026 · progreso</span>
+    </a>
+    <a class="menu-link" href="malla_psic.html">
+      <span class="menu-link-num">09</span>
+      <span class="menu-link-text">malla psicología</span>
+      <span class="menu-link-sub">UAS · calculadora</span>
+    </a>
+    <a class="menu-link" href="malla_software.html">
+      <span class="menu-link-num">10</span>
+      <span class="menu-link-text">malla software</span>
+      <span class="menu-link-sub">pendiente de iniciar</span>
+    </a>
+  </div>
+
+  <div class="menu-section">
+    <div class="menu-section-label">listas</div>
+    <a class="menu-link" href="listas.html">
+      <span class="menu-link-num">11</span>
+      <span class="menu-link-text">listas</span>
+      <span class="menu-link-sub">películas · podcasts · temas</span>
+    </a>
+  </div>
+</div>
 
 <!-- CONFIG MODAL -->
 <div class="modal-overlay" id="configModal">
@@ -632,6 +782,7 @@
   <div style="display:flex; gap:8px; align-items:center;">
     <button class="btn-config" id="theme-btn" onclick="toggleTheme()">◐</button>
     <button class="btn-config" onclick="openConfig()">⚙ config</button>
+    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
   </div>
 </div>
 
@@ -756,20 +907,55 @@
         <div class="nav-title">hoy</div>
         <div class="nav-sub">registro diario completo</div>
       </a>
-      <a class="nav-card" href="registros.html">
+      <a class="nav-card" href="higiene.html">
         <div class="nav-icon">02</div>
+        <div class="nav-title">higiene</div>
+        <div class="nav-sub">rutinas mañana y noche</div>
+      </a>
+      <a class="nav-card" href="alimentacion.html">
+        <div class="nav-icon">03</div>
+        <div class="nav-title">alimentación</div>
+        <div class="nav-sub">dieta y macros del día</div>
+      </a>
+      <a class="nav-card" href="estudio.html">
+        <div class="nav-icon">04</div>
+        <div class="nav-title">estudio</div>
+        <div class="nav-sub">sesiones y línea de tiempo</div>
+      </a>
+      <a class="nav-card" href="registros.html">
+        <div class="nav-icon">05</div>
         <div class="nav-title">registros</div>
-        <div class="nav-sub">hábitos, ejercicio, finanzas, chess</div>
+        <div class="nav-sub">hábitos anuales · chess</div>
+      </a>
+      <a class="nav-card" href="finanzas.html">
+        <div class="nav-icon">06</div>
+        <div class="nav-title">finanzas</div>
+        <div class="nav-sub">presupuesto y gastos</div>
       </a>
       <a class="nav-card" href="planeacion.html">
-        <div class="nav-icon">03</div>
+        <div class="nav-icon">07</div>
         <div class="nav-title">planeación</div>
-        <div class="nav-sub">mensual, anual, revisión semanal</div>
+        <div class="nav-sub">década · calendario · mallas</div>
+      </a>
+      <a class="nav-card" href="planeacion_anual.html">
+        <div class="nav-icon">08</div>
+        <div class="nav-title">plan anual</div>
+        <div class="nav-sub">tabla 2026 · progreso</div>
+      </a>
+      <a class="nav-card" href="malla_psic.html">
+        <div class="nav-icon">09</div>
+        <div class="nav-title">psicología</div>
+        <div class="nav-sub">malla · calculadora UAS</div>
+      </a>
+      <a class="nav-card" href="malla_software.html">
+        <div class="nav-icon">10</div>
+        <div class="nav-title">software</div>
+        <div class="nav-sub">malla pendiente</div>
       </a>
       <a class="nav-card" href="listas.html">
-        <div class="nav-icon">04</div>
+        <div class="nav-icon">11</div>
         <div class="nav-title">listas</div>
-        <div class="nav-sub">películas, podcasts, temas, tareas</div>
+        <div class="nav-sub">películas · podcasts · temas</div>
       </a>
     </div>
   </div>
@@ -1111,6 +1297,16 @@ function renderTasks() {
       <button class="task-del" onclick="deleteTask(${t.id})">✕</button>
     </div>
   `).join('');
+}
+
+// ── MENU ──
+function openMenu() {
+  document.getElementById('menu-drawer').classList.add('open');
+  document.getElementById('menu-overlay').classList.add('open');
+}
+function closeMenu() {
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
 }
 
 // ── THEME ──
