@@ -1,0 +1,37 @@
+[
+  {
+    "date": "2026-03-18",
+    "checks": {
+      "principales_0": true,
+      "principales_1": true,
+      "principales_2": true,
+      "principales_3": true,
+      "principales_4": true,
+      "secundarios_0": true,
+      "secundarios_2": true,
+      "secundarios_3": true
+    },
+    "extras": [
+      {
+        "name": "Coca-cola 500",
+        "kcal": 0,
+        "prot": 0,
+        "carb": 0,
+        "fat": 0
+      },
+      {
+        "name": "Churros 30g",
+        "kcal": 0,
+        "prot": 0,
+        "carb": 0,
+        "fat": 0
+      }
+    ],
+    "totals": {
+      "kcal": 1501,
+      "prot": 80,
+      "carb": 177,
+      "fat": 50
+    }
+  }
+]
