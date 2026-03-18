@@ -960,6 +960,20 @@
     </div>
   </div>
 
+  <!-- EXPORTAR -->
+  <div>
+    <div class="section-label">exportar datos</div>
+    <div class="card" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">
+      <div style="font-size:12px; color:var(--text2); line-height:1.5;">
+        Descarga todos tus registros para análisis con IA.
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-guardar" onclick="exportCSV()">↓ exportar CSV</button>
+        <button class="btn-guardar" onclick="exportJSON()">↓ exportar JSON</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- CHART.JS -->
@@ -1386,6 +1400,118 @@ if (todayEntry) {
 }
 
 if (config.token) syncFromGitHub();
-</script>
+
+// ── EXPORT ──
+function getAllData() {
+  const keys = [
+    'tracker_diary', 'tracker_tasks', 'tracker_sleep', 'tracker_exercise',
+    'tracker_study', 'tracker_chess', 'food_data', 'finance_movements',
+    'annual_habits_data', 'annual_done', 'lists_data', 'annual_plan_overrides',
+    'psic_curriculum', 'cal_events', 'finance_budget', 'finance_projection'
+  ];
+  const all = {};
+  keys.forEach(k => {
+    try { const v = localStorage.getItem(k); if (v) all[k] = JSON.parse(v); } catch(e) {}
+  });
+  return all;
+}
+
+function exportJSON() {
+  const data = getAllData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `mi_tracker_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCSV() {
+  const data  = getAllData();
+  const lines = [];
+
+  // DIARY
+  if (data.tracker_diary?.length) {
+    lines.push('## DIARIO DIARIO');
+    lines.push('fecha,hora,ánimo,energía,reactividad,frase,etiqueta');
+    data.tracker_diary.forEach(e => {
+      lines.push(`${e.date},${e.time||''},${e.mood||''},${e.energy||''},${e.reactivity||''},"${(e.journal||'').replace(/"/g,'""')}","${e.tag||''}"`);
+    });
+    lines.push('');
+  }
+
+  // SLEEP
+  if (data.tracker_sleep?.length) {
+    lines.push('## DESCANSO');
+    lines.push('fecha,horas,calidad,conciliación,despertares,sensación,tipo_sueño,siesta_min');
+    data.tracker_sleep.forEach(e => {
+      lines.push(`${e.date},${e.hours||''},${e.quality||''},${e.conciliation||''},${e.wakeups||''},${e.wakeFeeling||''},"${e.dreamType||''}",${e.siesta||0}`);
+    });
+    lines.push('');
+  }
+
+  // EXERCISE
+  if (data.tracker_exercise?.length) {
+    lines.push('## EJERCICIO');
+    lines.push('fecha,semana,tren,reps_totales,rir,peso_kg,buena_técnica,comió_bien,durmió_bien');
+    data.tracker_exercise.forEach(e => {
+      const reps = (e.exercises||[]).reduce((s,x) => s+(x.series||0)*(x.reps||0), 0);
+      lines.push(`${e.date},${e.week||''},${e.tren||''},${reps},${e.rir||''},${e.weight||''},${e.goodTech?1:0},${e.ateWell?1:0},${e.sleptWell?1:0}`);
+    });
+    lines.push('');
+  }
+
+  // STUDY
+  if (data.tracker_study?.length) {
+    lines.push('## ESTUDIO');
+    lines.push('fecha,horas_total,calidad,dificultad,concentración,interrupciones,páginas,materia,tipos_sesión');
+    data.tracker_study.forEach(e => {
+      lines.push(`${e.date},${e.totalHours||0},${e.calidad||''},${e.dificultad||''},${e.concentracion||''},${e.interacciones||''},${e.pages||0},"${e.subject||''}","${(e.types||[]).join('|')}"`);
+    });
+    lines.push('');
+  }
+
+  // CHESS
+  if (data.tracker_chess?.length) {
+    lines.push('## AJEDREZ');
+    lines.push('fecha,resultado,color,modalidad,elo_antes,elo_después,delta_elo,apertura,blunders,errores,plataforma');
+    data.tracker_chess.forEach(e => {
+      lines.push(`${e.date},${e.result||''},${e.color||''},${e.mode||''},${e.eloBefore||''},${e.eloAfter||''},${e.eloDelta||''},"${e.opening||''}",${e.blunders||0},${e.mistakes||0},${e.platform||''}`);
+    });
+    lines.push('');
+  }
+
+  // FINANCE
+  if (data.finance_movements?.length) {
+    lines.push('## FINANZAS');
+    lines.push('fecha,tipo,descripción,monto,categoría');
+    data.finance_movements.forEach(e => {
+      lines.push(`${e.date},${e.type},"${(e.desc||'').replace(/"/g,'""')}",${e.amount},"${e.cat||''}"`);
+    });
+    lines.push('');
+  }
+
+  // HABITS
+  if (data.annual_habits_data) {
+    lines.push('## HÁBITOS ANUALES');
+    lines.push('fecha,hábito,completado');
+    Object.entries(data.annual_habits_data).forEach(([date, habits]) => {
+      Object.entries(habits).forEach(([habit, val]) => {
+        lines.push(`${date},"${habit}",${val}`);
+      });
+    });
+    lines.push('');
+  }
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `mi_tracker_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 </body>
 </html>
