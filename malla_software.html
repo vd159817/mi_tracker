@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>malla software · tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f3ef; --surface: #ffffff; --surface2: #f0ede8;
+      --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.15);
+      --text: #1a1916; --text2: #6a6760; --text3: #aaa89f;
+      --accent: #8a6a4a; --accent2: #b09070; --normal: #3a6a52;
+      --soft: #2c6fad; --r: 10px; --r-sm: 6px;
+    }
+    [data-theme="dark"] {
+      --bg: #141414; --surface: #1e1e1e; --surface2: #282828;
+      --border: rgba(255,255,255,0.09); --border2: rgba(255,255,255,0.18);
+      --text: #f0ede6; --text2: #c9a96e; --text3: #7a6a55;
+      --accent: #c9a96e; --accent2: #a08050; --normal: #6aaa82;
+      --soft: #4a9fd4;
+    }
+    [data-theme="dark"] .section-label, [data-theme="dark"] .nav-title { font-weight: 500; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 24px; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; padding: 0 0 6rem; transition: background 0.2s, color 0.2s; }
+
+    .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem 1rem; border-bottom: 0.5px solid var(--border); }
+    .btn-back { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 12px; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; }
+    .btn-back:hover { color: var(--soft); border-color: var(--soft); }
+
+    .content { padding: 2rem 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; text-align: center; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 0.6rem; }
+
+    .placeholder-icon { font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300; color: var(--soft); opacity: 0.4; line-height: 1; margin-bottom: 1rem; }
+    .placeholder-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--text); margin-bottom: 0.5rem; }
+    .placeholder-sub { font-size: 13px; color: var(--text3); line-height: 1.7; max-width: 320px; }
+
+    .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 400px; margin-top: 1rem; }
+    .nav-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r); padding: 1rem; text-decoration: none; display: flex; flex-direction: column; gap: 5px; transition: border-color 0.2s; }
+    .nav-card:hover { border-color: var(--border2); background: var(--surface2); }
+    .nav-num { font-size: 11px; color: var(--text3); }
+    .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; color: var(--text); }
+    .nav-sub { font-size: 10px; color: var(--text3); }
+
+    /* ── HAMBURGER MENU ── */
+    .menu-btn { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 16px; padding: 5px 10px; cursor: pointer; transition: all 0.2s; line-height: 1; }
+    .menu-btn:hover { color: var(--accent); border-color: var(--accent2); }
+    .menu-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; }
+    .menu-overlay.open { display: block; }
+    .menu-drawer { position: fixed; top: 0; right: -280px; bottom: 0; width: 260px; background: var(--surface); border-left: 0.5px solid var(--border2); z-index: 301; padding: 0; transition: right 0.25s cubic-bezier(.4,0,.2,1); display: flex; flex-direction: column; overflow-y: auto; }
+    .menu-drawer.open { right: 0; }
+    .menu-drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.25rem 1rem; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+    .menu-drawer-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--accent); font-style: italic; }
+    .menu-close { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 0; transition: color 0.15s; }
+    .menu-close:hover { color: var(--text); }
+    .menu-section { padding: 0.75rem 0; border-bottom: 0.5px solid var(--border); }
+    .menu-section:last-child { border-bottom: none; }
+    .menu-section-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); padding: 0 1.25rem; margin-bottom: 4px; }
+    .menu-link { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; text-decoration: none; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 13px; transition: all 0.15s; }
+    .menu-link:hover { background: var(--surface2); color: var(--text); }
+    .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
+    .menu-link-text { flex: 1; }
+    .menu-link-sub { font-size: 10px; color: var(--text3); }
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <div style="font-family:'Cormorant Garamond',serif; font-size:15px; font-style:italic; color:var(--soft);">software · pendiente</div>
+    <div style="font-size:12px; color:var(--text3); margin-top:2px;" id="full-date"></div>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button class="btn-back" onclick="toggleTheme()">◐</button>
+    <a class="btn-back" href="planeacion.html">← planeación</a>
+    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
+  </div>
+</div>
+
+<div class="content">
+  <div class="placeholder-icon">{ }</div>
+  <div class="placeholder-title">desarrollo de software</div>
+  <div class="placeholder-sub">
+    Esta malla está lista para cuando inicies la carrera.<br><br>
+    Cuando tengas el plan de estudios, pásalo y lo llenamos con el mismo formato que psicología — materias, créditos, calificaciones, horas, dificultad y proyección de egreso.
+  </div>
+
+  <div class="nav-grid">
+    <a class="nav-card" href="malla_psic.html">
+      <div class="nav-num">←</div>
+      <div class="nav-title">psicología</div>
+      <div class="nav-sub">malla activa</div>
+    </a>
+    <a class="nav-card" href="planeacion.html">
+      <div class="nav-num">←</div>
+      <div class="nav-title">planeación</div>
+      <div class="nav-sub">volver</div>
+    </a>
+  </div>
+</div>
+
+<script>
+  function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('tracker_theme', next);
+  }
+  (function(){ const t = localStorage.getItem('tracker_theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();
+  const now = new Date();
+  document.getElementById('full-date').textContent = `${now.getDate()} de ${['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][now.getMonth()]}, ${now.getFullYear()}`;
+
+// ── MENU ──
+function openMenu() {
+  document.getElementById('menu-drawer').classList.add('open');
+  document.getElementById('menu-overlay').classList.add('open');
+}
+function closeMenu() {
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+</script>
+</body>
+</html>

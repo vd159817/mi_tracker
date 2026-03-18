@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>hoy · tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --surface: #ffffff;
+      --surface2: #f0ede8;
+      --border: rgba(0,0,0,0.08);
+      --border2: rgba(0,0,0,0.15);
+      --text: #1a1916;
+      --text2: #6a6760;
+      --text3: #aaa89f;
+      --accent: #8a6a4a;
+      --accent2: #b09070;
+      --urgent: #b84030;
+      --important: #9a7030;
+      --normal: #3a6a52;
+      --r: 10px;
+      --r-sm: 6px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #141414;
+      --surface: #1e1e1e;
+      --surface2: #282828;
+      --border: rgba(255,255,255,0.09);
+      --border2: rgba(255,255,255,0.18);
+      --text: #f0ede6;
+      --text2: #c9a96e;
+      --text3: #7a6a55;
+      --accent: #c9a96e;
+      --accent2: #a08050;
+      --urgent: #d4694a;
+      --important: #c9a96e;
+      --normal: #6aaa82;
+    }
+
+    [data-theme="dark"] .habit-name,
+    [data-theme="dark"] .task-text,
+    [data-theme="dark"] .nav-title,
+    [data-theme="dark"] .routine-name,
+    [data-theme="dark"] .section-label,
+    [data-theme="dark"] .mood-track-label,
+    [data-theme="dark"] .meta-label,
+    [data-theme="dark"] .metric-label,
+    [data-theme="dark"] .dreams-label,
+    [data-theme="dark"] .day-name,
+    [data-theme="dark"] .time-display,
+    [data-theme="dark"] .hours-big,
+    [data-theme="dark"] .tren-btn,
+    [data-theme="dark"] .ex-label { font-weight: 500; }
+
+    html, body { transition: background 0.2s, color 0.2s; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { font-size: 24px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      padding: 0 0 6rem;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem 1rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .top-bar .day-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+    }
+
+    .top-bar .full-date {
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    .btn-back {
+      background: none;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      padding: 6px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-back:hover { color: var(--accent); border-color: var(--accent2); }
+
+    /* ── LAYOUT ── */
+    .content {
+      padding: 1.25rem 1.25rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r);
+      padding: 1rem 1.125rem;
+    }
+
+    /* ── SHARED INPUTS ── */
+    input[type=text], input[type=number], textarea, select {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      padding: 7px 10px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input[type=text]:focus, input[type=number]:focus, textarea:focus, select:focus {
+      border-color: var(--border2);
+    }
+
+    input::placeholder, textarea::placeholder { color: var(--text3); }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--r-sm);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-ghost {
+      background: none;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover { color: var(--accent); border-color: var(--accent2); }
+
+    .btn-edit {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-edit:hover { color: var(--accent); border-color: var(--accent2); }
+
+    .row { display: flex; gap: 8px; align-items: center; }
+    .row-top { display: flex; gap: 8px; align-items: flex-start; }
+
+    .save-status {
+      font-size: 11px;
+      color: var(--normal);
+      text-align: center;
+      min-height: 18px;
+      transition: opacity 0.3s;
+      margin-top: 6px;
+    }
+
+    .save-status.hidden { opacity: 0; }
+
+    /* ── HABITS ── */
+    .habits-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .habit-category {
+      margin-bottom: 0.75rem;
+    }
+
+    .category-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 6px;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .habit-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: var(--r-sm);
+      background: var(--surface2);
+      margin-bottom: 5px;
+      border-left: 2px solid transparent;
+    }
+
+    .habit-item.done { border-left-color: var(--normal); }
+    .habit-item.done .habit-name { text-decoration: line-through; color: var(--text3); }
+
+    .habit-check {
+      width: 18px;
+      height: 18px;
+      border: 0.5px solid var(--border2);
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      transition: all 0.15s;
+      background: var(--surface);
+    }
+
+    .habit-check.checked {
+      background: var(--normal);
+      border-color: var(--normal);
+      color: #fff;
+    }
+
+    .habit-name {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .habit-days-tag {
+      font-size: 9px;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.04em;
+    }
+
+    /* HABIT EDITOR */
+    .habit-editor {
+      display: none;
+      margin-top: 0.75rem;
+      border-top: 0.5px solid var(--border);
+      padding-top: 0.75rem;
+    }
+
+    .habit-editor.open { display: block; }
+
+    .habit-editor-item {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .habit-editor-item input[type=text] { flex: 1; }
+
+    .days-select {
+      font-size: 11px;
+      padding: 5px 8px;
+      width: auto;
+    }
+
+    .cat-select {
+      font-size: 11px;
+      padding: 5px 8px;
+      width: auto;
+    }
+
+    .add-habit-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .add-habit-row input { flex: 2; min-width: 120px; }
+    .add-habit-row select { flex: 1; min-width: 100px; }
+
+    /* ── WORK ROUTINES ── */
+    .routine-block {
+      margin-bottom: 1rem;
+    }
+
+    .routine-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .routine-icon {
+      font-size: 14px;
+      color: var(--text3);
+    }
+
+    .routine-name {
+      font-size: 15px;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .routine-steps {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 10px;
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      font-size: 12px;
+      color: var(--text2);
+    }
+
+    .routine-step {
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .routine-arrow {
+      color: var(--text3);
+      font-size: 10px;
+    }
+
+    /* ROUTINE EDITOR */
+    .routine-editor {
+      display: none;
+      margin-top: 0.75rem;
+      border-top: 0.5px solid var(--border);
+      padding-top: 0.75rem;
+    }
+
+    .routine-editor.open { display: block; }
+
+    .routine-editor-block {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .routine-editor-block .block-title-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .step-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 5px;
+      align-items: center;
+    }
+
+    .step-row input { flex: 1; }
+
+    /* ── SLEEP ── */
+    .sleep-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 0.75rem;
+    }
+
+    .sleep-block {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 10px;
+    }
+
+    .sleep-block-label {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sleep-block-label .sleep-icon { font-size: 13px; }
+
+    .time-slider-wrap {
+      margin-bottom: 6px;
+    }
+
+    .time-slider-wrap input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 3px;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      background: linear-gradient(to right, #3a5068, #6a4080, #8a4060, #c06040, #c0a030, #8aaa40, #3a8060);
+      padding: 0;
+    }
+
+    .time-slider-wrap input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: 2px solid var(--surface);
+      box-shadow: 0 0 0 1px var(--accent2);
+    }
+
+    .time-display {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--accent);
+      text-align: center;
+      margin: 4px 0;
+    }
+
+    .time-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      color: var(--text3);
+    }
+
+    .sleep-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 0.75rem;
+    }
+
+    .metric-block {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 8px 10px;
+    }
+
+    .metric-label {
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .likert-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 3px;
+    }
+
+    .likert-btn {
+      flex: 1;
+      height: 28px;
+      border: 0.5px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .likert-btn.selected {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .siesta-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .total-sleep {
+      text-align: center;
+      padding: 8px;
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      margin-bottom: 0.75rem;
+    }
+
+    .total-sleep .hours-big {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--accent);
+    }
+
+    .total-sleep .hours-label {
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+    }
+
+    /* DREAMS */
+    .dreams-section {
+      margin-top: 0.75rem;
+      border-top: 0.5px solid var(--border);
+      padding-top: 0.75rem;
+    }
+
+    .dreams-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 8px;
+    }
+
+    .dream-type-row {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .dream-type-btn {
+      font-size: 11px;
+      font-family: 'DM Mono', monospace;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 0.5px solid var(--border2);
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .dream-type-btn.selected {
+      background: var(--text);
+      color: var(--bg);
+      border-color: transparent;
+    }
+
+    .dream-textarea {
+      width: 100%;
+      min-height: 70px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.6;
+      padding: 10px 12px;
+      resize: none;
+      outline: none;
+    }
+
+    .dream-textarea::placeholder { color: var(--text3); font-style: italic; }
+
+    .obs-textarea {
+      width: 100%;
+      min-height: 55px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.6;
+      padding: 10px 12px;
+      resize: none;
+      outline: none;
+      margin-top: 8px;
+    }
+
+    .obs-textarea::placeholder { color: var(--text3); font-style: italic; }
+
+    /* SLEEP CHART */
+    .chart-wrap {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 10px;
+      margin-top: 0.75rem;
+    }
+
+    .chart-wrap canvas { width: 100% !important; height: 120px !important; }
+
+    /* ── EXERCISE ── */
+    .exercise-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 0.75rem;
+    }
+
+    .meta-block {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 8px 10px;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .tren-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .tren-btn {
+      flex: 1;
+      font-size: 10px;
+      font-family: 'DM Mono', monospace;
+      padding: 5px 4px;
+      border-radius: var(--r-sm);
+      border: 0.5px solid var(--border2);
+      background: transparent;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+
+    .tren-btn.selected {
+      background: var(--text);
+      color: var(--bg);
+      border-color: transparent;
+    }
+
+    .exercise-checks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 0.75rem;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 7px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text2);
+      border: 0.5px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .check-item.checked {
+      border-color: var(--normal);
+      color: var(--text);
+    }
+
+    .check-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border2);
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .check-item.checked .check-dot {
+      background: var(--normal);
+      border-color: var(--normal);
+    }
+
+    /* EXERCISES LIST */
+    .exercises-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .exercise-item {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .exercise-item input[type=text] { flex: 2; min-width: 100px; }
+    .exercise-item input[type=number] { width: 60px; flex-shrink: 0; }
+
+    .ex-label {
+      font-size: 10px;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    /* DISCIPLINE */
+    .discipline-item {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .discipline-item input[type=text] { flex: 2; }
+    .discipline-item input[type=number] { width: 70px; flex-shrink: 0; }
+
+    .exercise-notes {
+      width: 100%;
+      min-height: 55px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.6;
+      padding: 10px 12px;
+      resize: none;
+      outline: none;
+      margin-top: 8px;
+    }
+
+    .exercise-notes::placeholder { color: var(--text3); font-style: italic; }
+
+    .ex-chart-wrap {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 10px;
+      margin-top: 0.75rem;
+    }
+
+    .ex-chart-wrap canvas { width: 100% !important; height: 120px !important; }
+
+    /* ── NAV BOTTOM ── */
+    .nav-bottom {
+      margin-top: 1.5rem;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .nav-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r);
+      padding: 1rem;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-card:hover { border-color: var(--border2); background: var(--surface2); }
+    .nav-card:active { transform: scale(0.98); }
+
+    .nav-num {
+      font-size: 11px;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .nav-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 400;
+      color: var(--text);
+    }
+
+    .nav-sub {
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ── HAMBURGER MENU ── */
+    .menu-btn { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 16px; padding: 5px 10px; cursor: pointer; transition: all 0.2s; line-height: 1; }
+    .menu-btn:hover { color: var(--accent); border-color: var(--accent2); }
+    .menu-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; }
+    .menu-overlay.open { display: block; }
+    .menu-drawer { position: fixed; top: 0; right: -280px; bottom: 0; width: 260px; background: var(--surface); border-left: 0.5px solid var(--border2); z-index: 301; padding: 0; transition: right 0.25s cubic-bezier(.4,0,.2,1); display: flex; flex-direction: column; overflow-y: auto; }
+    .menu-drawer.open { right: 0; }
+    .menu-drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.25rem 1rem; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+    .menu-drawer-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--accent); font-style: italic; }
+    .menu-close { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 0; transition: color 0.15s; }
+    .menu-close:hover { color: var(--text); }
+    .menu-section { padding: 0.75rem 0; border-bottom: 0.5px solid var(--border); }
+    .menu-section:last-child { border-bottom: none; }
+    .menu-section-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); padding: 0 1.25rem; margin-bottom: 4px; }
+    .menu-link { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; text-decoration: none; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 13px; transition: all 0.15s; }
+    .menu-link:hover { background: var(--surface2); color: var(--text); }
+    .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
+    .menu-link-text { flex: 1; }
+    .menu-link-sub { font-size: 10px; color: var(--text3); }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div>
+    <div class="day-name" id="day-name"></div>
+    <div class="full-date" id="full-date"></div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <button class="btn-back" id="theme-btn" onclick="toggleTheme()">◐</button>
+    <a class="btn-back" href="index.html">← inicio</a>
+    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ══════════════════════════════════════
+       1. HÁBITOS DEL DÍA
+  ══════════════════════════════════════ -->
+  <div>
+    <div class="section-label">hábitos del día</div>
+    <div class="card">
+
+      <div class="habits-header">
+        <span style="font-size:13px; color:var(--text2)" id="habits-summary">— hábitos</span>
+        <button class="btn-edit" onclick="toggleHabitEditor()">✎ editar</button>
+      </div>
+
+      <div id="habits-list"></div>
+
+      <!-- EDITOR -->
+      <div class="habit-editor" id="habit-editor">
+        <div style="font-size:11px; color:var(--text3); margin-bottom:10px; letter-spacing:0.06em;">
+          NOMBRE · CATEGORÍA · DÍAS
+        </div>
+        <div id="habit-editor-list"></div>
+        <div class="add-habit-row">
+          <input type="text" id="new-habit-name" placeholder="nuevo hábito..." />
+          <input type="text" id="new-habit-cat" placeholder="categoría" style="flex:1; min-width:90px;" />
+          <select id="new-habit-days" class="days-select" style="width:auto; flex:1; min-width:100px;">
+            <option value="todos">todos los días</option>
+            <option value="LMX">Lun Mié Vie</option>
+            <option value="MJS">Mar Jue Sáb</option>
+            <option value="finde">Sáb Dom</option>
+            <option value="semana">Lun–Vie</option>
+            <option value="L">Lunes</option>
+            <option value="M">Martes</option>
+            <option value="X">Miércoles</option>
+            <option value="J">Jueves</option>
+            <option value="V">Viernes</option>
+            <option value="S">Sábado</option>
+            <option value="D">Domingo</option>
+          </select>
+          <button class="icon-btn" onclick="addHabit()" title="agregar">+</button>
+        </div>
+        <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end;">
+          <button class="btn-ghost" onclick="toggleHabitEditor()">cerrar</button>
+          <button class="btn-primary" onclick="saveHabits()">guardar hábitos</button>
+        </div>
+      </div>
+
+      <div class="save-status hidden" id="habits-status">guardado</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       2. WORK ROUTINES
+  ══════════════════════════════════════ -->
+  <div>
+    <div class="section-label">rutinas de trabajo</div>
+    <div class="card">
+
+      <div class="habits-header">
+        <span style="font-size:13px; color:var(--text2)">rutinas configuradas</span>
+        <button class="btn-edit" onclick="toggleRoutineEditor()">✎ editar</button>
+      </div>
+
+      <div id="routines-list"></div>
+
+      <!-- EDITOR -->
+      <div class="routine-editor" id="routine-editor">
+        <div id="routine-editor-blocks"></div>
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <button class="btn-ghost" onclick="addRoutineBlock()">+ rutina</button>
+        </div>
+        <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end;">
+          <button class="btn-ghost" onclick="toggleRoutineEditor()">cerrar</button>
+          <button class="btn-primary" onclick="saveRoutines()">guardar rutinas</button>
+        </div>
+      </div>
+
+      <div class="save-status hidden" id="routines-status">guardado</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       3. DESCANSO Y SUEÑOS
+  ══════════════════════════════════════ -->
+  <div>
+    <div class="section-label">descanso y sueños</div>
+    <div class="card">
+
+      <!-- HORA DORMIR / DESPERTAR -->
+      <div class="sleep-grid">
+        <div class="sleep-block">
+          <div class="sleep-block-label">
+            <span class="sleep-icon">☽</span> dormí a las
+          </div>
+          <div class="time-display" id="sleep-time-display">—</div>
+          <div class="time-slider-wrap">
+            <input type="range" id="sleep-slider" min="0" max="23" value="22" step="1"
+              oninput="updateSleepTime()" />
+          </div>
+          <div class="time-labels">
+            <span>12 pm</span><span>6 pm</span><span>12 am</span><span>6 am</span><span>12 pm</span>
+          </div>
+        </div>
+        <div class="sleep-block">
+          <div class="sleep-block-label">
+            <span class="sleep-icon">○</span> desperté a las
+          </div>
+          <div class="time-display" id="wake-time-display">—</div>
+          <div class="time-slider-wrap">
+            <input type="range" id="wake-slider" min="0" max="23" value="7" step="1"
+              oninput="updateWakeTime()" />
+          </div>
+          <div class="time-labels">
+            <span>12 am</span><span>6 am</span><span>12 pm</span><span>6 pm</span><span>12 am</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOTAL -->
+      <div class="total-sleep">
+        <div class="hours-big" id="total-sleep-hours">— h</div>
+        <div class="hours-label">total de sueño</div>
+      </div>
+
+      <!-- SIESTA -->
+      <div class="siesta-row">
+        <span style="font-size:12px; color:var(--text2); white-space:nowrap;">siesta:</span>
+        <input type="number" id="siesta-min" placeholder="0" min="0" max="180" step="30"
+          style="width:70px; flex-shrink:0;" />
+        <span style="font-size:12px; color:var(--text3);">min</span>
+      </div>
+
+      <!-- MÉTRICAS -->
+      <div class="sleep-metrics">
+        <div class="metric-block">
+          <div class="metric-label">calidad</div>
+          <div class="likert-row" id="quality-row"></div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">conciliación</div>
+          <div class="likert-row" id="conciliation-row"></div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">despertares</div>
+          <div class="likert-row" id="wakeups-row"></div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">sensación al despertar</div>
+          <div class="likert-row" id="wakefeeling-row"></div>
+        </div>
+      </div>
+
+      <!-- SUEÑOS -->
+      <div class="dreams-section">
+        <div class="dreams-label">sueños</div>
+        <div class="dream-type-row">
+          <button class="dream-type-btn" data-type="pesadilla" onclick="selectDreamType(this)">pesadilla</button>
+          <button class="dream-type-btn" data-type="estresante" onclick="selectDreamType(this)">estresante</button>
+          <button class="dream-type-btn" data-type="normal" onclick="selectDreamType(this)">normal</button>
+          <button class="dream-type-btn" data-type="bueno" onclick="selectDreamType(this)">bueno</button>
+          <button class="dream-type-btn" data-type="ninguno" onclick="selectDreamType(this)">ninguno</button>
+        </div>
+        <div class="row" style="gap:8px; margin-bottom:8px;">
+          <textarea class="dream-textarea" id="dream-text" placeholder="describe tu sueño..."></textarea>
+        </div>
+        <div class="row" style="gap:8px;">
+          <button class="icon-btn" title="borrar" onclick="document.getElementById('dream-text').value=''">✕</button>
+          <button class="icon-btn" title="pegar" onclick="pasteField('dream-text')">⎘</button>
+        </div>
+      </div>
+
+      <!-- OBSERVACIONES -->
+      <div style="margin-top:0.75rem; border-top:0.5px solid var(--border); padding-top:0.75rem;">
+        <div class="dreams-label">observaciones del descanso</div>
+        <textarea class="obs-textarea" id="sleep-obs" placeholder="notas sobre el descanso..."></textarea>
+        <div class="row" style="gap:8px; margin-top:6px;">
+          <button class="icon-btn" title="borrar" onclick="document.getElementById('sleep-obs').value=''">✕</button>
+          <button class="icon-btn" title="pegar" onclick="pasteField('sleep-obs')">⎘</button>
+        </div>
+      </div>
+
+      <!-- GRÁFICA SUEÑO -->
+      <div class="chart-wrap">
+        <div style="font-size:10px; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;">último mes</div>
+        <canvas id="sleepChart"></canvas>
+      </div>
+
+      <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+        <button class="btn-primary" onclick="saveSleep()">guardar descanso</button>
+      </div>
+      <div class="save-status hidden" id="sleep-status">guardado</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       4. EJERCICIO
+  ══════════════════════════════════════ -->
+  <div>
+    <div class="section-label">ejercicio</div>
+    <div class="card">
+
+      <!-- META -->
+      <div class="exercise-meta">
+        <div class="meta-block">
+          <div class="meta-label">semana del año</div>
+          <input type="number" id="ex-week" min="1" max="52" placeholder="—"
+            style="font-size:18px; text-align:center; background:transparent; border:none; color:var(--accent); font-family:'Cormorant Garamond',serif; width:100%;" />
+        </div>
+        <div class="meta-block">
+          <div class="meta-label">tren muscular</div>
+          <div class="tren-buttons">
+            <button class="tren-btn" data-tren="superior" onclick="selectTren(this)">sup</button>
+            <button class="tren-btn" data-tren="inferior" onclick="selectTren(this)">inf</button>
+            <button class="tren-btn" data-tren="completo" onclick="selectTren(this)">comp</button>
+          </div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-label">desc. entre series</div>
+          <div class="row" style="gap:4px;">
+            <input type="number" id="ex-rest" min="0" max="600" step="15" placeholder="seg" />
+            <span style="font-size:11px; color:var(--text3);">seg</span>
+          </div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-label">rir</div>
+          <input type="number" id="ex-rir" min="0" max="10" placeholder="0–10" />
+        </div>
+        <div class="meta-block">
+          <div class="meta-label">peso adicional</div>
+          <div class="row" style="gap:4px;">
+            <input type="number" id="ex-weight" min="0" step="0.5" placeholder="kg" />
+            <span style="font-size:11px; color:var(--text3);">kg</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECKS -->
+      <div class="exercise-checks">
+        <div class="check-item" id="check-food" onclick="toggleCheck('check-food')">
+          <div class="check-dot"></div>
+          <span>comí bien antes</span>
+        </div>
+        <div class="check-item" id="check-sleep" onclick="toggleCheck('check-sleep')">
+          <div class="check-dot"></div>
+          <span>dormí bien antes</span>
+        </div>
+        <div class="check-item" id="check-tech" onclick="toggleCheck('check-tech')">
+          <div class="check-dot"></div>
+          <span>buena técnica</span>
+        </div>
+        <div class="check-item" id="check-extra" onclick="toggleCheck('check-extra')">
+          <div class="check-dot"></div>
+          <span>uso peso adicional</span>
+        </div>
+      </div>
+
+      <!-- EJERCICIOS -->
+      <div class="exercises-header">
+        <span style="font-size:12px; color:var(--text2);">ejercicios</span>
+        <button class="btn-ghost" style="font-size:11px; padding:4px 10px;" onclick="addExerciseRow()">+ ejercicio</button>
+      </div>
+      <div id="exercises-list"></div>
+
+      <!-- DISCIPLINAS -->
+      <div class="exercises-header" style="margin-top:10px;">
+        <span style="font-size:12px; color:var(--text2);">disciplinas</span>
+        <button class="btn-ghost" style="font-size:11px; padding:4px 10px;" onclick="addDisciplineRow()">+ disciplina</button>
+      </div>
+      <div id="disciplines-list"></div>
+
+      <!-- NOTAS -->
+      <textarea class="exercise-notes" id="ex-notes" placeholder="notas del entrenamiento..."></textarea>
+      <div class="row" style="gap:8px; margin-top:6px;">
+        <button class="icon-btn" onclick="document.getElementById('ex-notes').value=''">✕</button>
+        <button class="icon-btn" onclick="pasteField('ex-notes')">⎘</button>
+      </div>
+
+      <!-- GRÁFICA EJERCICIO -->
+      <div class="ex-chart-wrap">
+        <div style="font-size:10px; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px;">entrenamientos del mes</div>
+        <canvas id="exChart"></canvas>
+      </div>
+
+      <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+        <button class="btn-primary" onclick="saveExercise()">guardar ejercicio</button>
+      </div>
+      <div class="save-status hidden" id="ex-status">guardado</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       NAV — PÁGINAS FUTURAS
+  ══════════════════════════════════════ -->
+  <div class="nav-bottom">
+    <div class="section-label">otras secciones</div>
+    <div class="nav-grid">
+      <a class="nav-card" href="higiene.html">
+        <div class="nav-num">→</div>
+        <div class="nav-title">higiene</div>
+        <div class="nav-sub">rutinas de higiene diaria</div>
+      </a>
+      <a class="nav-card" href="estudio.html">
+        <div class="nav-num">→</div>
+        <div class="nav-title">estudio</div>
+        <div class="nav-sub">tracker de sesiones y materias</div>
+      </a>
+      <a class="nav-card" href="alimentacion.html">
+        <div class="nav-num">→</div>
+        <div class="nav-title">alimentación</div>
+        <div class="nav-sub">registro nutricional</div>
+      </a>
+      <a class="nav-card" href="index.html">
+        <div class="nav-num">←</div>
+        <div class="nav-title">inicio</div>
+        <div class="nav-sub">volver al dashboard</div>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ── THEME ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('tracker_theme', next);
+}
+(function applyTheme() {
+  const saved = localStorage.getItem('tracker_theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+
+// ── CONFIG & DATA ──
+const config = JSON.parse(localStorage.getItem('tracker_config') || '{}');
+const REPO = config.repo || 'vd159817/mi_tracker';
+
+let habitsConfig = JSON.parse(localStorage.getItem('tracker_habits_config') || '[]');
+let habitsData   = JSON.parse(localStorage.getItem('tracker_habits_data') || '{}');
+let routinesData = JSON.parse(localStorage.getItem('tracker_routines') || '[]');
+let sleepData    = JSON.parse(localStorage.getItem('tracker_sleep') || '[]');
+let exerciseData = JSON.parse(localStorage.getItem('tracker_exercise') || '[]');
+
+const TODAY = new Date().toISOString().split('T')[0];
+const DAY_IDX = new Date().getDay(); // 0=Dom,1=Lun,...,6=Sáb
+
+// ── DATE ──
+(function initDate() {
+  const now = new Date();
+  const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('day-name').textContent = days[now.getDay()];
+  document.getElementById('full-date').textContent = `${now.getDate()} de ${months[now.getMonth()]}, ${now.getFullYear()}`;
+})();
+
+// ── GITHUB ──
+async function saveToGitHub(path, data) {
+  if (!config.token) return;
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  let sha = '';
+  try {
+    const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
+    if (r.ok) { const j = await r.json(); sha = j.sha; }
+  } catch(e) {}
+  const body = { message: `update ${path}`, content };
+  if (sha) body.sha = sha;
+  await fetch(url, {
+    method: 'PUT',
+    headers: { Authorization: `token ${config.token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+}
+
+// ── HELPERS ──
+function showStatus(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg || (config.token ? 'guardado en github ✓' : 'guardado localmente ✓');
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 2500);
+}
+
+async function pasteField(id) {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById(id).value = text;
+  } catch(e) { alert('Permite acceso al portapapeles.'); }
+}
+
+// ── DAYS LOGIC ──
+const DAY_MAP = {
+  'todos': [0,1,2,3,4,5,6],
+  'LMX':   [1,3,5],
+  'MJS':   [2,4,6],
+  'finde': [6,0],
+  'semana':[1,2,3,4,5],
+  'L':[1],'M':[2],'X':[3],'J':[4],'V':[5],'S':[6],'D':[0]
+};
+
+function habitAppliestoday(days) {
+  return (DAY_MAP[days] || [0,1,2,3,4,5,6]).includes(DAY_IDX);
+}
+
+// ── HABITS ──
+function toggleHabitEditor() {
+  const ed = document.getElementById('habit-editor');
+  ed.classList.toggle('open');
+  if (ed.classList.contains('open')) renderHabitEditorList();
+}
+
+function renderHabitEditorList() {
+  const container = document.getElementById('habit-editor-list');
+  container.innerHTML = habitsConfig.map((h, i) => `
+    <div class="habit-editor-item">
+      <input type="text" value="${h.name}" onchange="habitsConfig[${i}].name=this.value" style="flex:2;" />
+      <input type="text" value="${h.category||''}" placeholder="cat" onchange="habitsConfig[${i}].category=this.value" style="flex:1; min-width:70px;" />
+      <select class="days-select" onchange="habitsConfig[${i}].days=this.value" style="width:auto;">
+        ${Object.keys(DAY_MAP).map(d => `<option value="${d}" ${h.days===d?'selected':''}>${d}</option>`).join('')}
+      </select>
+      <button class="icon-btn" onclick="removeHabit(${i})" title="eliminar" style="color:var(--urgent);">✕</button>
+    </div>
+  `).join('');
+}
+
+function addHabit() {
+  const name = document.getElementById('new-habit-name').value.trim();
+  if (!name) return;
+  habitsConfig.push({
+    name,
+    category: document.getElementById('new-habit-cat').value.trim(),
+    days: document.getElementById('new-habit-days').value
+  });
+  document.getElementById('new-habit-name').value = '';
+  document.getElementById('new-habit-cat').value = '';
+  renderHabitEditorList();
+}
+
+function removeHabit(i) {
+  habitsConfig.splice(i, 1);
+  renderHabitEditorList();
+}
+
+async function saveHabits() {
+  localStorage.setItem('tracker_habits_config', JSON.stringify(habitsConfig));
+  if (config.token) await saveToGitHub('data/habits_config.json', habitsConfig);
+  renderHabitsList();
+  showStatus('habits-status');
+  document.getElementById('habit-editor').classList.remove('open');
+}
+
+function renderHabitsList() {
+  const container = document.getElementById('habits-list');
+  const todayHabits = habitsConfig.filter(h => habitAppliestoday(h.days || 'todos'));
+
+  if (todayHabits.length === 0) {
+    container.innerHTML = `<div style="font-size:13px; color:var(--text3); text-align:center; padding:1rem 0; font-style:italic; font-family:'Cormorant Garamond',serif;">sin hábitos para hoy — agrega algunos en editar</div>`;
+    document.getElementById('habits-summary').textContent = '— hábitos';
+    return;
+  }
+
+  // Group by category
+  const cats = {};
+  todayHabits.forEach(h => {
+    const cat = h.category || 'general';
+    if (!cats[cat]) cats[cat] = [];
+    cats[cat].push(h);
+  });
+
+  let done = 0;
+  container.innerHTML = Object.entries(cats).map(([cat, habits]) => `
+    <div class="habit-category">
+      <div class="category-label">${cat}</div>
+      ${habits.map(h => {
+        const key = `${TODAY}_${h.name}`;
+        const isDone = habitsData[key] || false;
+        if (isDone) done++;
+        return `
+          <div class="habit-item ${isDone ? 'done' : ''}" id="habit-${btoa(h.name).replace(/=/g,'')}"
+            onclick="toggleHabit('${h.name}')" style="cursor:pointer;">
+            <div class="habit-check ${isDone ? 'checked' : ''}">
+              ${isDone ? '✓' : ''}
+            </div>
+            <span class="habit-name">${h.name}</span>
+            <span class="habit-days-tag">${h.days !== 'todos' ? h.days : ''}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `).join('');
+
+  document.getElementById('habits-summary').textContent = `${done}/${todayHabits.length} completados`;
+}
+
+async function toggleHabit(name) {
+  const key = `${TODAY}_${name}`;
+  habitsData[key] = !habitsData[key];
+  localStorage.setItem('tracker_habits_data', JSON.stringify(habitsData));
+  if (config.token) await saveToGitHub('data/habits_data.json', habitsData);
+  renderHabitsList();
+}
+
+// ── ROUTINES ──
+function toggleRoutineEditor() {
+  const ed = document.getElementById('routine-editor');
+  ed.classList.toggle('open');
+  if (ed.classList.contains('open')) renderRoutineEditorBlocks();
+}
+
+function renderRoutineEditorBlocks() {
+  const container = document.getElementById('routine-editor-blocks');
+  container.innerHTML = routinesData.map((r, ri) => `
+    <div class="routine-editor-block">
+      <div class="block-title-row">
+        <input type="text" value="${r.name}" placeholder="nombre rutina"
+          onchange="routinesData[${ri}].name=this.value" style="flex:1;" />
+        <button class="icon-btn" onclick="removeRoutine(${ri})" style="color:var(--urgent);">✕</button>
+      </div>
+      <div id="steps-${ri}">
+        ${(r.steps||[]).map((s,si) => `
+          <div class="step-row">
+            <input type="text" value="${s}" placeholder="paso ${si+1}"
+              onchange="routinesData[${ri}].steps[${si}]=this.value" />
+            <button class="icon-btn" onclick="removeStep(${ri},${si})" style="font-size:11px; color:var(--text3);">✕</button>
+          </div>
+        `).join('')}
+      </div>
+      <button class="btn-ghost" style="font-size:11px; padding:3px 10px; margin-top:5px;"
+        onclick="addStep(${ri})">+ paso</button>
+    </div>
+  `).join('');
+}
+
+function addRoutineBlock() {
+  routinesData.push({ name: '', steps: [''] });
+  renderRoutineEditorBlocks();
+}
+
+function removeRoutine(ri) {
+  routinesData.splice(ri, 1);
+  renderRoutineEditorBlocks();
+}
+
+function addStep(ri) {
+  if (!routinesData[ri].steps) routinesData[ri].steps = [];
+  routinesData[ri].steps.push('');
+  renderRoutineEditorBlocks();
+}
+
+function removeStep(ri, si) {
+  routinesData[ri].steps.splice(si, 1);
+  renderRoutineEditorBlocks();
+}
+
+async function saveRoutines() {
+  localStorage.setItem('tracker_routines', JSON.stringify(routinesData));
+  if (config.token) await saveToGitHub('data/routines.json', routinesData);
+  renderRoutinesList();
+  showStatus('routines-status');
+  document.getElementById('routine-editor').classList.remove('open');
+}
+
+function renderRoutinesList() {
+  const container = document.getElementById('routines-list');
+  if (routinesData.length === 0) {
+    container.innerHTML = `<div style="font-size:13px; color:var(--text3); text-align:center; padding:1rem 0; font-style:italic; font-family:'Cormorant Garamond',serif;">sin rutinas — agrega en editar</div>`;
+    return;
+  }
+  container.innerHTML = routinesData.map(r => `
+    <div class="routine-block">
+      <div class="routine-header">
+        <svg class="routine-icon" width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1"/>
+          <circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1"/>
+          <line x1="7" y1="0" x2="7" y2="2.5" stroke="currentColor" stroke-width="1"/>
+          <line x1="7" y1="11.5" x2="7" y2="14" stroke="currentColor" stroke-width="1"/>
+          <line x1="0" y1="7" x2="2.5" y2="7" stroke="currentColor" stroke-width="1"/>
+          <line x1="11.5" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1"/>
+        </svg>
+        <span class="routine-name">${r.name}</span>
+      </div>
+      <div class="routine-steps">
+        ${(r.steps||[]).filter(s=>s).map((s,i) => `
+          <span class="routine-step">${s}</span>
+          ${i < r.steps.filter(s=>s).length-1 ? '<span class="routine-arrow">›</span>' : ''}
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── SLEEP TIME ──
+// Sleep slider: 0=12pm, 1=1pm... 11=11pm, 12=12am, 13=1am... 23=11am
+function sliderToTimeLabel(val, type) {
+  // type 'sleep': 0=12pm→23=11am (full 24h)
+  // we map: 0=12pm(12:00), 1=13:00... 11=23:00, 12=0:00, 13=1:00... 23=11:00
+  const hour = (val + 12) % 24;
+  const ampm = hour < 12 ? 'am' : 'pm';
+  const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return `${h12}:00 ${ampm}`;
+}
+
+function sliderToHour(val) {
+  return (val + 12) % 24;
+}
+
+function updateSleepTime() {
+  const val = parseInt(document.getElementById('sleep-slider').value);
+  document.getElementById('sleep-time-display').textContent = sliderToTimeLabel(val);
+  updateTotalSleep();
+}
+
+function updateWakeTime() {
+  const val = parseInt(document.getElementById('wake-slider').value);
+  // wake slider: 0=12am, 1=1am...11=11am, 12=12pm...23=11pm
+  const hour = val;
+  const ampm = hour < 12 ? 'am' : 'pm';
+  const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  document.getElementById('wake-time-display').textContent = `${h12}:00 ${ampm}`;
+  updateTotalSleep();
+}
+
+function updateTotalSleep() {
+  const sleepHour = sliderToHour(parseInt(document.getElementById('sleep-slider').value));
+  const wakeHour  = parseInt(document.getElementById('wake-slider').value);
+  let diff = wakeHour - sleepHour;
+  if (diff <= 0) diff += 24;
+  const siesta = parseInt(document.getElementById('siesta-min').value || 0);
+  const total = diff + siesta / 60;
+  document.getElementById('total-sleep-hours').textContent = `${total.toFixed(1)} h`;
+}
+
+document.getElementById('siesta-min').addEventListener('input', updateTotalSleep);
+
+// ── LIKERT ROWS ──
+function buildLikert(containerId, options, dataKey) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = options.map((opt, i) => `
+    <button class="likert-btn" data-val="${i+1}" data-key="${dataKey}"
+      onclick="selectLikert(this, '${dataKey}')">${opt}</button>
+  `).join('');
+}
+
+function selectLikert(btn, key) {
+  const parent = btn.parentElement;
+  parent.querySelectorAll('.likert-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function getLikertValue(containerId) {
+  const sel = document.getElementById(containerId).querySelector('.likert-btn.selected');
+  return sel ? parseInt(sel.dataset.val) : null;
+}
+
+function setLikertValue(containerId, val) {
+  if (!val) return;
+  document.getElementById(containerId).querySelectorAll('.likert-btn').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.val) === val);
+  });
+}
+
+buildLikert('quality-row', ['1','2','3','4','5'], 'quality');
+buildLikert('conciliation-row', ['fácil','ok','difícil','muy dif'], 'concil');
+buildLikert('wakeups-row', ['0','1','2','3+'], 'wakeups');
+buildLikert('wakefeeling-row', ['mal','regular','ok','bien','excelente'], 'wakefeel');
+
+// ── DREAM TYPE ──
+let selectedDreamType = null;
+function selectDreamType(btn) {
+  document.querySelectorAll('.dream-type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedDreamType = btn.dataset.type;
+}
+
+// ── SAVE SLEEP ──
+async function saveSleep() {
+  const sleepHour = sliderToHour(parseInt(document.getElementById('sleep-slider').value));
+  const wakeHour  = parseInt(document.getElementById('wake-slider').value);
+  let diff = wakeHour - sleepHour;
+  if (diff <= 0) diff += 24;
+  const siesta = parseInt(document.getElementById('siesta-min').value || 0);
+
+  const entry = {
+    date: TODAY,
+    sleepHour,
+    wakeHour,
+    hours: parseFloat((diff + siesta/60).toFixed(1)),
+    siesta,
+    quality:   getLikertValue('quality-row'),
+    conciliation: getLikertValue('conciliation-row'),
+    wakeups:   getLikertValue('wakeups-row'),
+    wakeFeeling: getLikertValue('wakefeeling-row'),
+    dreamType: selectedDreamType,
+    dreamText: document.getElementById('dream-text').value.trim(),
+    obs: document.getElementById('sleep-obs').value.trim()
+  };
+
+  const idx = sleepData.findIndex(d => d.date === TODAY);
+  if (idx >= 0) sleepData[idx] = entry; else sleepData.push(entry);
+
+  localStorage.setItem('tracker_sleep', JSON.stringify(sleepData));
+  if (config.token) await saveToGitHub('data/sleep.json', sleepData);
+
+  // Clear text fields
+  document.getElementById('dream-text').value = '';
+  document.getElementById('sleep-obs').value = '';
+
+  showStatus('sleep-status');
+  renderSleepChart();
+}
+
+// ── SLEEP CHART ──
+let sleepChartInst = null;
+function renderSleepChart() {
+  const last30 = [];
+  const today = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().split('T')[0];
+    const e = sleepData.find(s => s.date === ds) || { date: ds };
+    last30.push(e);
+  }
+
+  const labels = last30.map(d => d.date.slice(5));
+  const hours  = last30.map(d => d.hours || null);
+  const quality = last30.map(d => d.quality || null);
+  const wakeups = last30.map(d => d.wakeups || null);
+
+  const ctx = document.getElementById('sleepChart').getContext('2d');
+  if (sleepChartInst) sleepChartInst.destroy();
+
+  sleepChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'horas', data: hours, borderColor: '#8a6a4a', backgroundColor: 'rgba(138,106,74,0.06)', borderWidth: 1.5, pointRadius: 2, tension: 0.4, spanGaps: true, yAxisID: 'y' },
+        { label: 'calidad', data: quality, borderColor: '#3a6a52', backgroundColor: 'rgba(58,106,82,0.06)', borderWidth: 1.5, pointRadius: 2, tension: 0.4, spanGaps: true, yAxisID: 'y2' },
+        { label: 'despertares', data: wakeups, borderColor: '#b84030', borderDash:[3,3], backgroundColor: 'rgba(184,64,48,0.06)', borderWidth: 1, pointRadius: 2, tension: 0.4, spanGaps: true, yAxisID: 'y2' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#6a6760', font: { family: 'DM Mono', size: 9 }, boxWidth: 10, padding: 8 } },
+        tooltip: { backgroundColor: '#fff', titleColor: '#8a6a4a', bodyColor: '#6a6760', borderColor: 'rgba(0,0,0,0.1)', borderWidth: 0.5, titleFont: { family: 'DM Mono', size: 10 }, bodyFont: { family: 'DM Mono', size: 10 } }
+      },
+      scales: {
+        x: { ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 }, maxRotation: 0, maxTicksLimit: 8 }, grid: { color: 'rgba(0,0,0,0.05)' }, border: { color: 'rgba(0,0,0,0.08)' } },
+        y: { position: 'left', min: 0, max: 12, ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 }, stepSize: 3 }, grid: { color: 'rgba(0,0,0,0.05)' }, border: { color: 'rgba(0,0,0,0.08)' } },
+        y2: { position: 'right', min: 0, max: 5, ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 } }, grid: { drawOnChartArea: false }, border: { color: 'rgba(0,0,0,0.08)' } }
+      }
+    }
+  });
+}
+
+// ── EXERCISE ──
+let exTren = null;
+function selectTren(btn) {
+  document.querySelectorAll('.tren-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  exTren = btn.dataset.tren;
+}
+
+const exChecks = {};
+function toggleCheck(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('checked');
+  exChecks[id] = el.classList.contains('checked');
+}
+
+let exRows = [];
+function addExerciseRow() {
+  exRows.push({ name:'', series:null, reps:null });
+  renderExerciseRows();
+}
+
+function renderExerciseRows() {
+  const container = document.getElementById('exercises-list');
+  container.innerHTML = exRows.map((r, i) => `
+    <div class="exercise-item">
+      <input type="text" placeholder="ejercicio" value="${r.name||''}"
+        onchange="exRows[${i}].name=this.value" />
+      <span class="ex-label">series</span>
+      <input type="number" min="1" max="20" placeholder="—" value="${r.series||''}"
+        style="width:55px;" onchange="exRows[${i}].series=parseInt(this.value)" />
+      <span class="ex-label">reps</span>
+      <input type="number" min="1" max="100" placeholder="—" value="${r.reps||''}"
+        style="width:55px;" onchange="exRows[${i}].reps=parseInt(this.value)" />
+      <button class="icon-btn" onclick="exRows.splice(${i},1); renderExerciseRows();" style="color:var(--urgent);">✕</button>
+    </div>
+  `).join('');
+}
+
+let discRows = [];
+function addDisciplineRow() {
+  discRows.push({ name:'', minutes:null });
+  renderDisciplineRows();
+}
+
+function renderDisciplineRows() {
+  const container = document.getElementById('disciplines-list');
+  container.innerHTML = discRows.map((r, i) => `
+    <div class="discipline-item">
+      <input type="text" placeholder="disciplina (yoga, cuerda...)" value="${r.name||''}"
+        onchange="discRows[${i}].name=this.value" />
+      <input type="number" min="1" max="300" placeholder="min" value="${r.minutes||''}"
+        onchange="discRows[${i}].minutes=parseInt(this.value)" />
+      <span class="ex-label">min</span>
+      <button class="icon-btn" onclick="discRows.splice(${i},1); renderDisciplineRows();" style="color:var(--urgent);">✕</button>
+    </div>
+  `).join('');
+}
+
+async function saveExercise() {
+  const entry = {
+    date: TODAY,
+    week: parseInt(document.getElementById('ex-week').value) || getWeekNumber(),
+    tren: exTren,
+    rest: parseInt(document.getElementById('ex-rest').value) || null,
+    rir: parseInt(document.getElementById('ex-rir').value) || null,
+    weight: parseFloat(document.getElementById('ex-weight').value) || null,
+    ateWell: exChecks['check-food'] || false,
+    sleptWell: exChecks['check-sleep'] || false,
+    goodTech: exChecks['check-tech'] || false,
+    usedWeight: exChecks['check-extra'] || false,
+    exercises: exRows.filter(r => r.name),
+    disciplines: discRows.filter(r => r.name),
+    notes: document.getElementById('ex-notes').value.trim()
+  };
+
+  const idx = exerciseData.findIndex(d => d.date === TODAY);
+  if (idx >= 0) exerciseData[idx] = entry; else exerciseData.push(entry);
+
+  localStorage.setItem('tracker_exercise', JSON.stringify(exerciseData));
+  if (config.token) await saveToGitHub('data/exercise.json', exerciseData);
+
+  document.getElementById('ex-notes').value = '';
+  showStatus('ex-status');
+  renderExChart();
+}
+
+function getWeekNumber() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 4 - (d.getDay()||7));
+  const y = new Date(d.getFullYear(),0,1);
+  return Math.ceil((((d-y)/86400000)+1)/7);
+}
+
+// ── EXERCISE CHART ──
+let exChartInst = null;
+function renderExChart() {
+  const last30 = [];
+  const today = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().split('T')[0];
+    const e = exerciseData.find(s => s.date === ds) || { date: ds };
+    last30.push(e);
+  }
+
+  const labels = last30.map(d => d.date.slice(5));
+  const hasEx  = last30.map(d => d.tren ? 1 : 0);
+  const totalReps = last30.map(d => {
+    if (!d.exercises) return null;
+    return d.exercises.reduce((sum, e) => sum + (e.series||0)*(e.reps||0), 0) || null;
+  });
+
+  const ctx = document.getElementById('exChart').getContext('2d');
+  if (exChartInst) exChartInst.destroy();
+
+  exChartInst = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        { type:'bar', label:'entrenó', data: hasEx, backgroundColor: 'rgba(138,106,74,0.25)', borderColor: 'rgba(138,106,74,0.6)', borderWidth: 0.5, yAxisID: 'y2' },
+        { type:'line', label:'reps totales', data: totalReps, borderColor: '#3a6a52', backgroundColor: 'rgba(58,106,82,0.06)', borderWidth: 1.5, pointRadius: 2, tension: 0.4, spanGaps: true, yAxisID: 'y' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#6a6760', font: { family: 'DM Mono', size: 9 }, boxWidth: 10, padding: 8 } },
+        tooltip: { backgroundColor: '#fff', titleColor: '#8a6a4a', bodyColor: '#6a6760', borderColor: 'rgba(0,0,0,0.1)', borderWidth: 0.5, titleFont: { family: 'DM Mono', size: 10 }, bodyFont: { family: 'DM Mono', size: 10 } }
+      },
+      scales: {
+        x: { ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 }, maxRotation: 0, maxTicksLimit: 8 }, grid: { color: 'rgba(0,0,0,0.05)' }, border: { color: 'rgba(0,0,0,0.08)' } },
+        y: { position: 'left', ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 } }, grid: { color: 'rgba(0,0,0,0.05)' }, border: { color: 'rgba(0,0,0,0.08)' } },
+        y2: { position: 'right', min: 0, max: 1, ticks: { display: false }, grid: { drawOnChartArea: false } }
+      }
+    }
+  });
+}
+
+// ── INIT ──
+document.getElementById('ex-week').value = getWeekNumber();
+updateSleepTime();
+updateWakeTime();
+
+// Load today's sleep if exists
+const todaySleep = sleepData.find(s => s.date === TODAY);
+if (todaySleep) {
+  // Reverse map sleep hour to slider val
+  const sleepSliderVal = (todaySleep.sleepHour + 12) % 24;
+  document.getElementById('sleep-slider').value = sleepSliderVal;
+  document.getElementById('wake-slider').value = todaySleep.wakeHour;
+  if (todaySleep.siesta) document.getElementById('siesta-min').value = todaySleep.siesta;
+  updateSleepTime(); updateWakeTime();
+  if (todaySleep.quality) setLikertValue('quality-row', todaySleep.quality);
+  if (todaySleep.conciliation) setLikertValue('conciliation-row', todaySleep.conciliation);
+  if (todaySleep.wakeups) setLikertValue('wakeups-row', todaySleep.wakeups);
+  if (todaySleep.wakeFeeling) setLikertValue('wakefeeling-row', todaySleep.wakeFeeling);
+}
+
+renderHabitsList();
+renderRoutinesList();
+renderSleepChart();
+renderExChart();
+
+// ── MENU ──
+function openMenu() {
+  document.getElementById('menu-drawer').classList.add('open');
+  document.getElementById('menu-overlay').classList.add('open');
+}
+function closeMenu() {
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+</script>
+</body>
+</html>

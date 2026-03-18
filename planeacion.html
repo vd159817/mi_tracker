@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>planeación · tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f3ef; --surface: #ffffff; --surface2: #f0ede8;
+      --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.15);
+      --text: #1a1916; --text2: #6a6760; --text3: #aaa89f;
+      --accent: #8a6a4a; --accent2: #b09070; --normal: #3a6a52;
+      --urgent: #b84030; --r: 10px; --r-sm: 6px;
+      --psic: #7a4a9a; --soft: #2c6fad; --lang: #3a7a6a;
+      --psic-light: rgba(122,74,154,0.12); --soft-light: rgba(44,111,173,0.12); --lang-light: rgba(58,122,106,0.12);
+    }
+    [data-theme="dark"] {
+      --bg: #141414; --surface: #1e1e1e; --surface2: #282828;
+      --border: rgba(255,255,255,0.09); --border2: rgba(255,255,255,0.18);
+      --text: #f0ede6; --text2: #c9a96e; --text3: #7a6a55;
+      --accent: #c9a96e; --accent2: #a08050; --normal: #6aaa82;
+      --urgent: #d4694a;
+      --psic: #a870d0; --soft: #4a9fd4; --lang: #5aaa8a;
+      --psic-light: rgba(168,112,208,0.15); --soft-light: rgba(74,159,212,0.15); --lang-light: rgba(90,170,138,0.15);
+    }
+    [data-theme="dark"] .section-label,
+    [data-theme="dark"] .nav-title,
+    [data-theme="dark"] .day-name,
+    [data-theme="dark"] .decade-year,
+    [data-theme="dark"] .event-name { font-weight: 500; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { font-size: 24px; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Mono', monospace; min-height: 100vh; padding: 0 0 6rem; transition: background 0.2s, color 0.2s; }
+
+    .top-bar { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem 1rem; border-bottom: 0.5px solid var(--border); }
+    .day-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--accent); letter-spacing: 0.08em; }
+    .full-date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .btn-back { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; padding: 6px 12px; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.2s; }
+    .btn-back:hover { color: var(--accent); border-color: var(--accent2); }
+
+    .content { padding: 1.25rem 1.25rem 0; display: flex; flex-direction: column; gap: 1.5rem; }
+    .section-label { font-size: 11px; letter-spacing: 0.12em; color: var(--text3); text-transform: uppercase; margin-bottom: 0.6rem; }
+    .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r); padding: 1rem 1.125rem; }
+
+    input[type=text], input[type=date], input[type=number], textarea, select {
+      font-family: 'DM Mono', monospace; font-size: 13px;
+      background: var(--surface2); border: 0.5px solid var(--border);
+      border-radius: var(--r-sm); color: var(--text); padding: 7px 10px;
+      outline: none; transition: border-color 0.2s; width: 100%;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--border2); }
+    input::placeholder { color: var(--text3); }
+
+    .btn-primary { background: var(--accent); color: #fff; border: none; border-radius: var(--r-sm); font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; padding: 9px 18px; cursor: pointer; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-ghost { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 12px; padding: 7px 14px; cursor: pointer; transition: all 0.2s; }
+    .btn-ghost:hover { color: var(--accent); border-color: var(--accent2); }
+    .save-status { font-size: 11px; color: var(--normal); text-align: center; min-height: 18px; transition: opacity 0.3s; margin-top: 6px; }
+    .save-status.hidden { opacity: 0; }
+
+    /* ── MODAL ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--surface); border: 0.5px solid var(--border2); border-radius: var(--r); padding: 1.25rem; width: 100%; max-width: 460px; max-height: 80vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 0.5px solid var(--border); padding-bottom: 0.75rem; }
+    .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--text); }
+
+    /* ── DECADE TIMELINE ── */
+    .decade-scroll { overflow-x: auto; padding-bottom: 8px; }
+    .decade-scroll::-webkit-scrollbar { height: 3px; }
+    .decade-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .decade-wrap { min-width: 700px; padding: 0 8px; }
+
+    /* year markers */
+    .decade-years { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .decade-year { font-size: 11px; color: var(--accent); font-family: 'DM Mono', monospace; font-weight: 500; }
+
+    /* spine */
+    .decade-spine { height: 2px; background: var(--border2); position: relative; margin: 0 0 6px; }
+    .decade-spine-dot { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); top: -3px; transform: translateX(-50%); }
+
+    /* lanes */
+    .decade-lanes { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+
+    .decade-lane { display: flex; align-items: center; gap: 8px; }
+    .decade-lane-label { font-size: 10px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; width: 60px; flex-shrink: 0; text-align: right; }
+
+    .decade-lane-track { flex: 1; position: relative; height: 28px; }
+
+    .decade-block {
+      position: absolute;
+      top: 0; height: 100%;
+      border-radius: var(--r-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      overflow: hidden; padding: 0 6px;
+      white-space: nowrap;
+      cursor: default;
+    }
+
+    .decade-block.psic  { background: var(--psic-light); border: 0.5px solid var(--psic);  color: var(--psic); }
+    .decade-block.soft  { background: var(--soft-light); border: 0.5px solid var(--soft);  color: var(--soft); }
+    .decade-block.lang  { background: var(--lang-light); border: 0.5px solid var(--lang);  color: var(--lang); }
+    .decade-block.work  { background: rgba(138,106,74,0.12); border: 0.5px solid var(--accent); color: var(--accent); }
+    .decade-block.crim  { background: rgba(184,64,48,0.12); border: 0.5px solid var(--urgent); color: var(--urgent); }
+
+    .decade-milestone {
+      position: absolute; top: -22px;
+      transform: translateX(-50%);
+      font-size: 9px; color: var(--text3);
+      white-space: nowrap; text-align: center;
+      border-left: 0.5px solid var(--border2);
+      padding-left: 4px; line-height: 1.3;
+    }
+
+    /* diploma badges */
+    .diploma-area { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.75rem; }
+    .diploma-btn {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      padding: 7px 16px; border-radius: var(--r-sm);
+      border: 0.5px solid; cursor: pointer; transition: all 0.15s;
+      background: transparent;
+    }
+    .diploma-btn.psic { border-color: var(--psic); color: var(--psic); }
+    .diploma-btn.psic:hover { background: var(--psic-light); }
+    .diploma-btn.soft { border-color: var(--soft); color: var(--soft); }
+    .diploma-btn.soft:hover { background: var(--soft-light); }
+
+    /* diploma list in modal */
+    .diploma-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .diploma-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; background: var(--surface2); border-radius: var(--r-sm); }
+    .diploma-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+    .diploma-name { font-size: 13px; color: var(--text); line-height: 1.4; }
+    .diploma-desc { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+    /* ── ANNUAL CALENDAR ── */
+    .calendar-year-label { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; color: var(--accent); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 10px; }
+    .year-nav { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 11px; padding: 4px 10px; cursor: pointer; transition: all 0.2s; }
+    .year-nav:hover { color: var(--accent); border-color: var(--accent2); }
+
+    .calendar-scroll { overflow-x: auto; }
+    .calendar-scroll::-webkit-scrollbar { height: 3px; }
+    .calendar-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .cal-wrap { min-width: 700px; position: relative; }
+
+    /* month labels */
+    .cal-months { display: flex; margin-bottom: 4px; }
+    .cal-month-label { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; text-align: center; }
+
+    /* day grid */
+    .cal-grid { height: 20px; position: relative; background: var(--surface2); border-radius: var(--r-sm); overflow: hidden; }
+
+    /* event lanes */
+    .cal-lanes { margin-top: 4px; display: flex; flex-direction: column; gap: 3px; min-height: 40px; position: relative; }
+
+    .cal-event-bar {
+      position: absolute;
+      height: 18px;
+      border-radius: 3px;
+      display: flex; align-items: center;
+      padding: 0 6px;
+      font-size: 9px; font-family: 'DM Mono', monospace;
+      white-space: nowrap; overflow: hidden;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .cal-event-bar:hover { opacity: 0.85; }
+
+    .cal-today-line { position: absolute; top: 0; bottom: 0; width: 1.5px; background: var(--accent); opacity: 0.7; z-index: 5; pointer-events: none; }
+
+    /* event form */
+    .event-form { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; margin-bottom: 0.875rem; }
+    .ev-col { display: flex; flex-direction: column; gap: 3px; }
+    .ev-col label { font-size: 9px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; }
+    .ev-col.grow { flex: 1; min-width: 120px; }
+    .ev-col input, .ev-col select { font-size: 12px; padding: 6px 8px; }
+    .ev-col.date-col input { width: 140px; }
+    .color-picker-row { display: flex; gap: 6px; align-items: center; }
+    .color-swatch { width: 22px; height: 22px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s; flex-shrink: 0; }
+    .color-swatch.selected { border-color: var(--text); }
+
+    .event-list-section { margin-top: 0.875rem; border-top: 0.5px solid var(--border); padding-top: 0.875rem; }
+    .event-list-title { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; }
+    .event-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--surface2); border-radius: var(--r-sm); margin-bottom: 5px; }
+    .event-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+    .event-name { flex: 1; font-size: 12px; color: var(--text); }
+    .event-dates { font-size: 10px; color: var(--text3); white-space: nowrap; }
+    .event-del { background: none; border: none; color: var(--text3); font-size: 12px; cursor: pointer; transition: color 0.15s; }
+    .event-del:hover { color: var(--urgent); }
+
+    /* ── NAV ── */
+    .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.5rem; }
+    .nav-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r); padding: 1rem; text-decoration: none; display: flex; flex-direction: column; gap: 5px; transition: border-color 0.2s; }
+    .nav-card:hover { border-color: var(--border2); background: var(--surface2); }
+    .nav-card:active { transform: scale(0.98); }
+    .nav-num { font-size: 11px; color: var(--text3); }
+    .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; color: var(--text); }
+    .nav-sub { font-size: 10px; color: var(--text3); }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ── HAMBURGER MENU ── */
+    .menu-btn { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 16px; padding: 5px 10px; cursor: pointer; transition: all 0.2s; line-height: 1; }
+    .menu-btn:hover { color: var(--accent); border-color: var(--accent2); }
+    .menu-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; }
+    .menu-overlay.open { display: block; }
+    .menu-drawer { position: fixed; top: 0; right: -280px; bottom: 0; width: 260px; background: var(--surface); border-left: 0.5px solid var(--border2); z-index: 301; padding: 0; transition: right 0.25s cubic-bezier(.4,0,.2,1); display: flex; flex-direction: column; overflow-y: auto; }
+    .menu-drawer.open { right: 0; }
+    .menu-drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.25rem 1rem; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+    .menu-drawer-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--accent); font-style: italic; }
+    .menu-close { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 0; transition: color 0.15s; }
+    .menu-close:hover { color: var(--text); }
+    .menu-section { padding: 0.75rem 0; border-bottom: 0.5px solid var(--border); }
+    .menu-section:last-child { border-bottom: none; }
+    .menu-section-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); padding: 0 1.25rem; margin-bottom: 4px; }
+    .menu-link { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; text-decoration: none; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 13px; transition: all 0.15s; }
+    .menu-link:hover { background: var(--surface2); color: var(--text); }
+    .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
+    .menu-link-text { flex: 1; }
+    .menu-link-sub { font-size: 10px; color: var(--text3); }
+  </style>
+</head>
+<body>
+
+<!-- DIPLOMA MODALS -->
+<div class="modal-overlay" id="modal-psic">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--psic);">diplomados · psicología</span>
+      <button class="btn-back" onclick="closeModal('modal-psic')">✕</button>
+    </div>
+    <div class="diploma-list" id="diploma-list-psic"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-soft">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--soft);">diplomados · software</span>
+      <button class="btn-back" onclick="closeModal('modal-soft')">✕</button>
+    </div>
+    <div class="diploma-list" id="diploma-list-soft"></div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div>
+    <div class="day-name" id="day-name"></div>
+    <div class="full-date" id="full-date"></div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <button class="btn-back" onclick="toggleTheme()">◐</button>
+    <a class="btn-back" href="index.html">← inicio</a>
+    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ══════════════ LÍNEA DE LA DÉCADA ══════════════ -->
+  <div>
+    <div class="section-label">planeación de la década</div>
+    <div class="card">
+      <div class="decade-scroll">
+        <div class="decade-wrap" id="decade-wrap"></div>
+      </div>
+      <div style="margin-top:1.25rem; border-top:0.5px solid var(--border); padding-top:1rem;">
+        <div style="font-size:10px; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">diplomados planeados</div>
+        <div class="diploma-area">
+          <button class="diploma-btn psic" onclick="openModal('modal-psic')">◉ psicología &amp; criminalística</button>
+          <button class="diploma-btn soft" onclick="openModal('modal-soft')">◉ software &amp; tecnología</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ CALENDARIO ANUAL ══════════════ -->
+  <div>
+    <div class="section-label">calendario anual</div>
+    <div class="card">
+
+      <div class="calendar-year-label">
+        <button class="year-nav" onclick="changeYear(-1)">‹</button>
+        <span id="cal-year-display">2026</span>
+        <button class="year-nav" onclick="changeYear(1)">›</button>
+      </div>
+
+      <div class="calendar-scroll">
+        <div class="cal-wrap" id="cal-wrap">
+          <div class="cal-months" id="cal-months"></div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div class="cal-lanes" id="cal-lanes"></div>
+        </div>
+      </div>
+
+      <!-- EVENT FORM -->
+      <div style="margin-top:1rem; border-top:0.5px solid var(--border); padding-top:0.875rem;">
+        <div style="font-size:10px; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">agregar evento</div>
+        <div class="event-form">
+          <div class="ev-col grow">
+            <label>nombre del evento</label>
+            <input type="text" id="ev-name" placeholder="vacaciones, inicio semestre..." />
+          </div>
+          <div class="ev-col date-col">
+            <label>inicio</label>
+            <input type="date" id="ev-start" />
+          </div>
+          <div class="ev-col date-col">
+            <label>fin</label>
+            <input type="date" id="ev-end" />
+          </div>
+          <div class="ev-col">
+            <label>color</label>
+            <div class="color-picker-row" id="color-picker"></div>
+          </div>
+          <div class="ev-col" style="justify-content:flex-end;">
+            <button class="btn-primary" onclick="addEvent()" style="white-space:nowrap;">+ agregar</button>
+          </div>
+        </div>
+        <div class="save-status hidden" id="cal-status"></div>
+      </div>
+
+      <!-- EVENT LIST -->
+      <div class="event-list-section">
+        <div class="event-list-title">eventos del año</div>
+        <div id="event-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════ MALLAS CURRICULARES ══════════════ -->
+  <div>
+    <div class="section-label">mallas curriculares</div>
+    <div class="nav-grid">
+      <a class="nav-card" href="malla_psic.html">
+        <div class="nav-num" style="color:var(--psic);">◉</div>
+        <div class="nav-title">psicología</div>
+        <div class="nav-sub">UAS · 43 materias · calculadora de promedio</div>
+      </a>
+      <a class="nav-card" href="malla_software.html">
+        <div class="nav-num" style="color:var(--soft);">◉</div>
+        <div class="nav-title">software</div>
+        <div class="nav-sub">pendiente de iniciar</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-grid" style="margin-top:0;">
+    <a class="nav-card" href="index.html">
+      <div class="nav-num">←</div>
+      <div class="nav-title">inicio</div>
+      <div class="nav-sub">dashboard</div>
+    </a>
+    <a class="nav-card" href="listas.html">
+      <div class="nav-num">→</div>
+      <div class="nav-title">listas</div>
+      <div class="nav-sub">películas, podcasts, temas</div>
+    </a>
+  </div>
+
+</div>
+
+<script>
+// ── THEME ──
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('tracker_theme', next);
+  renderCalendar();
+}
+(function(){ const t = localStorage.getItem('tracker_theme'); if (t) document.documentElement.setAttribute('data-theme', t); })();
+
+// ── DATE ──
+const DAYS_ES   = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const MONTHS_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MONTHS_S  = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const NOW = new Date();
+(function(){
+  document.getElementById('day-name').textContent  = DAYS_ES[NOW.getDay()];
+  document.getElementById('full-date').textContent = `${NOW.getDate()} de ${MONTHS_ES[NOW.getMonth()]}, ${NOW.getFullYear()}`;
+})();
+
+// ── MODAL ──
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── DIPLOMAS ──
+const DIPLOMAS_PSIC = [
+  { name: 'Análisis contingencial', desc: 'Conducta aplicada' },
+  { name: 'Filosofía criminal', desc: 'Fundamentos filosóficos del crimen' },
+  { name: 'Psicología criminal', desc: 'Perfilación y análisis criminal' },
+  { name: 'Primeros auxilios', desc: 'Intervención en crisis' },
+  { name: 'Victimología', desc: 'Estudio de víctimas del delito' },
+  { name: 'Estrategia militar', desc: 'Táctica y operaciones' },
+  { name: 'Evaluación de riesgo y reincidencia', desc: 'Instrumentos de evaluación forense' },
+  { name: 'Entrenamiento balístico', desc: 'Manejo de armas y tiro' },
+  { name: 'Derechos humanos', desc: 'Marco legal y protección' },
+  { name: 'Género y violencia', desc: 'Perspectiva de género' },
+  { name: 'Geopolítica', desc: 'Relaciones internacionales y poder' },
+  { name: 'Artes marciales', desc: 'Defensa personal' },
+  { name: 'Adicciones', desc: 'Prevención y tratamiento' },
+  { name: 'Autismo', desc: 'Evaluación e intervención ASD' },
+  { name: 'Supervivencia', desc: 'Técnicas de supervivencia' },
+];
+
+const DIPLOMAS_SOFT = [
+  { name: 'Análisis de datos', desc: 'SQL, Python, visualización' },
+  { name: 'Project Management', desc: 'PMI, Scrum, Agile' },
+  { name: 'Marketing digital', desc: 'SEO, SEM, redes sociales' },
+  { name: 'Asistencia virtual', desc: 'Herramientas de productividad remota' },
+  { name: 'Estadística aplicada', desc: 'R, Python estadístico' },
+  { name: 'Inteligencia artificial', desc: 'ML, deep learning, NLP' },
+  { name: 'Administración empresarial', desc: 'Gestión y estrategia' },
+];
+
+function renderDiplomas() {
+  document.getElementById('diploma-list-psic').innerHTML = DIPLOMAS_PSIC.map(d => `
+    <div class="diploma-item">
+      <div class="diploma-dot" style="background:var(--psic);"></div>
+      <div><div class="diploma-name">${d.name}</div><div class="diploma-desc">${d.desc}</div></div>
+    </div>
+  `).join('');
+
+  document.getElementById('diploma-list-soft').innerHTML = DIPLOMAS_SOFT.map(d => `
+    <div class="diploma-item">
+      <div class="diploma-dot" style="background:var(--soft);"></div>
+      <div><div class="diploma-name">${d.name}</div><div class="diploma-desc">${d.desc}</div></div>
+    </div>
+  `).join('');
+}
+
+// ── DECADE TIMELINE ──
+const DECADE_START = 2026;
+const DECADE_END   = 2036;
+const DECADE_SPAN  = DECADE_END - DECADE_START;
+
+function yearToPercent(y) { return ((y - DECADE_START) / DECADE_SPAN) * 100; }
+
+function renderDecade() {
+  const wrap = document.getElementById('decade-wrap');
+
+  // Year markers
+  const years = [2026, 2028, 2030, 2032, 2034, 2036];
+  let html = `<div class="decade-years">`;
+  years.forEach(y => { html += `<span class="decade-year">${y}</span>`; });
+  html += `</div>`;
+
+  // Spine with dots
+  html += `<div class="decade-spine">`;
+  years.forEach(y => {
+    html += `<div class="decade-spine-dot" style="left:${yearToPercent(y)}%"></div>`;
+  });
+  html += `</div>`;
+
+  // Milestones above (as floating labels on spine)
+  const milestones = [
+    { y: 2026, label: 'trabajo sencillo\ndos carreras' },
+    { y: 2028, label: 'trabajo como\npsicóloga' },
+    { y: 2030, label: 'full-time software\n+ criminalística' },
+    { y: 2034, label: 'especializaciones\nciberseg · psic criminal' },
+  ];
+
+  // Lanes
+  const lanes = [
+    {
+      label: 'empleo',
+      blocks: [
+        { from: 2026, to: 2028, label: 'trabajo flexible (sostener carreras)', cls: 'work' },
+        { from: 2028, to: 2030, label: 'psicóloga medio tiempo', cls: 'psic' },
+        { from: 2030, to: 2036, label: 'desarrolladora de software (full time)', cls: 'soft' },
+      ]
+    },
+    {
+      label: 'carreras',
+      blocks: [
+        { from: 2026, to: 2030, label: 'psicología UAS', cls: 'psic' },
+        { from: 2026, to: 2030, label: '', cls: '' }, // spacer handled differently
+        { from: 2030, to: 2034, label: 'criminalística (sab)', cls: 'crim' },
+      ]
+    },
+    {
+      label: 'software',
+      blocks: [
+        { from: 2026, to: 2034, label: 'carrera desarrollo de software', cls: 'soft' },
+      ]
+    },
+    {
+      label: 'idiomas',
+      blocks: [
+        { from: 2026, to: 2029, label: 'inglés (avanzado)', cls: 'lang' },
+        { from: 2029, to: 2032, label: 'francés (intermedio)', cls: 'lang' },
+        { from: 2032, to: 2036, label: 'tercer idioma', cls: 'lang' },
+      ]
+    },
+    {
+      label: 'espec.',
+      blocks: [
+        { from: 2034, to: 2036, label: 'ciberseguridad / psic. criminal', cls: 'crim' },
+      ]
+    },
+  ];
+
+  html += `<div class="decade-lanes">`;
+
+  // milestone labels row
+  html += `<div style="position:relative; height:36px; margin-bottom:4px;">`;
+  milestones.forEach(m => {
+    html += `<div style="position:absolute; left:${yearToPercent(m.y)}%; transform:translateX(-50%); font-size:8px; color:var(--text3); font-family:'DM Mono',monospace; text-align:center; line-height:1.4; border-left:0.5px solid var(--border2); padding-left:4px;">${m.label.replace('\n','<br>')}</div>`;
+  });
+  html += `</div>`;
+
+  lanes.forEach(lane => {
+    html += `<div class="decade-lane">
+      <div class="decade-lane-label">${lane.label}</div>
+      <div class="decade-lane-track">`;
+    lane.blocks.forEach(b => {
+      if (!b.cls) return;
+      const left  = yearToPercent(b.from);
+      const width = yearToPercent(b.to) - left;
+      html += `<div class="decade-block ${b.cls}" style="left:${left}%; width:${width}%;" title="${b.label}">${b.label}</div>`;
+    });
+    html += `</div></div>`;
+  });
+
+  html += `</div>`;
+  wrap.innerHTML = html;
+}
+
+// ── CALENDAR ──
+let calYear   = new Date().getFullYear();
+let calEvents = JSON.parse(localStorage.getItem('cal_events') || '[]');
+let selectedColor = '#2c6fad';
+
+const EVENT_COLORS = ['#2c6fad','#7a4a9a','#3a7a6a','#b84030','#8a6a4a','#c9a030','#3a6a52','#d4694a'];
+
+function changeYear(delta) {
+  calYear += delta;
+  document.getElementById('cal-year-display').textContent = calYear;
+  renderCalendar();
+  renderEventList();
+}
+
+function isLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
+function daysInYear(y) { return isLeapYear(y) ? 366 : 365; }
+
+function dayOfYear(dateStr) {
+  const d    = new Date(dateStr);
+  const start = new Date(d.getFullYear(), 0, 0);
+  const diff  = d - start;
+  return Math.floor(diff / 86400000);
+}
+
+function dayOfYearForDate(year, month, day) {
+  const d     = new Date(year, month, day);
+  const start = new Date(year, 0, 0);
+  return Math.floor((d - start) / 86400000);
+}
+
+function buildColorPicker() {
+  const row = document.getElementById('color-picker');
+  row.innerHTML = EVENT_COLORS.map(c => `
+    <div class="color-swatch ${c === selectedColor ? 'selected' : ''}"
+      style="background:${c};"
+      onclick="selectColor('${c}')"></div>
+  `).join('');
+}
+
+function selectColor(c) {
+  selectedColor = c;
+  buildColorPicker();
+}
+
+function renderCalendar() {
+  const total   = daysInYear(calYear);
+  const months  = document.getElementById('cal-months');
+  const grid    = document.getElementById('cal-grid');
+  const lanes   = document.getElementById('cal-lanes');
+
+  // Month labels
+  let monthHtml = '';
+  for (let m = 0; m < 12; m++) {
+    const firstDay = dayOfYearForDate(calYear, m, 1);
+    const pct      = (firstDay / total) * 100;
+    const width    = (new Date(calYear, m+1, 0).getDate() / total) * 100;
+    monthHtml += `<div class="cal-month-label" style="left:${pct}%; width:${width}%; position:absolute;">${MONTHS_S[m]}</div>`;
+  }
+  months.style.position = 'relative';
+  months.style.height   = '14px';
+  months.innerHTML = monthHtml;
+
+  // Grid background with month separators
+  let gridHtml = '';
+  for (let m = 0; m < 12; m++) {
+    const firstDay = dayOfYearForDate(calYear, m, 1);
+    const pct = (firstDay / total) * 100;
+    gridHtml += `<div style="position:absolute; left:${pct}%; top:0; bottom:0; width:0.5px; background:var(--border2);"></div>`;
+  }
+  // Today line
+  if (new Date().getFullYear() === calYear) {
+    const todayDoy = dayOfYear(new Date().toISOString().split('T')[0]);
+    const todayPct = (todayDoy / total) * 100;
+    gridHtml += `<div class="cal-today-line" style="left:${todayPct}%;"></div>`;
+  }
+  grid.innerHTML = gridHtml;
+  grid.style.position = 'relative';
+
+  // Events
+  const yearEvents = calEvents.filter(e => {
+    const sy = new Date(e.start).getFullYear();
+    const ey = new Date(e.end).getFullYear();
+    return sy === calYear || ey === calYear || (sy < calYear && ey > calYear);
+  });
+
+  // Assign lanes to avoid overlap
+  const laneAssignments = [];
+  const eventLanes = yearEvents.map(ev => {
+    const startDate = new Date(Math.max(new Date(ev.start), new Date(calYear, 0, 1)));
+    const endDate   = new Date(Math.min(new Date(ev.end),   new Date(calYear, 11, 31)));
+    const startDoy  = dayOfYear(startDate.toISOString().split('T')[0]);
+    const endDoy    = dayOfYear(endDate.toISOString().split('T')[0]);
+    let lane = 0;
+    while (laneAssignments[lane] && laneAssignments[lane] > startDoy) lane++;
+    laneAssignments[lane] = endDoy + 1;
+    return { ev, startDoy, endDoy, lane };
+  });
+
+  const maxLane = Math.max(...eventLanes.map(e => e.lane), 0);
+  lanes.style.height = `${(maxLane + 1) * 22 + 6}px`;
+  lanes.style.position = 'relative';
+
+  lanes.innerHTML = eventLanes.map(({ ev, startDoy, endDoy, lane }) => {
+    const left  = (startDoy / total) * 100;
+    const width = Math.max(((endDoy - startDoy + 1) / total) * 100, 0.5);
+    const top   = lane * 22;
+    return `<div class="cal-event-bar"
+      style="left:${left}%; width:${width}%; top:${top}px; background:${ev.color}dd; border:0.5px solid ${ev.color}; color:#fff;"
+      title="${ev.name}: ${ev.start} → ${ev.end}"
+      onclick="deleteEvent(${ev.id})">${ev.name}</div>`;
+  }).join('');
+}
+
+function addEvent() {
+  const name  = document.getElementById('ev-name').value.trim();
+  const start = document.getElementById('ev-start').value;
+  const end   = document.getElementById('ev-end').value;
+  if (!name || !start || !end) return;
+  if (end < start) { alert('La fecha de fin debe ser igual o posterior al inicio.'); return; }
+
+  calEvents.push({ id: Date.now(), name, start, end, color: selectedColor });
+  localStorage.setItem('cal_events', JSON.stringify(calEvents));
+
+  document.getElementById('ev-name').value  = '';
+  document.getElementById('ev-start').value = '';
+  document.getElementById('ev-end').value   = '';
+
+  const el = document.getElementById('cal-status');
+  el.textContent = 'evento agregado ✓';
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 1800);
+
+  renderCalendar();
+  renderEventList();
+}
+
+function deleteEvent(id) {
+  if (!confirm('¿Eliminar este evento?')) return;
+  calEvents = calEvents.filter(e => e.id !== id);
+  localStorage.setItem('cal_events', JSON.stringify(calEvents));
+  renderCalendar();
+  renderEventList();
+}
+
+function renderEventList() {
+  const yearEvents = calEvents
+    .filter(e => new Date(e.start).getFullYear() === calYear || new Date(e.end).getFullYear() === calYear)
+    .sort((a, b) => a.start.localeCompare(b.start));
+
+  const list = document.getElementById('event-list');
+  if (yearEvents.length === 0) {
+    list.innerHTML = `<div style="font-size:13px; color:var(--text3); font-style:italic; font-family:'Cormorant Garamond',serif; padding:0.5rem 0;">sin eventos registrados este año</div>`;
+    return;
+  }
+  list.innerHTML = yearEvents.map(e => `
+    <div class="event-item">
+      <div class="event-dot" style="background:${e.color};"></div>
+      <span class="event-name">${e.name}</span>
+      <span class="event-dates">${e.start} → ${e.end}</span>
+      <button class="event-del" onclick="deleteEvent(${e.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+// ── INIT ──
+renderDiplomas();
+renderDecade();
+buildColorPicker();
+document.getElementById('cal-year-display').textContent = calYear;
+renderCalendar();
+renderEventList();
+
+// Close modals on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+// ── MENU ──
+function openMenu() {
+  document.getElementById('menu-drawer').classList.add('open');
+  document.getElementById('menu-overlay').classList.add('open');
+}
+function closeMenu() {
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>estudio · tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --surface: #ffffff;
+      --surface2: #f0ede8;
+      --border: rgba(0,0,0,0.08);
+      --border2: rgba(0,0,0,0.15);
+      --text: #1a1916;
+      --text2: #6a6760;
+      --text3: #aaa89f;
+      --accent: #8a6a4a;
+      --accent2: #b09070;
+      --normal: #3a6a52;
+      --r: 10px;
+      --r-sm: 6px;
+      --auto: #2c6fad;
+      --auto-light: rgba(44,111,173,0.15);
+      --auto-mid: rgba(44,111,173,0.5);
+      --uni: #7a4a9a;
+      --uni-light: rgba(122,74,154,0.15);
+      --uni-mid: rgba(122,74,154,0.5);
+    }
+
+    [data-theme="dark"] {
+      --bg: #141414;
+      --surface: #1e1e1e;
+      --surface2: #282828;
+      --border: rgba(255,255,255,0.09);
+      --border2: rgba(255,255,255,0.18);
+      --text: #f0ede6;
+      --text2: #c9a96e;
+      --text3: #7a6a55;
+      --accent: #c9a96e;
+      --accent2: #a08050;
+      --normal: #6aaa82;
+      --auto: #4a9fd4;
+      --auto-light: rgba(74,159,212,0.18);
+      --auto-mid: rgba(74,159,212,0.55);
+      --uni: #a870d0;
+      --uni-light: rgba(168,112,208,0.18);
+      --uni-mid: rgba(168,112,208,0.55);
+    }
+
+    [data-theme="dark"] .section-label,
+    [data-theme="dark"] .metric-label,
+    [data-theme="dark"] .nav-title,
+    [data-theme="dark"] .day-name,
+    [data-theme="dark"] .total-hours-num,
+    [data-theme="dark"] .seg-label { font-weight: 500; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html { font-size: 24px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      padding: 0 0 6rem;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem 1rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .day-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+    }
+
+    .full-date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+    .btn-back {
+      background: none;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      padding: 6px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    .btn-back:hover { color: var(--accent); border-color: var(--accent2); }
+
+    /* ── LAYOUT ── */
+    .content { padding: 1.25rem 1.25rem 0; display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--text3);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r);
+      padding: 1rem 1.125rem;
+    }
+
+    /* ── SHARED ── */
+    input[type=text], input[type=number], textarea, select {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      padding: 7px 10px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--border2); }
+    input::placeholder, textarea::placeholder { color: var(--text3); }
+
+    .icon-btn {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text2);
+      cursor: pointer; font-size: 14px;
+      transition: all 0.2s; flex-shrink: 0;
+    }
+    .icon-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      border: none; border-radius: var(--r-sm);
+      font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
+      padding: 9px 18px; cursor: pointer; transition: opacity 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-ghost {
+      background: none; border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm); color: var(--text2);
+      font-family: 'DM Mono', monospace; font-size: 12px;
+      padding: 7px 14px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-ghost:hover { color: var(--accent); border-color: var(--accent2); }
+
+    .save-status {
+      font-size: 11px; color: var(--normal);
+      text-align: center; min-height: 18px;
+      transition: opacity 0.3s; margin-top: 6px;
+    }
+    .save-status.hidden { opacity: 0; }
+
+    /* ── METRIC GRID ── */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 0.875rem;
+    }
+
+    .metric-block {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 9px 10px;
+    }
+
+    .metric-label {
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    /* ── LIKERT 3 ── */
+    .likert3 { display: flex; gap: 5px; }
+
+    .l3-btn {
+      flex: 1; height: 30px;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      background: transparent;
+      color: var(--text3);
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .l3-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── PAGES SLIDER ── */
+    .pages-wrap { margin-bottom: 0.875rem; }
+
+    .pages-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 6px;
+    }
+
+    .pages-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 300; color: var(--accent);
+    }
+
+    input[type=range] {
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 3px; border-radius: 2px;
+      outline: none; cursor: pointer;
+      background: linear-gradient(to right, var(--auto), var(--uni));
+      padding: 0; border: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
+      border: 2px solid var(--surface);
+      box-shadow: 0 0 0 1px var(--accent2);
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent); cursor: pointer;
+      border: 2px solid var(--surface);
+    }
+
+    .pages-marks {
+      display: flex; justify-content: space-between;
+      font-size: 9px; color: var(--text3); margin-top: 4px;
+    }
+
+    /* ── SESSION TYPES ── */
+    .session-types {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: 0.875rem;
+    }
+
+    .type-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px; padding: 5px 12px;
+      border-radius: 999px;
+      border: 0.5px solid var(--border2);
+      background: transparent; color: var(--text2);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .type-btn.selected { background: var(--text); color: var(--bg); border-color: transparent; }
+
+    /* ── CONTEXT BADGES ── */
+    .context-row {
+      display: flex; gap: 8px; margin-bottom: 0.875rem; flex-wrap: wrap;
+    }
+
+    .ctx-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--r-sm);
+      border: 0.5px solid var(--border2);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: transparent;
+      font-family: 'DM Mono', monospace;
+      color: var(--text2);
+    }
+
+    .ctx-badge .ctx-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    .ctx-badge.auto-active { background: var(--auto-light); border-color: var(--auto); color: var(--auto); }
+    .ctx-badge.uni-active  { background: var(--uni-light);  border-color: var(--uni);  color: var(--uni); }
+
+    .ctx-badge .ctx-dot.auto { background: var(--auto); }
+    .ctx-badge .ctx-dot.uni  { background: var(--uni); }
+
+    /* ── SUBJECT INPUT ── */
+    .subject-row {
+      display: flex; gap: 8px; align-items: center; margin-bottom: 0.875rem;
+    }
+
+    .subject-tag {
+      font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text3); white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline-section { margin-bottom: 0.875rem; }
+
+    .timeline-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .total-hours-wrap {
+      display: flex; align-items: baseline; gap: 5px;
+    }
+
+    .total-hours-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 300; color: var(--accent);
+    }
+
+    .total-hours-label { font-size: 10px; color: var(--text3); }
+
+    .timeline-canvas-wrap {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+      position: relative;
+    }
+
+    /* hour grid */
+    .hour-grid {
+      display: flex;
+      height: 160px;
+      gap: 0;
+      position: relative;
+    }
+
+    .hour-col {
+      flex: 1;
+      border-right: 0.5px solid var(--border);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .hour-col:last-child { border-right: none; }
+    .hour-col:hover { background: rgba(138,106,74,0.06); }
+
+    .hour-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    .seg-block {
+      position: absolute;
+      top: 8px; bottom: 8px;
+      border-radius: 3px;
+      opacity: 0.85;
+      transition: opacity 0.15s;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      min-width: 6px;
+    }
+    .seg-block:hover { opacity: 1; }
+    .seg-block.auto-seg { background: var(--auto); }
+    .seg-block.uni-seg  { background: var(--uni); }
+
+    .seg-label {
+      font-size: 8px; color: #fff; font-weight: 500;
+      writing-mode: vertical-rl; text-orientation: mixed;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-height: 100%;
+      letter-spacing: 0.04em;
+    }
+
+    .hour-labels-row {
+      display: flex; margin-top: 22px; padding: 0 0 4px;
+    }
+
+    /* segment add form */
+    .seg-form {
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .seg-form select { width: auto; flex-shrink: 0; font-size: 11px; padding: 5px 8px; }
+    .seg-form input[type=number] { width: 65px; flex-shrink: 0; font-size: 11px; padding: 5px 8px; }
+
+    .seg-time-label { font-size: 10px; color: var(--text3); white-space: nowrap; }
+
+    .seg-list { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+
+    .seg-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 10px; border-radius: var(--r-sm);
+      font-size: 11px; color: var(--text2);
+    }
+    .seg-item.auto-item { background: var(--auto-light); border: 0.5px solid var(--auto); }
+    .seg-item.uni-item  { background: var(--uni-light);  border: 0.5px solid var(--uni); }
+
+    .seg-item-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .seg-item-dot.auto { background: var(--auto); }
+    .seg-item-dot.uni  { background: var(--uni); }
+
+    .seg-item-text { flex: 1; }
+    .seg-item-del {
+      background: none; border: none; color: var(--text3);
+      font-size: 12px; cursor: pointer; padding: 0 2px; transition: color 0.15s;
+    }
+    .seg-item-del:hover { color: #d4694a; }
+
+    /* ── OBSERVATIONS ── */
+    .obs-textarea {
+      width: 100%; min-height: 70px;
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px; font-weight: 300; line-height: 1.6;
+      padding: 10px 12px; resize: none; outline: none;
+    }
+    .obs-textarea::placeholder { color: var(--text3); font-style: italic; }
+
+    /* ── CHART ── */
+    .chart-wrap {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 12px;
+      margin-top: 0.875rem;
+      border: 0.5px solid var(--border);
+    }
+
+    .chart-header {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 10px;
+    }
+
+    .chart-title {
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3);
+    }
+
+    .chart-legend {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 9px; color: var(--text3);
+    }
+
+    .legend-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+    }
+
+    .chart-wrap canvas { width: 100% !important; height: 180px !important; }
+
+    /* ── NAV ── */
+    .nav-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.5rem;
+    }
+
+    .nav-card {
+      background: var(--surface); border: 0.5px solid var(--border);
+      border-radius: var(--r); padding: 1rem;
+      text-decoration: none; display: flex; flex-direction: column; gap: 5px;
+      transition: border-color 0.2s; cursor: pointer;
+    }
+    .nav-card:hover { border-color: var(--border2); background: var(--surface2); }
+    .nav-card:active { transform: scale(0.98); }
+
+    .nav-num { font-size: 11px; color: var(--text3); }
+    .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; color: var(--text); }
+    .nav-sub { font-size: 10px; color: var(--text3); }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    /* ── HAMBURGER MENU ── */
+    .menu-btn { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 16px; padding: 5px 10px; cursor: pointer; transition: all 0.2s; line-height: 1; }
+    .menu-btn:hover { color: var(--accent); border-color: var(--accent2); }
+    .menu-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; }
+    .menu-overlay.open { display: block; }
+    .menu-drawer { position: fixed; top: 0; right: -280px; bottom: 0; width: 260px; background: var(--surface); border-left: 0.5px solid var(--border2); z-index: 301; padding: 0; transition: right 0.25s cubic-bezier(.4,0,.2,1); display: flex; flex-direction: column; overflow-y: auto; }
+    .menu-drawer.open { right: 0; }
+    .menu-drawer-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.25rem 1rem; border-bottom: 0.5px solid var(--border); flex-shrink: 0; }
+    .menu-drawer-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--accent); font-style: italic; }
+    .menu-close { background: none; border: none; color: var(--text3); font-size: 18px; cursor: pointer; padding: 0; transition: color 0.15s; }
+    .menu-close:hover { color: var(--text); }
+    .menu-section { padding: 0.75rem 0; border-bottom: 0.5px solid var(--border); }
+    .menu-section:last-child { border-bottom: none; }
+    .menu-section-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); padding: 0 1.25rem; margin-bottom: 4px; }
+    .menu-link { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; text-decoration: none; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 13px; transition: all 0.15s; }
+    .menu-link:hover { background: var(--surface2); color: var(--text); }
+    .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
+    .menu-link-text { flex: 1; }
+    .menu-link-sub { font-size: 10px; color: var(--text3); }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div>
+    <div class="day-name" id="day-name"></div>
+    <div class="full-date" id="full-date"></div>
+  </div>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <button class="btn-back" onclick="toggleTheme()">◐</button>
+    <a class="btn-back" href="hoy.html">← hoy</a>
+    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ══════════════════════════════════════
+       REGISTRO DE SESIÓN
+  ══════════════════════════════════════ -->
+  <div>
+    <div class="section-label">registro del estudio</div>
+    <div class="card">
+
+      <!-- CONTEXTO -->
+      <div class="metric-label" style="margin-bottom:7px;">contexto de estudio</div>
+      <div class="context-row">
+        <button class="ctx-badge" id="ctx-auto" onclick="toggleCtx('auto')">
+          <span class="ctx-dot auto"></span>
+          autodidacta
+        </button>
+        <button class="ctx-badge" id="ctx-uni" onclick="toggleCtx('uni')">
+          <span class="ctx-dot uni"></span>
+          universidad
+        </button>
+      </div>
+
+      <!-- MATERIA / LIBRO -->
+      <div class="subject-row">
+        <span class="subject-tag" id="subject-tag-label">materia / libro</span>
+        <input type="text" id="subject-input" placeholder="ej. Desarrollo Organizacional · Pablo..." />
+      </div>
+
+      <!-- TIPO DE SESIÓN -->
+      <div class="metric-label" style="margin-bottom:7px;">tipo de sesión</div>
+      <div class="session-types" id="session-types">
+        <button class="type-btn" data-type="lectura" onclick="toggleType(this)">lectura</button>
+        <button class="type-btn" data-type="notas" onclick="toggleType(this)">notas</button>
+        <button class="type-btn" data-type="audiolibro" onclick="toggleType(this)">audiolibro</button>
+        <button class="type-btn" data-type="anki" onclick="toggleType(this)">anki</button>
+        <button class="type-btn" data-type="clase" onclick="toggleType(this)">clase</button>
+        <button class="type-btn" data-type="tareas" onclick="toggleType(this)">tareas</button>
+      </div>
+
+      <!-- MÉTRICAS LIKERT -->
+      <div class="metric-grid">
+        <div class="metric-block">
+          <div class="metric-label">calidad</div>
+          <div class="likert3" id="l-calidad">
+            <button class="l3-btn" data-val="1" onclick="selectL3(this,'calidad')">baja</button>
+            <button class="l3-btn" data-val="2" onclick="selectL3(this,'calidad')">media</button>
+            <button class="l3-btn" data-val="3" onclick="selectL3(this,'calidad')">alta</button>
+          </div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">dificultad</div>
+          <div class="likert3" id="l-dificultad">
+            <button class="l3-btn" data-val="1" onclick="selectL3(this,'dificultad')">baja</button>
+            <button class="l3-btn" data-val="2" onclick="selectL3(this,'dificultad')">media</button>
+            <button class="l3-btn" data-val="3" onclick="selectL3(this,'dificultad')">alta</button>
+          </div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">concentración</div>
+          <div class="likert3" id="l-concentracion">
+            <button class="l3-btn" data-val="1" onclick="selectL3(this,'concentracion')">baja</button>
+            <button class="l3-btn" data-val="2" onclick="selectL3(this,'concentracion')">media</button>
+            <button class="l3-btn" data-val="3" onclick="selectL3(this,'concentracion')">alta</button>
+          </div>
+        </div>
+        <div class="metric-block">
+          <div class="metric-label">interrupciones</div>
+          <div class="likert3" id="l-interacciones">
+            <button class="l3-btn" data-val="1" onclick="selectL3(this,'interacciones')">bajas</button>
+            <button class="l3-btn" data-val="2" onclick="selectL3(this,'interacciones')">medias</button>
+            <button class="l3-btn" data-val="3" onclick="selectL3(this,'interacciones')">altas</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÁGINAS -->
+      <div class="pages-wrap">
+        <div class="pages-header">
+          <span class="metric-label" style="margin:0;">páginas</span>
+          <span class="pages-val" id="pages-val">10</span>
+        </div>
+        <input type="range" id="pages-slider" min="0" max="120" value="10" step="5"
+          oninput="document.getElementById('pages-val').textContent=this.value" />
+        <div class="pages-marks">
+          <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span><span>120</span>
+        </div>
+      </div>
+
+      <!-- LÍNEA DE TIEMPO -->
+      <div class="timeline-section">
+        <div class="timeline-header">
+          <div class="metric-label" style="margin:0;">línea de tiempo</div>
+          <div class="total-hours-wrap">
+            <span class="total-hours-num" id="total-hours">0</span>
+            <span class="total-hours-label">h totales</span>
+          </div>
+        </div>
+
+        <!-- LEYENDA -->
+        <div style="display:flex; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:5px; font-size:10px; color:var(--auto);">
+            <div style="width:10px;height:10px;border-radius:2px;background:var(--auto);"></div>
+            autodidacta
+          </div>
+          <div style="display:flex; align-items:center; gap:5px; font-size:10px; color:var(--uni);">
+            <div style="width:10px;height:10px;border-radius:2px;background:var(--uni);"></div>
+            universidad
+          </div>
+        </div>
+
+        <!-- GRID VISUAL -->
+        <div class="timeline-canvas-wrap">
+          <div class="hour-grid" id="hour-grid"></div>
+          <div class="hour-labels-row" id="hour-labels"></div>
+        </div>
+
+        <!-- LISTA DE SEGMENTOS -->
+        <div class="seg-list" id="seg-list"></div>
+
+        <!-- FORMULARIO AGREGAR SEGMENTO -->
+        <div class="seg-form">
+          <span class="seg-time-label">de</span>
+          <select id="seg-start" style="width:80px;">
+            <!-- filled by JS -->
+          </select>
+          <span class="seg-time-label">a</span>
+          <select id="seg-end" style="width:80px;">
+            <!-- filled by JS -->
+          </select>
+          <select id="seg-ctx" style="width:110px;">
+            <option value="auto">autodidacta</option>
+            <option value="uni">universidad</option>
+          </select>
+          <button class="icon-btn" onclick="addSegment()" title="agregar" style="width:auto; padding: 0 10px; font-size:13px;">+ segmento</button>
+        </div>
+      </div>
+
+      <!-- OBSERVACIONES -->
+      <div style="margin-bottom:0.75rem;">
+        <div class="metric-label" style="margin-bottom:6px;">observaciones</div>
+        <textarea class="obs-textarea" id="obs-text" placeholder="notas sobre la sesión de hoy..."></textarea>
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <button class="icon-btn" onclick="document.getElementById('obs-text').value=''">✕</button>
+          <button class="icon-btn" onclick="pasteField('obs-text')">⎘</button>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="btn-primary" onclick="saveSession()">guardar sesión</button>
+      </div>
+      <div class="save-status hidden" id="save-status"></div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       GRÁFICA DEL MES
+  ══════════════════════════════════════ -->
+  <div>
+    <div class="section-label">progreso del mes</div>
+    <div class="card" style="padding: 1rem;">
+
+      <div class="chart-header">
+        <span class="chart-title">último mes · variables de estudio</span>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#2c7be5;"></div>horas</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#28b463;"></div>calidad</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#e6a817;"></div>dificultad</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#9b59b6;"></div>concentración</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#e74c3c;"></div>páginas÷10</div>
+        </div>
+      </div>
+
+      <div class="chart-wrap" style="border:none; padding:0; background:transparent;">
+        <canvas id="studyChart"></canvas>
+      </div>
+
+      <!-- RESUMEN ESTADÍSTICO -->
+      <div id="stats-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:1rem;"></div>
+
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-grid">
+    <a class="nav-card" href="hoy.html">
+      <div class="nav-num">←</div>
+      <div class="nav-title">hoy</div>
+      <div class="nav-sub">registro diario</div>
+    </a>
+    <a class="nav-card" href="index.html">
+      <div class="nav-num">←</div>
+      <div class="nav-title">inicio</div>
+      <div class="nav-sub">dashboard</div>
+    </a>
+  </div>
+
+</div><!-- /content -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ── THEME ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('tracker_theme', next);
+  renderChart(); // re-render with new colors
+}
+(function applyTheme() {
+  const t = localStorage.getItem('tracker_theme');
+  if (t) document.documentElement.setAttribute('data-theme', t);
+})();
+
+// ── DATE ──
+const DAYS   = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+(function() {
+  const now = new Date();
+  document.getElementById('day-name').textContent  = DAYS[now.getDay()];
+  document.getElementById('full-date').textContent = `${now.getDate()} de ${MONTHS[now.getMonth()]}, ${now.getFullYear()}`;
+})();
+
+const TODAY = new Date().toISOString().split('T')[0];
+const config = JSON.parse(localStorage.getItem('tracker_config') || '{}');
+const REPO   = config.repo || 'vd159817/mi_tracker';
+
+let studyData = JSON.parse(localStorage.getItem('tracker_study') || '[]');
+
+// ── GITHUB ──
+async function saveToGitHub(path, data) {
+  if (!config.token) return;
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  let sha = '';
+  try { const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
+    if (r.ok) { const j = await r.json(); sha = j.sha; } } catch(e) {}
+  const body = { message: `update ${path}`, content };
+  if (sha) body.sha = sha;
+  await fetch(url, { method: 'PUT',
+    headers: { Authorization: `token ${config.token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body) });
+}
+
+// ── HELPERS ──
+async function pasteField(id) {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById(id).value = text;
+  } catch(e) { alert('Permite acceso al portapapeles.'); }
+}
+
+function showStatus(msg) {
+  const el = document.getElementById('save-status');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 2500);
+}
+
+// ── CONTEXT TOGGLE ──
+let activeCtx = { auto: false, uni: false };
+
+function toggleCtx(ctx) {
+  activeCtx[ctx] = !activeCtx[ctx];
+  const btn = document.getElementById(`ctx-${ctx}`);
+  btn.classList.toggle(`${ctx}-active`, activeCtx[ctx]);
+  updateSubjectLabel();
+}
+
+function updateSubjectLabel() {
+  const both = activeCtx.auto && activeCtx.uni;
+  const label = both ? 'materia / libro'
+    : activeCtx.auto ? 'libro / tema'
+    : activeCtx.uni  ? 'materia universitaria'
+    : 'materia / libro';
+  document.getElementById('subject-tag-label').textContent = label;
+}
+
+// ── SESSION TYPES ──
+const selectedTypes = new Set();
+
+function toggleType(btn) {
+  const t = btn.dataset.type;
+  if (selectedTypes.has(t)) {
+    selectedTypes.delete(t);
+    btn.classList.remove('selected');
+  } else {
+    selectedTypes.add(t);
+    btn.classList.add('selected');
+  }
+}
+
+// ── LIKERT 3 ──
+const l3State = {};
+
+function selectL3(btn, key) {
+  btn.parentElement.querySelectorAll('.l3-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  l3State[key] = parseInt(btn.dataset.val);
+}
+
+function setL3(key, val) {
+  if (!val) return;
+  const container = document.getElementById(`l-${key}`);
+  if (!container) return;
+  container.querySelectorAll('.l3-btn').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.val) === val);
+  });
+  l3State[key] = val;
+}
+
+// ── TIMELINE ──
+// Hours: 6am → 12am (next day) = 18 slots
+const HOUR_START = 6;   // 6am
+const HOUR_COUNT = 20;  // 6am to 2am next day
+
+let segments = []; // { start, end, ctx }  (start/end in 0-based index from HOUR_START)
+
+function hourLabel(h) {
+  // h is absolute 0-23
+  const real = h % 24;
+  const ampm = real < 12 ? 'am' : 'pm';
+  const h12  = real === 0 ? 12 : real > 12 ? real - 12 : real;
+  return `${h12}${ampm}`;
+}
+
+function buildTimeSelects() {
+  const start = document.getElementById('seg-start');
+  const end   = document.getElementById('seg-end');
+  [start, end].forEach((sel, i) => {
+    sel.innerHTML = '';
+    for (let h = 0; h <= HOUR_COUNT; h++) {
+      const absH = HOUR_START + h;
+      const opt  = document.createElement('option');
+      opt.value  = absH;
+      opt.textContent = hourLabel(absH);
+      if (i === 0 && h === 0) opt.selected = true;
+      if (i === 1 && h === 1) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  });
+}
+
+buildTimeSelects();
+
+function buildHourGrid() {
+  const grid   = document.getElementById('hour-grid');
+  const labels = document.getElementById('hour-labels');
+  grid.innerHTML   = '';
+  labels.innerHTML = '';
+
+  for (let h = 0; h < HOUR_COUNT; h++) {
+    const absH = HOUR_START + h;
+    const col  = document.createElement('div');
+    col.className = 'hour-col';
+    col.style.position = 'relative';
+    grid.appendChild(col);
+
+    // label every 2 hours
+    const lbl = document.createElement('div');
+    lbl.style.flex = '1';
+    lbl.style.textAlign = 'center';
+    lbl.style.fontSize  = '8px';
+    lbl.style.color     = 'var(--text3)';
+    lbl.style.fontFamily = 'DM Mono, monospace';
+    lbl.textContent = h % 2 === 0 ? hourLabel(absH) : '';
+    labels.appendChild(lbl);
+  }
+
+  renderSegments();
+}
+
+function renderSegments() {
+  const grid = document.getElementById('hour-grid');
+  // Remove old seg blocks
+  grid.querySelectorAll('.seg-block').forEach(el => el.remove());
+
+  segments.forEach((seg, idx) => {
+    const startCol = seg.start - HOUR_START;
+    const endCol   = seg.end   - HOUR_START;
+    if (startCol < 0 || endCol > HOUR_COUNT || startCol >= endCol) return;
+
+    const gridWidth = grid.offsetWidth || 300;
+    const colW      = gridWidth / HOUR_COUNT;
+    const left      = startCol * colW;
+    const width     = (endCol - startCol) * colW - 2;
+
+    const block = document.createElement('div');
+    block.className = `seg-block ${seg.ctx}-seg`;
+    block.style.left  = left + 'px';
+    block.style.width = Math.max(width, 6) + 'px';
+    block.style.position = 'absolute';
+    block.title = `${hourLabel(seg.start)}–${hourLabel(seg.end)} · ${seg.ctx === 'auto' ? 'autodidacta' : 'universidad'}`;
+
+    const lbl = document.createElement('div');
+    lbl.className = 'seg-label';
+    lbl.textContent = seg.ctx === 'auto' ? 'auto' : 'uni';
+    block.appendChild(lbl);
+
+    block.onclick = () => removeSegment(idx);
+    grid.appendChild(block);
+  });
+
+  renderSegList();
+  updateTotalHours();
+}
+
+function renderSegList() {
+  const list = document.getElementById('seg-list');
+  if (segments.length === 0) { list.innerHTML = ''; return; }
+  list.innerHTML = segments.map((seg, i) => `
+    <div class="seg-item ${seg.ctx}-item">
+      <div class="seg-item-dot ${seg.ctx}"></div>
+      <span class="seg-item-text">
+        ${hourLabel(seg.start)} → ${hourLabel(seg.end)}
+        &nbsp;·&nbsp; ${seg.ctx === 'auto' ? 'autodidacta' : 'universidad'}
+        &nbsp;·&nbsp; ${seg.end - seg.start}h
+      </span>
+      <button class="seg-item-del" onclick="removeSegment(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function addSegment() {
+  const start = parseInt(document.getElementById('seg-start').value);
+  const end   = parseInt(document.getElementById('seg-end').value);
+  const ctx   = document.getElementById('seg-ctx').value;
+  if (end <= start) { alert('La hora de fin debe ser mayor que la de inicio.'); return; }
+  segments.push({ start, end, ctx });
+  renderSegments();
+}
+
+function removeSegment(idx) {
+  segments.splice(idx, 1);
+  renderSegments();
+}
+
+function updateTotalHours() {
+  const total = segments.reduce((sum, s) => sum + (s.end - s.start), 0);
+  document.getElementById('total-hours').textContent = total.toFixed(1);
+}
+
+buildHourGrid();
+
+// Rebuild grid on resize
+window.addEventListener('resize', () => renderSegments());
+
+// ── SAVE SESSION ──
+async function saveSession() {
+  const entry = {
+    date: TODAY,
+    context: { auto: activeCtx.auto, uni: activeCtx.uni },
+    subject: document.getElementById('subject-input').value.trim(),
+    types: [...selectedTypes],
+    calidad: l3State['calidad'] || null,
+    dificultad: l3State['dificultad'] || null,
+    concentracion: l3State['concentracion'] || null,
+    interacciones: l3State['interacciones'] || null,
+    pages: parseInt(document.getElementById('pages-slider').value),
+    segments: segments.map(s => ({...s})),
+    totalHours: segments.reduce((sum, s) => sum + (s.end - s.start), 0),
+    obs: document.getElementById('obs-text').value.trim()
+  };
+
+  const idx = studyData.findIndex(d => d.date === TODAY);
+  if (idx >= 0) studyData[idx] = entry; else studyData.push(entry);
+
+  localStorage.setItem('tracker_study', JSON.stringify(studyData));
+  if (config.token) await saveToGitHub('data/study.json', studyData);
+
+  document.getElementById('obs-text').value = '';
+  showStatus(config.token ? 'guardado en github ✓' : 'guardado localmente ✓');
+  renderChart();
+  renderStats();
+}
+
+// ── LOAD TODAY ──
+const todayEntry = studyData.find(d => d.date === TODAY);
+if (todayEntry) {
+  if (todayEntry.context) {
+    if (todayEntry.context.auto) toggleCtx('auto');
+    if (todayEntry.context.uni)  toggleCtx('uni');
+  }
+  if (todayEntry.subject) document.getElementById('subject-input').value = todayEntry.subject;
+  if (todayEntry.types) todayEntry.types.forEach(t => {
+    const btn = document.querySelector(`.type-btn[data-type="${t}"]`);
+    if (btn) { selectedTypes.add(t); btn.classList.add('selected'); }
+  });
+  if (todayEntry.calidad)        setL3('calidad', todayEntry.calidad);
+  if (todayEntry.dificultad)     setL3('dificultad', todayEntry.dificultad);
+  if (todayEntry.concentracion)  setL3('concentracion', todayEntry.concentracion);
+  if (todayEntry.interacciones)  setL3('interacciones', todayEntry.interacciones);
+  if (todayEntry.pages) {
+    document.getElementById('pages-slider').value = todayEntry.pages;
+    document.getElementById('pages-val').textContent = todayEntry.pages;
+  }
+  if (todayEntry.segments) {
+    segments = todayEntry.segments.map(s => ({...s}));
+    renderSegments();
+  }
+}
+
+// ── CHART ──
+let chartInstance = null;
+
+function getLast30() {
+  const result = [];
+  const today  = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d  = new Date(today);
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().split('T')[0];
+    const e  = studyData.find(s => s.date === ds) || { date: ds };
+    result.push(e);
+  }
+  return result;
+}
+
+function renderChart() {
+  const last30 = getLast30();
+  const labels = last30.map(d => d.date.slice(5));
+
+  const hours    = last30.map(d => d.totalHours || null);
+  const calidad  = last30.map(d => d.calidad || null);
+  const dific    = last30.map(d => d.dificultad || null);
+  const conc     = last30.map(d => d.concentracion || null);
+  const pages    = last30.map(d => d.pages ? +(d.pages / 10).toFixed(1) : null);
+
+  const ctx = document.getElementById('studyChart').getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+  const tickColor = isDark ? '#7a6a55' : '#aaa89f';
+  const tooltipBg = isDark ? '#1e1e1e' : '#ffffff';
+  const tooltipTitle = '#2c7be5';
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'horas',
+          data: hours,
+          borderColor: '#2c7be5',
+          backgroundColor: 'rgba(44,123,229,0.08)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#2c7be5',
+          tension: 0.4, spanGaps: true,
+          yAxisID: 'y'
+        },
+        {
+          label: 'calidad',
+          data: calidad,
+          borderColor: '#28b463',
+          backgroundColor: 'rgba(40,180,99,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2.5,
+          pointBackgroundColor: '#28b463',
+          tension: 0.4, spanGaps: true,
+          yAxisID: 'y2'
+        },
+        {
+          label: 'dificultad',
+          data: dific,
+          borderColor: '#e6a817',
+          backgroundColor: 'rgba(230,168,23,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2.5,
+          pointBackgroundColor: '#e6a817',
+          tension: 0.4, spanGaps: true,
+          borderDash: [4,3],
+          yAxisID: 'y2'
+        },
+        {
+          label: 'concentración',
+          data: conc,
+          borderColor: '#9b59b6',
+          backgroundColor: 'rgba(155,89,182,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2.5,
+          pointBackgroundColor: '#9b59b6',
+          tension: 0.4, spanGaps: true,
+          yAxisID: 'y2'
+        },
+        {
+          label: 'páginas÷10',
+          data: pages,
+          borderColor: '#e74c3c',
+          backgroundColor: 'rgba(231,76,60,0.06)',
+          borderWidth: 1,
+          pointRadius: 2,
+          pointBackgroundColor: '#e74c3c',
+          tension: 0.4, spanGaps: true,
+          borderDash: [2,4],
+          yAxisID: 'y'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: false // we use custom legend above
+        },
+        tooltip: {
+          backgroundColor: tooltipBg,
+          titleColor: tooltipTitle,
+          bodyColor: tickColor,
+          borderColor: gridColor,
+          borderWidth: 1,
+          titleFont: { family: 'DM Mono', size: 10, weight: '500' },
+          bodyFont:  { family: 'DM Mono', size: 10 },
+          padding: 10,
+          callbacks: {
+            label: ctx => {
+              const v = ctx.parsed.y;
+              if (v === null) return null;
+              const names = ['horas','calidad (1-3)','dificultad (1-3)','concentración (1-3)','páginas÷10'];
+              return ` ${names[ctx.datasetIndex]}: ${v}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: tickColor, font: { family: 'DM Mono', size: 8 }, maxRotation: 0, maxTicksLimit: 10 },
+          grid: { color: gridColor },
+          border: { color: gridColor }
+        },
+        y: {
+          position: 'left',
+          min: 0,
+          title: { display: true, text: 'horas / páginas÷10', color: tickColor, font: { family: 'DM Mono', size: 8 } },
+          ticks: { color: tickColor, font: { family: 'DM Mono', size: 8 } },
+          grid: { color: gridColor },
+          border: { color: gridColor }
+        },
+        y2: {
+          position: 'right',
+          min: 0, max: 3,
+          title: { display: true, text: 'escala 1-3', color: tickColor, font: { family: 'DM Mono', size: 8 } },
+          ticks: {
+            color: tickColor, font: { family: 'DM Mono', size: 8 }, stepSize: 1,
+            callback: v => ['','baja','media','alta'][v] || v
+          },
+          grid: { drawOnChartArea: false },
+          border: { color: gridColor }
+        }
+      }
+    }
+  });
+}
+
+function renderStats() {
+  const last30 = getLast30().filter(d => d.totalHours);
+  if (last30.length === 0) return;
+
+  const totalH    = last30.reduce((s, d) => s + (d.totalHours || 0), 0);
+  const avgH      = (totalH / last30.length).toFixed(1);
+  const avgCal    = (last30.filter(d=>d.calidad).reduce((s,d)=>s+d.calidad,0) / last30.filter(d=>d.calidad).length || 0).toFixed(1);
+  const totalPags = last30.reduce((s,d) => s + (d.pages||0), 0);
+
+  const statItems = [
+    { label: 'horas totales (mes)', val: totalH.toFixed(1) + 'h' },
+    { label: 'promedio diario',     val: avgH + 'h' },
+    { label: 'páginas acumuladas',  val: totalPags },
+    { label: 'sesiones registradas', val: last30.length },
+    { label: 'calidad promedio',    val: avgCal + '/3' },
+  ];
+
+  document.getElementById('stats-grid').innerHTML = statItems.map(s => `
+    <div style="background:var(--surface2); border-radius:var(--r-sm); padding:8px 10px;">
+      <div style="font-size:9px; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:4px;">${s.label}</div>
+      <div style="font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:300; color:var(--accent);">${s.val}</div>
+    </div>
+  `).join('');
+}
+
+// ── INIT ──
+renderChart();
+renderStats();
+
+// ── MENU ──
+function openMenu() {
+  document.getElementById('menu-drawer').classList.add('open');
+  document.getElementById('menu-overlay').classList.add('open');
+}
+function closeMenu() {
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+</script>
+</body>
+</html>
