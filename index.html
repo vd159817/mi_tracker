@@ -729,23 +729,6 @@
   </div>
 </div>
 
-<!-- CONFIG MODAL -->
-<div class="modal-overlay" id="configModal">
-  <div class="modal">
-    <h3>configuración</h3>
-    <label>github token</label>
-    <input type="password" id="cfg-token" placeholder="ghp_..." />
-    <label>repositorio (usuario/repo)</label>
-    <input type="text" id="cfg-repo" placeholder="vd159817/mi_tracker" value="vd159817/mi_tracker" />
-    <label>tu nombre (para el saludo)</label>
-    <input type="text" id="cfg-name" placeholder="nombre" />
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeConfig()">cancelar</button>
-      <button class="btn-save" onclick="saveConfig()">guardar</button>
-    </div>
-  </div>
-</div>
-
 <!-- TOP BAR -->
 <div class="top-bar">
   <div class="date-block">
@@ -754,7 +737,6 @@
   </div>
   <div style="display:flex; gap:8px; align-items:center;">
     <button class="btn-config" id="theme-btn" onclick="toggleTheme()">◐</button>
-    <button class="btn-config" onclick="openConfig()">⚙ config</button>
     <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
   </div>
 </div>
@@ -1288,33 +1270,6 @@ function toggleTheme() {
   if (saved) document.documentElement.setAttribute('data-theme', saved);
 })();
 
-// ── CONFIG ──
-function openConfig() {
-  document.getElementById('cfg-token').value = config.token || '';
-  document.getElementById('cfg-name').value = config.name || '';
-  document.getElementById('configModal').classList.add('open');
-}
-
-function closeConfig() {
-  document.getElementById('configModal').classList.remove('open');
-}
-
-function saveConfig() {
-  config.token = document.getElementById('cfg-token').value.trim();
-  config.name = document.getElementById('cfg-name').value.trim();
-  config.repo = document.getElementById('cfg-repo').value.trim();
-  localStorage.setItem('tracker_config', JSON.stringify(config));
-  closeConfig();
-  if (config.token) syncFromGitHub();
-}
-
-// ── SYNC FROM GITHUB ──
-async function syncFromGitHub() {
-  const remote = await loadFromGitHub(FILES.diary);
-  if (remote && remote.length > 0) {
-    diaryData = remote;
-    localStorage.setItem('tracker_diary', JSON.stringify(diaryData));
-  }
   const remoteTasks = await loadFromGitHub(FILES.tasks);
   if (remoteTasks && remoteTasks.length > 0) {
     tasksData = remoteTasks;
@@ -1528,7 +1483,6 @@ async function exportCSV() {
     lines.push('');
   }
 
-
   // ALIMENTACIÓN
   if (data.food_data?.length) {
     lines.push('## ALIMENTACIÓN');
@@ -1562,7 +1516,6 @@ async function exportCSV() {
 }
 </script>
 
-
 <script>
 // ── AUTOGUARDADO ──────────────────────────────────────────────────────────
 (function() {
@@ -1588,6 +1541,6 @@ async function exportCSV() {
 </script>
 
   <script>window.PAGE_FILES = {tracker_diary:"data/diary.json",tracker_tasks:"data/tasks.json"};</script>
-  <script src="github-sync.js"></script>
+  <script src="server-sync.js"></script>
 </body>
 </html>
