@@ -31,7 +31,7 @@
   const PENDING_KEY    = 'tracker_sync_pending';
   const LAST_SYNC_KEY  = 'tracker_last_sync';
   const UNDO_KEY       = 'tracker_undo_snapshot';
-  const DEFAULT_URL    = 'http://localhost:3000';
+  const DEFAULT_URL    = '';  // vacío → fuerza configurar IP real
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -52,7 +52,13 @@
 
   // ── CONFIGURACIÓN DE URL ───────────────────────────────────────────────────
   function getServerUrl() {
-    return (localStorage.getItem(SERVER_URL_KEY) || DEFAULT_URL).replace(/\/$/, '');
+    const stored = localStorage.getItem(SERVER_URL_KEY) || '';
+    return stored.replace(/\/$/, '') || DEFAULT_URL;
+  }
+
+  function hasServerUrl() {
+    const u = getServerUrl();
+    return u.length > 0 && !u.includes('localhost');
   }
 
   function setServerUrl(url) {
@@ -233,12 +239,16 @@
     if (!url) { setCfgStatus('ingresa una URL', false); return; }
     setCfgStatus('probando…');
     try {
-      const r = await fetch(`${url}/health`, { signal: AbortSignal.timeout(3000) });
+      const r = await fetch(`${url}/health`, { signal: makeAbortSignal(3000) });
       const j = await r.json();
       if (j.ok) setCfgStatus(`✓ conectado · ${url}`, true);
       else      setCfgStatus('servidor respondió pero sin health check', false);
     } catch(e) {
-      setCfgStatus(`✗ no se pudo conectar: ${e.message}`, false);
+      let hint = e.message;
+      if (e.name === 'AbortError' || hint.includes('abort')) hint = 'tiempo de espera agotado';
+      if (hint.includes('fetch'))  hint = 'no se pudo conectar — verifica IP y que el servidor esté corriendo';
+      setCfgStatus(`✗ ${hint}`, false);
+      console.error('[sync] test connection falló:', e.message, '— URL:', url);
     }
   }
 
@@ -315,31 +325,66 @@
   function clearPending(k) { const p = getPending(); delete p[k];   setPending(p); }
   function hasPending()    { return Object.keys(getPending()).length > 0; }
 
+  // AbortSignal.timeout no está disponible en todos los WebView (Android < Chrome 103)
+  function makeAbortSignal(ms) {
+    if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+      return AbortSignal.timeout(ms);
+    }
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), ms);
+    return ctrl.signal;
+  }
+
   // ── API DEL SERVIDOR ──────────────────────────────────────────────────────
   async function apiGet() {
-    const r = await fetch(`${getServerUrl()}/datos`, {
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
+    const url = `${getServerUrl()}/datos`;
+    console.log('[sync] GET', url);
+    try {
+      const r = await fetch(url, { signal: makeAbortSignal(5000) });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      console.log('[sync] GET OK —', Object.keys(data).length, 'claves');
+      return data;
+    } catch(e) {
+      console.error('[sync] GET falló:', e.message, '— URL:', url);
+      throw e;
+    }
   }
 
   async function apiPost(payload) {
-    const r = await fetch(`${getServerUrl()}/guardar`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload),
-      signal:  AbortSignal.timeout(8000),
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
+    const url   = `${getServerUrl()}/guardar`;
+    const keys  = Object.keys(payload);
+    console.log('[sync] POST', url, '— claves:', keys.join(', '));
+    try {
+      const r = await fetch(url, {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept':        'application/json',
+        },
+        body:    JSON.stringify(payload),
+        signal:  makeAbortSignal(8000),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const result = await r.json();
+      console.log('[sync] POST OK —', result.ts);
+      return result;
+    } catch(e) {
+      console.error('[sync] POST falló:', e.message, '— URL:', url);
+      throw e;
+    }
   }
 
   async function apiHealth() {
-    const r = await fetch(`${getServerUrl()}/health`, {
-      signal: AbortSignal.timeout(2000),
-    });
-    return r.ok;
+    const url = getServerUrl();
+    if (!url) return false;   // sin URL configurada, no intentar
+    try {
+      const r = await fetch(`${url}/health`, { signal: makeAbortSignal(2000) });
+      return r.ok;
+    } catch(e) {
+      console.warn('[sync] health check falló:', e.message, '— URL:', url);
+      return false;
+    }
   }
 
   // ── SNAPSHOT DE UNDO ──────────────────────────────────────────────────────
@@ -360,11 +405,24 @@
 
   // ── CARGA INICIAL ─────────────────────────────────────────────────────────
   async function bootSync() {
+    // Si no hay URL configurada, mostrar aviso específico
+    if (!getServerUrl()) {
+      setState('error', 'configura la IP del servidor — toca ⚙ servidor');
+      window._syncBootDone = true;
+      setTimeout(() => window.SrvSync.openConfig(), 1200);
+      return;
+    }
+
     setState('busy', 'conectando al servidor…');
+    console.log('[sync] bootSync — URL:', getServerUrl());
 
     const serverAlive = await apiHealth().catch(() => false);
     if (!serverAlive) {
-      setState(hasPending() ? 'pending' : 'offline');
+      const msg = navigator.onLine
+        ? 'servidor no responde — verifica la IP en ⚙ servidor'
+        : 'sin red';
+      setState(hasPending() ? 'pending' : 'offline', msg);
+      console.warn('[sync] servidor no disponible');
       window._syncBootDone = true;
       return;
     }
@@ -458,6 +516,8 @@
         // Fallo: marcar todos como pendientes, mantener en cola
         for (const lsKey of Object.keys(toSave)) markPending(lsKey);
         errors++;
+        console.error('[sync] flushQueue falló:', e.message);
+        showFooter('no se pudo guardar — reintentando…', 3000);
       }
     }
 
