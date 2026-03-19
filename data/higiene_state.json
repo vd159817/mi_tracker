@@ -3,7 +3,8 @@
   "checks": {
     "mensual_0": true,
     "mensual_1": true,
-    "mensual_2": true
+    "mensual_2": true,
+    "manana_1": true
   },
   "log": []
 }
