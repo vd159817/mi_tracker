@@ -2093,6 +2093,70 @@ function closeMenu() {
 }
 </script>
   <script src="historial.js"></script>
+
+<script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+
+  const autoSleep    = debounce(saveSleep,    1500);
+  const autoExercise = debounce(saveExercise, 1500);
+  const autoHabits   = debounce(saveHabits,   1500);
+  const autoRoutines = debounce(saveRoutines, 1500);
+
+  // Campos de sueño
+  ['sleep-slider','wake-slider','siesta-min','dream-text','sleep-obs'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoSleep);
+  });
+
+  // Likert de sueño — parchear selectL para que también dispare
+  const _origSelectL = window.selectL;
+  if (typeof _origSelectL === 'function') {
+    window.selectL = function(btn, key) {
+      _origSelectL(btn, key);
+      // Si es métrica de sueño, autoguardar sueño
+      const sleepKeys = ['quality','conciliation','wakeups','wakefeeling'];
+      if (sleepKeys.some(k => key.toLowerCase().includes(k))) autoSleep();
+    };
+  }
+
+  // Tipo de sueño
+  document.querySelectorAll('.dream-type-btn').forEach(btn => {
+    btn.addEventListener('click', autoSleep);
+  });
+
+  // Tren muscular y checks de ejercicio
+  document.querySelectorAll('.tren-btn, .exercise-check').forEach(btn => {
+    btn.addEventListener('click', autoExercise);
+  });
+
+  // Campos de ejercicio (dinámicos) — usar delegación de eventos
+  document.addEventListener('input', function(e) {
+    const el = e.target;
+    if (el.closest('.exercise-item') || el.closest('.discipline-item') ||
+        el.id === 'ex-week' || el.id === 'ex-rest' || el.id === 'ex-rir' ||
+        el.id === 'ex-weight' || el.id === 'ex-notes') {
+      autoExercise();
+    }
+    if (el.closest('.habit-editor-item')) autoHabits();
+    if (el.closest('.routine-editor-block')) autoRoutines();
+  });
+
+  document.addEventListener('change', function(e) {
+    const el = e.target;
+    if (el.closest('.exercise-item') || el.closest('.discipline-item')) autoExercise();
+    if (el.closest('.habit-editor-item')) autoHabits();
+    if (el.closest('.routine-editor-block')) autoRoutines();
+  });
+
+  // Hábito marcado/desmarcado ya llama saveHabitsData directamente → OK
+
+})();
+</script>
+
   <script>window.PAGE_FILES = {tracker_sleep:"data/sleep.json",tracker_exercise:"data/exercise.json",tracker_habits_config:"data/habits_config.json",tracker_habits_data:"data/habits_data.json",tracker_routines:"data/routines.json"};</script>
   <script src="github-sync.js"></script>
 </body>

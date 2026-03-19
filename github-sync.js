@@ -72,6 +72,25 @@
         .sync-bar { padding: 4px 1rem; }
         .sync-label { font-size: 9px; }
       }
+
+      /* ── FOOTER DE ESTADO ── */
+      .sync-footer {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'Cormorant Garamond', serif;
+        font-style: italic;
+        font-size: 13px;
+        color: var(--text3, #aaa89f);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        white-space: nowrap;
+        z-index: 50;
+        letter-spacing: 0.02em;
+      }
+      .sync-footer.visible { opacity: 1; }
     `;
     document.head.appendChild(s);
   }
@@ -95,7 +114,24 @@
         </div>
       `;
       topBar.insertAdjacentElement('afterend', bar);
+
+      // Footer de estado al final de la página
+      const footer = document.createElement('div');
+      footer.className = 'sync-footer';
+      footer.id = 'sync-footer';
+      document.body.appendChild(footer);
     }, 40);
+  }
+
+  // ── FOOTER DE ESTADO (texto al final de la página) ──────────────────────
+  let footerTimer = null;
+  function showFooter(msg, duration = 2500) {
+    const el = document.getElementById('sync-footer');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('visible');
+    clearTimeout(footerTimer);
+    footerTimer = setTimeout(() => el.classList.remove('visible'), duration);
   }
 
   // ── ESTADO UI ─────────────────────────────────────────────────────────────
@@ -121,7 +157,12 @@
         const hm = `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
         const isToday = new Date().toDateString() === d.toDateString();
         time.textContent = isToday ? hm : `${d.getDate()}/${d.getMonth()+1} ${hm}`;
+        // Mostrar footer solo si fue un guardado real (no la carga inicial)
+        if (window._syncBootDone) showFooter(`guardado a las ${hm}`);
       }
+    } else if (state === 'error') {
+      showFooter(detail || 'error al guardar', 4000);
+      if (time) time.textContent = '';
     } else if (time) {
       time.textContent = '';
     }
@@ -172,9 +213,9 @@
 
   // ── CARGA INICIAL ─────────────────────────────────────────────────────────
   async function bootSync() {
-    if (!getToken()) { setState('offline', 'configura tu token en ⚙ config'); return; }
+    if (!getToken()) { setState('offline', 'configura tu token en ⚙ config'); window._syncBootDone = true; return; }
     if (!navigator.onLine) {
-      setState(hasPending() ? 'pending' : 'offline');
+      setState(hasPending() ? 'pending' : 'offline'); window._syncBootDone = true;
       return;
     }
 
@@ -205,6 +246,7 @@
 
     _originalSetItem(LAST_SYNC_KEY, new Date().toISOString());
     setState('ok');
+    window._syncBootDone = true;   // a partir de aquí el footer sí aparece
 
     // Recargar si hubo cambios remotos (una sola vez)
     if (changed && !justReloaded) {

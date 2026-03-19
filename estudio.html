@@ -1627,6 +1627,36 @@ function closeMenu() {
 }
 </script>
   <script src="historial.js"></script>
+
+<script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  const autoSession = debounce(saveSession, 1500);
+
+  // Campos de texto y sliders
+  ['subject-input','obs-text','pages-slider'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoSession);
+  });
+
+  // Contexto, tipos de sesión, métricas Likert, segmentos de timeline
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.ctx-badge') || e.target.closest('.type-btn') ||
+        e.target.closest('.l3-btn')    || e.target.closest('.seg-form') ||
+        e.target.closest('.seg-item')) {
+      autoSession();
+    }
+  });
+  document.addEventListener('change', function(e) {
+    if (e.target.id === 'seg-start' || e.target.id === 'seg-end' ||
+        e.target.id === 'seg-ctx') autoSession();
+  });
+})();
+</script>
+
   <script>window.PAGE_FILES = {tracker_study:"data/study.json"};</script>
   <script src="github-sync.js"></script>
 </body>

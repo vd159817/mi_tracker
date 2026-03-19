@@ -955,6 +955,46 @@ function closeMenu() { document.getElementById('menu-drawer').classList.remove('
 </script>
 
   <link rel="stylesheet" href="tracker.css" />
+
+<script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  const autoEntry  = debounce(saveEntry,       1500);
+  const autoConfig = debounce(saveCycleConfig, 1000);
+
+  // Campos de configuración del ciclo
+  ['last-period-date','cycle-length','period-length','felt-phase'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.addEventListener('input', autoConfig); el.addEventListener('change', autoConfig); }
+  });
+
+  // Notas del día
+  const notes = document.getElementById('period-notes');
+  if (notes) notes.addEventListener('input', autoEntry);
+
+  // Fase percibida, flujo y síntomas — parchear funciones
+  const _origPhase = window.selectPerceivedPhase;
+  if (typeof _origPhase === 'function') {
+    window.selectPerceivedPhase = function(p) { _origPhase(p); autoEntry(); };
+  }
+  const _origFlow = window.selectFlow;
+  if (typeof _origFlow === 'function') {
+    window.selectFlow = function(v) { _origFlow(v); autoEntry(); };
+  }
+  const _origToggleSym = window.toggleSymptom;
+  if (typeof _origToggleSym === 'function') {
+    window.toggleSymptom = function(s) { _origToggleSym(s); autoEntry(); };
+  }
+  const _origSetLikert = window.setLikert;
+  if (typeof _origSetLikert === 'function') {
+    window.setLikert = function(k, v) { _origSetLikert(k, v); autoEntry(); };
+  }
+})();
+</script>
+
   <script>window.PAGE_FILES = {period_data:"data/period.json",period_config:"data/period_config.json"};</script>
   <script src="github-sync.js"></script>
 </body>

@@ -913,6 +913,44 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+
+<script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  const autoMov  = debounce(function() {
+    if (typeof saveMovement === 'function') saveMovement();
+  }, 1500);
+  const autoBudget = debounce(saveBudget, 1500);
+  const autoProj   = debounce(saveProjection, 1500);
+
+  // Campos de movimiento
+  ['mov-desc','mov-amount','mov-date','mov-cat'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoMov);
+  });
+
+  // Campos de proyección
+  ['proj-weeks','proj-rate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoProj);
+  });
+
+  // Agregar / eliminar movimiento
+  const _origAdd = window.addMovement;
+  if (typeof _origAdd === 'function') {
+    window.addMovement = function() { _origAdd(); };
+    // addMovement ya llama saveToGitHub internamente → OK
+  }
+  const _origDel = window.deleteMovement;
+  if (typeof _origDel === 'function') {
+    window.deleteMovement = function(i) { _origDel(i); };
+  }
+})();
+</script>
+
   <script>window.PAGE_FILES = {finance_movements:"data/finance.json",finance_budget:"data/finance_budget.json",finance_projection:"data/finance_projection.json"};</script>
   <script src="github-sync.js"></script>
 </body>

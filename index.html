@@ -920,8 +920,8 @@
         Descarga todos tus registros para análisis con IA.
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn-guardar" onclick="exportCSV()">↓ exportar CSV</button>
-        <button class="btn-guardar" onclick="exportJSON()">↓ exportar JSON</button>
+        <button class="btn-guardar" id="btn-export-csv" onclick="exportCSV()">↓ exportar CSV</button>
+        <button class="btn-guardar" id="btn-export-json" onclick="exportJSON()">↓ exportar JSON</button>
       </div>
     </div>
   </div>
@@ -1354,34 +1354,105 @@ if (todayEntry) {
 if (config.token) syncFromGitHub();
 
 // ── EXPORT ──
-function getAllData() {
-  const keys = [
-    'tracker_diary', 'tracker_tasks', 'tracker_sleep', 'tracker_exercise',
-    'tracker_study', 'tracker_chess', 'food_data', 'finance_movements',
-    'annual_habits_data', 'annual_done', 'lists_data', 'annual_plan_overrides',
-    'psic_curriculum', 'cal_events', 'finance_budget', 'finance_projection',
-    'food_data', 'period_data', 'period_config', 'tracker_habits_data', 'tracker_habits_config'
-  ];
+// Mapa completo lsKey → archivo GitHub
+const ALL_FILES_MAP = {
+  tracker_diary:         'data/diary.json',
+  tracker_tasks:         'data/tasks.json',
+  tracker_sleep:         'data/sleep.json',
+  tracker_exercise:      'data/exercise.json',
+  tracker_habits_config: 'data/habits_config.json',
+  tracker_habits_data:   'data/habits_data.json',
+  tracker_routines:      'data/routines.json',
+  tracker_study:         'data/study.json',
+  food_data:             'data/food.json',
+  food_diet:             'data/food_diet.json',
+  finance_movements:     'data/finance.json',
+  finance_budget:        'data/finance_budget.json',
+  finance_projection:    'data/finance_projection.json',
+  tracker_chess:         'data/chess.json',
+  annual_habits_data:    'data/annual_habits.json',
+  annual_habits_config:  'data/annual_habits_config.json',
+  period_data:           'data/period.json',
+  period_config:         'data/period_config.json',
+  lists_config:          'data/lists_config.json',
+  lists_data:            'data/lists_data.json',
+  cal_events:            'data/cal_events.json',
+};
+
+function getLocalData() {
   const all = {};
-  keys.forEach(k => {
+  Object.keys(ALL_FILES_MAP).forEach(k => {
     try { const v = localStorage.getItem(k); if (v) all[k] = JSON.parse(v); } catch(e) {}
   });
   return all;
 }
 
-function exportJSON() {
-  const data = getAllData();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `mi_tracker_${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+// Muestra el estado en los botones de export
+function setExportStatus(msg, busy = false) {
+  ['btn-export-csv','btn-export-json'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.disabled = busy; if (busy) el.textContent = msg; }
+  });
+}
+function resetExportBtns() {
+  const csv  = document.getElementById('btn-export-csv');
+  const json = document.getElementById('btn-export-json');
+  if (csv)  { csv.disabled  = false; csv.textContent  = '↓ exportar CSV'; }
+  if (json) { json.disabled = false; json.textContent = '↓ exportar JSON'; }
 }
 
-function exportCSV() {
-  const data  = getAllData();
+// Fetch todos los archivos desde GitHub y mezcla con localStorage
+async function fetchAllFromGitHub() {
+  const token = config.token;
+  if (!token) return getLocalData(); // sin token, usar solo local
+
+  const data  = getLocalData(); // base: datos locales
+  const repo  = REPO;
+  let fetched = 0;
+
+  await Promise.all(Object.entries(ALL_FILES_MAP).map(async ([lsKey, ghPath]) => {
+    try {
+      const url = `https://api.github.com/repos/${repo}/contents/${ghPath}`;
+      const r   = await fetch(url, { headers: { Authorization: `token ${token}` } });
+      if (!r.ok) return;
+      const j    = await r.json();
+      const raw  = JSON.parse(decodeURIComponent(escape(atob(j.content))));
+      // Mezclar: preferir GitHub (más actualizado) sobre local
+      data[lsKey] = raw;
+      // También actualizar localStorage con los datos frescos
+      localStorage.setItem(lsKey, JSON.stringify(raw));
+      fetched++;
+    } catch(e) { /* archivo no existe aún, ignorar */ }
+  }));
+
+  console.log(`✓ ${fetched} archivos cargados desde GitHub`);
+  return data;
+}
+
+async function exportJSON() {
+  setExportStatus('↻ cargando...', true);
+  try {
+    const data = await fetchAllFromGitHub();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `mi_tracker_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } finally {
+    resetExportBtns();
+  }
+}
+
+async function exportCSV() {
+  setExportStatus('↻ cargando...', true);
+  let data;
+  try {
+    data = await fetchAllFromGitHub();
+  } finally {
+    resetExportBtns();
+  }
   const lines = [];
 
   // DIARY
@@ -1489,6 +1560,31 @@ function exportCSV() {
   a.click();
   URL.revokeObjectURL(url);
 }
+</script>
+
+
+<script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  const autoDay = debounce(saveDay, 1500);
+
+  // Sliders de ánimo, energía, reactividad
+  ['mood-slider','energy-slider','react-slider'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoDay);
+  });
+
+  // Journaling y etiqueta
+  ['journal-text','journal-tag'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoDay);
+  });
+
+  // Tareas: agregar/completar/eliminar ya llaman saveTasks → OK
+})();
 </script>
 
   <script>window.PAGE_FILES = {tracker_diary:"data/diary.json",tracker_tasks:"data/tasks.json"};</script>

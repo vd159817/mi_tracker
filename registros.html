@@ -931,6 +931,27 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+
+<script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  const autoChess = debounce(saveChessEntry, 1500);
+
+  // Campos de ajedrez
+  ['chess-result','chess-color','chess-mode','chess-elo-before',
+   'chess-elo-after','chess-opening','chess-blunders','chess-mistakes',
+   'chess-inaccuracies','chess-pgn','chess-platform','chess-date'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.addEventListener('input', autoChess); el.addEventListener('change', autoChess); }
+  });
+
+  // Hábito anual marcado ya llama saveHabitData → OK (tiene su propio save inline)
+})();
+</script>
+
   <script>window.PAGE_FILES = {tracker_chess:"data/chess.json",annual_habits_config:"data/annual_habits_config.json",annual_habits_data:"data/annual_habits.json"};</script>
   <script src="github-sync.js"></script>
 </body>

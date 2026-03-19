@@ -823,6 +823,42 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+
+<script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  const autoDay = debounce(saveDay, 1500);
+
+  // Marcar alimento de dieta base ya llama updateSummary → disparar saveDay también
+  const _origToggleFood = window.toggleFood;
+  if (typeof _origToggleFood === 'function') {
+    window.toggleFood = function(sec, i) {
+      _origToggleFood(sec, i);
+      autoDay();
+    };
+  }
+
+  // Agregar extra ya llama addExtra → después de renderExtras disparar saveDay
+  const _origAddExtra = window.addExtra;
+  if (typeof _origAddExtra === 'function') {
+    window.addExtra = function() {
+      _origAddExtra();
+      autoDay();
+    };
+  }
+  const _origRemoveExtra = window.removeExtra;
+  if (typeof _origRemoveExtra === 'function') {
+    window.removeExtra = function(i) {
+      _origRemoveExtra(i);
+      autoDay();
+    };
+  }
+})();
+</script>
+
   <script>window.PAGE_FILES = {food_data:"data/food.json",food_diet:"data/food_diet.json"};</script>
   <script src="github-sync.js"></script>
 </body>
