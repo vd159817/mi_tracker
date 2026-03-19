@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "date": "2026-03-18",
+    "sleepHour": 10,
+    "wakeHour": 13,
+    "hours": 3,
+    "siesta": 0,
+    "quality": null,
+    "conciliation": null,
+    "wakeups": null,
+    "wakeFeeling": null,
+    "dreamType": null,
+    "dreamText": "",
+    "obs": ""
+  },
+  {
+    "date": "2026-03-19",
+    "sleepHour": 10,
+    "wakeHour": 9,
+    "hours": 23,
+    "siesta": 0,
+    "quality": null,
+    "conciliation": null,
+    "wakeups": null,
+    "wakeFeeling": null,
+    "dreamType": null,
+    "dreamText": "",
+    "obs": ""
+  }
+]
