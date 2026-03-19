@@ -144,6 +144,33 @@
     .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; color: var(--text); }
     .nav-sub { font-size: 10px; color: var(--text3); }
 
+    /* ── AUTOCOMPLETE ── */
+    .ac-wrap { position: relative; margin-bottom: 8px; }
+    .ac-wrap label { font-size: 9px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 3px; }
+    .ac-wrap input { width: 100%; }
+    .ac-dropdown {
+      display: none; position: absolute; top: 100%; left: 0; right: 0;
+      background: var(--surface); border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm); z-index: 200;
+      max-height: 240px; overflow-y: auto;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.14);
+    }
+    .ac-dropdown.open { display: block; }
+    .ac-item {
+      padding: 9px 12px; cursor: pointer; font-size: 12px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; transition: background 0.1s;
+    }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover, .ac-item.ac-active { background: var(--surface2); }
+    .ac-item-left { flex: 1; min-width: 0; }
+    .ac-item-name { font-size: 12px; color: var(--text); }
+    .ac-item-name mark { background: none; color: var(--accent); font-weight: 600; }
+    .ac-item-porcion { font-size: 9px; color: var(--text3); margin-top: 1px; }
+    .ac-item-kcal { font-size: 11px; color: var(--cal); white-space: nowrap; flex-shrink: 0; }
+    .ac-porcion-label { font-size: 9px; color: var(--text3); font-style: italic; min-height: 14px; }
+
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
@@ -168,6 +195,7 @@
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
   </style>
+  <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
 <!-- MENU OVERLAY -->
@@ -191,21 +219,9 @@
     <div class="menu-section-label">registros</div>
     <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
     <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">planeación</div>
-    <a class="menu-link" href="planeacion.html"><span class="menu-link-num">07</span><span class="menu-link-text">planeación</span><span class="menu-link-sub">década · calendario · mallas</span></a>
-    <a class="menu-link" href="planeacion_anual.html"><span class="menu-link-num">08</span><span class="menu-link-text">planeación anual</span><span class="menu-link-sub">tabla 2026 · progreso</span></a>
-    <a class="menu-link" href="malla_psic.html"><span class="menu-link-num">09</span><span class="menu-link-text">malla psicología</span><span class="menu-link-sub">UAS · calculadora</span></a>
-    <a class="menu-link" href="malla_software.html"><span class="menu-link-num">10</span><span class="menu-link-text">malla software</span><span class="menu-link-sub">pendiente de iniciar</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">listas</div>
-    <a class="menu-link" href="listas.html"><span class="menu-link-num">11</span><span class="menu-link-text">listas</span><span class="menu-link-sub">películas · podcasts · temas</span></a>
+    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
   </div>
 </div>
-
-
 
 <!-- EDITOR MODAL -->
 <div class="modal-overlay" id="editor-modal">
@@ -217,8 +233,7 @@
     <div id="editor-body"></div>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeEditor()">cancelar</button>
-      <button class="btn-primary" onclick="saveDiet()">guardar dieta</button>
-    </div>
+          </div>
   </div>
 </div>
 
@@ -297,10 +312,17 @@
   <div>
     <div class="section-label">extras del día</div>
     <div class="card">
+      <!-- PORCIÓN seleccionada -->
+      <div class="ac-porcion-label" id="ac-porcion-label"></div>
       <div class="extra-form">
-        <div class="extra-form-col name-col">
+        <div class="extra-form-col name-col" style="position:relative; flex:1; min-width:160px;">
           <label>alimento</label>
-          <input type="text" id="ex-name" placeholder="Coca-Cola, churros..." />
+          <input type="text" id="ex-name" placeholder="busca: coca-cola, atún, taco..."
+            autocomplete="off"
+            oninput="acInput(this.value)"
+            onkeydown="acKeydown(event)"
+            onblur="setTimeout(acClose,150)" />
+          <div class="ac-dropdown" id="ac-dropdown"></div>
         </div>
         <div class="extra-form-col">
           <label>kcal</label>
@@ -321,10 +343,7 @@
         <button class="icon-btn" onclick="addExtra()" title="agregar" style="width:auto; padding:0 10px; align-self:flex-end; height:34px; font-size:12px;">+ agregar</button>
       </div>
       <div class="extra-list" id="extra-list"></div>
-      <div style="margin-top:10px; display:flex; justify-content:flex-end;">
-        <button class="btn-primary" onclick="saveDay()">guardar día</button>
-      </div>
-      <div class="save-status hidden" id="save-status"></div>
+
     </div>
   </div>
 
@@ -340,9 +359,6 @@
   </div>
 
   <!-- NAV -->
-  <div class="nav-grid">
-    <a class="nav-card" href="hoy.html">
-      <div class="nav-num">←</div>
       <div class="nav-title">hoy</div>
       <div class="nav-sub">registro diario</div>
     </a>
@@ -491,6 +507,88 @@ function toggleFood(section, idx) {
 }
 
 // ── EXTRAS ──
+// ── BASE DE DATOS DE ALIMENTOS (autocomplete) ──────────────────────────────
+const FOOD_DB = [{"nombre": "Coca-Cola 355ml (lata)", "kcal": 150, "prot": 0, "carb": 39, "fat": 0, "porcion": "355ml"}, {"nombre": "Coca-Cola 600ml", "kcal": 254, "prot": 0, "carb": 66, "fat": 0, "porcion": "600ml"}, {"nombre": "Coca-Cola 1L", "kcal": 420, "prot": 0, "carb": 109, "fat": 0, "porcion": "1L"}, {"nombre": "Coca-Cola 2L", "kcal": 840, "prot": 0, "carb": 218, "fat": 0, "porcion": "2L"}, {"nombre": "Coca-Cola Zero 355ml", "kcal": 0, "prot": 0, "carb": 0, "fat": 0, "porcion": "355ml"}, {"nombre": "Agua natural 500ml", "kcal": 0, "prot": 0, "carb": 0, "fat": 0, "porcion": "500ml"}, {"nombre": "Agua de jamaica (vaso)", "kcal": 45, "prot": 0, "carb": 11, "fat": 0, "porcion": "250ml"}, {"nombre": "Agua de limón (vaso)", "kcal": 40, "prot": 0, "carb": 10, "fat": 0, "porcion": "250ml"}, {"nombre": "Leche entera (vaso)", "kcal": 149, "prot": 8, "carb": 11, "fat": 8, "porcion": "240ml"}, {"nombre": "Leche descremada (vaso)", "kcal": 83, "prot": 8, "carb": 12, "fat": 0, "porcion": "240ml"}, {"nombre": "Café negro", "kcal": 2, "prot": 0, "carb": 0, "fat": 0, "porcion": "taza"}, {"nombre": "Café con leche", "kcal": 80, "prot": 4, "carb": 8, "fat": 3, "porcion": "taza"}, {"nombre": "Jugo de naranja natural", "kcal": 112, "prot": 2, "carb": 26, "fat": 0, "porcion": "240ml"}, {"nombre": "Limonada preparada", "kcal": 100, "prot": 0, "carb": 25, "fat": 0, "porcion": "500ml"}, {"nombre": "Churritos Rufles 40g", "kcal": 200, "prot": 2, "carb": 26, "fat": 10, "porcion": "40g"}, {"nombre": "Sabritas (bolsa 45g)", "kcal": 240, "prot": 3, "carb": 24, "fat": 15, "porcion": "45g"}, {"nombre": "Doritos (bolsa 45g)", "kcal": 230, "prot": 3, "carb": 28, "fat": 12, "porcion": "45g"}, {"nombre": "Cheetos (bolsa 45g)", "kcal": 250, "prot": 4, "carb": 26, "fat": 15, "porcion": "45g"}, {"nombre": "Palomitas preparadas (taza)", "kcal": 130, "prot": 2, "carb": 14, "fat": 8, "porcion": "taza"}, {"nombre": "Gansito", "kcal": 340, "prot": 4, "carb": 50, "fat": 14, "porcion": "1 pieza"}, {"nombre": "Pingüino", "kcal": 290, "prot": 3, "carb": 42, "fat": 12, "porcion": "1 pieza"}, {"nombre": "Chocorroles", "kcal": 320, "prot": 4, "carb": 48, "fat": 13, "porcion": "1 pieza"}, {"nombre": "Galletas Marías (4 piezas)", "kcal": 120, "prot": 2, "carb": 22, "fat": 3, "porcion": "4 piezas"}, {"nombre": "Tortilla tostada (1 pieza)", "kcal": 60, "prot": 1, "carb": 12, "fat": 1, "porcion": "1 pieza"}, {"nombre": "Limón (1 pieza)", "kcal": 11, "prot": 0, "carb": 4, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Manzana (1 mediana)", "kcal": 95, "prot": 0, "carb": 25, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Plátano (1 mediano)", "kcal": 105, "prot": 1, "carb": 27, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Naranja (1 mediana)", "kcal": 62, "prot": 1, "carb": 15, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Mango (1 taza)", "kcal": 99, "prot": 1, "carb": 25, "fat": 1, "porcion": "1 taza"}, {"nombre": "Papaya (1 taza)", "kcal": 62, "prot": 1, "carb": 16, "fat": 0, "porcion": "1 taza"}, {"nombre": "Sandía (1 taza)", "kcal": 46, "prot": 1, "carb": 12, "fat": 0, "porcion": "1 taza"}, {"nombre": "Melón (1 taza)", "kcal": 54, "prot": 1, "carb": 13, "fat": 0, "porcion": "1 taza"}, {"nombre": "Uvas (1 taza)", "kcal": 104, "prot": 1, "carb": 27, "fat": 0, "porcion": "1 taza"}, {"nombre": "Fresa (1 taza)", "kcal": 49, "prot": 1, "carb": 12, "fat": 0, "porcion": "1 taza"}, {"nombre": "Guayaba (1 pieza)", "kcal": 37, "prot": 1, "carb": 8, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Jícama (1 taza)", "kcal": 46, "prot": 1, "carb": 11, "fat": 0, "porcion": "1 taza"}, {"nombre": "Tamarindo (1 pieza)", "kcal": 48, "prot": 1, "carb": 12, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Tuna (1 pieza)", "kcal": 42, "prot": 1, "carb": 10, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Durazno (1 pieza)", "kcal": 59, "prot": 1, "carb": 14, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Lechuga (1 taza)", "kcal": 10, "prot": 1, "carb": 2, "fat": 0, "porcion": "1 taza"}, {"nombre": "Pepino (1 taza)", "kcal": 16, "prot": 1, "carb": 4, "fat": 0, "porcion": "1 taza"}, {"nombre": "Jitomate (1 mediano)", "kcal": 22, "prot": 1, "carb": 5, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Cebolla (1/4 taza)", "kcal": 16, "prot": 0, "carb": 4, "fat": 0, "porcion": "1/4 taza"}, {"nombre": "Chile jalapeño (1 pieza)", "kcal": 4, "prot": 0, "carb": 1, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Nopal (1 taza cocido)", "kcal": 22, "prot": 2, "carb": 5, "fat": 0, "porcion": "1 taza"}, {"nombre": "Zanahoria (1 mediana)", "kcal": 25, "prot": 1, "carb": 6, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Calabaza (1 taza)", "kcal": 18, "prot": 1, "carb": 4, "fat": 0, "porcion": "1 taza"}, {"nombre": "Espinaca (1 taza)", "kcal": 7, "prot": 1, "carb": 1, "fat": 0, "porcion": "1 taza"}, {"nombre": "Brócoli (1 taza)", "kcal": 31, "prot": 3, "carb": 6, "fat": 0, "porcion": "1 taza"}, {"nombre": "Aguacate (1/2 pieza)", "kcal": 120, "prot": 2, "carb": 6, "fat": 11, "porcion": "1/2 pieza"}, {"nombre": "Atún en lata (1 lata 140g)", "kcal": 130, "prot": 29, "carb": 0, "fat": 1, "porcion": "140g"}, {"nombre": "Atún en aceite (1 lata)", "kcal": 200, "prot": 27, "carb": 0, "fat": 10, "porcion": "140g"}, {"nombre": "Pollo a la plancha (100g)", "kcal": 165, "prot": 31, "carb": 0, "fat": 4, "porcion": "100g"}, {"nombre": "Pollo frito (100g)", "kcal": 246, "prot": 28, "carb": 8, "fat": 12, "porcion": "100g"}, {"nombre": "Carne de res molida (100g)", "kcal": 215, "prot": 26, "carb": 0, "fat": 12, "porcion": "100g"}, {"nombre": "Huevo entero (1 pieza)", "kcal": 78, "prot": 6, "carb": 1, "fat": 5, "porcion": "1 pieza"}, {"nombre": "Clara de huevo (1 pieza)", "kcal": 17, "prot": 4, "carb": 0, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Jamón de pavo (2 rebanadas)", "kcal": 60, "prot": 10, "carb": 1, "fat": 2, "porcion": "2 rebanas"}, {"nombre": "Chorizo (50g)", "kcal": 200, "prot": 9, "carb": 2, "fat": 18, "porcion": "50g"}, {"nombre": "Sardinas en salsa (1 lata)", "kcal": 190, "prot": 22, "carb": 0, "fat": 11, "porcion": "125g"}, {"nombre": "Queso Oaxaca (30g)", "kcal": 100, "prot": 7, "carb": 0, "fat": 8, "porcion": "30g"}, {"nombre": "Queso panela (30g)", "kcal": 75, "prot": 7, "carb": 1, "fat": 5, "porcion": "30g"}, {"nombre": "Queso fresco (30g)", "kcal": 74, "prot": 6, "carb": 1, "fat": 5, "porcion": "30g"}, {"nombre": "Tripitas de res (100g)", "kcal": 185, "prot": 18, "carb": 0, "fat": 12, "porcion": "100g"}, {"nombre": "Tacos de tripitas (2 tacos)", "kcal": 320, "prot": 18, "carb": 24, "fat": 16, "porcion": "2 tacos"}, {"nombre": "Hígado de res (100g)", "kcal": 135, "prot": 21, "carb": 4, "fat": 4, "porcion": "100g"}, {"nombre": "Tortilla de maíz (1 pieza)", "kcal": 52, "prot": 1, "carb": 11, "fat": 1, "porcion": "1 pieza"}, {"nombre": "Tortilla de harina (1 pieza)", "kcal": 146, "prot": 4, "carb": 24, "fat": 4, "porcion": "1 pieza"}, {"nombre": "Frijoles negros cocidos (1/2 taza)", "kcal": 114, "prot": 8, "carb": 20, "fat": 0, "porcion": "1/2 taza"}, {"nombre": "Frijoles refritos (1/2 taza)", "kcal": 130, "prot": 7, "carb": 19, "fat": 3, "porcion": "1/2 taza"}, {"nombre": "Arroz blanco cocido (1/2 taza)", "kcal": 103, "prot": 2, "carb": 22, "fat": 0, "porcion": "1/2 taza"}, {"nombre": "Arroz a la mexicana (1/2 taza)", "kcal": 120, "prot": 2, "carb": 24, "fat": 2, "porcion": "1/2 taza"}, {"nombre": "Papa hervida (1 mediana)", "kcal": 110, "prot": 3, "carb": 26, "fat": 0, "porcion": "1 pieza"}, {"nombre": "Papas a la francesa (porción)", "kcal": 365, "prot": 4, "carb": 48, "fat": 18, "porcion": "150g"}, {"nombre": "Taco de canasta", "kcal": 180, "prot": 5, "carb": 25, "fat": 7, "porcion": "1 taco"}, {"nombre": "Taco al pastor", "kcal": 210, "prot": 15, "carb": 20, "fat": 8, "porcion": "1 taco"}, {"nombre": "Taco de carne asada", "kcal": 225, "prot": 18, "carb": 18, "fat": 9, "porcion": "1 taco"}, {"nombre": "Taco de pollo", "kcal": 190, "prot": 16, "carb": 18, "fat": 6, "porcion": "1 taco"}, {"nombre": "Quesadilla (1 pieza)", "kcal": 300, "prot": 14, "carb": 32, "fat": 14, "porcion": "1 pieza"}, {"nombre": "Enchiladas rojas (2 piezas)", "kcal": 360, "prot": 16, "carb": 38, "fat": 16, "porcion": "2 piezas"}, {"nombre": "Tamale de rajas (1 pieza)", "kcal": 285, "prot": 7, "carb": 38, "fat": 12, "porcion": "1 pieza"}, {"nombre": "Tamale de pollo (1 pieza)", "kcal": 305, "prot": 13, "carb": 38, "fat": 12, "porcion": "1 pieza"}, {"nombre": "Pozole (1 tazón)", "kcal": 350, "prot": 28, "carb": 30, "fat": 10, "porcion": "1 tazón"}, {"nombre": "Sopa de fideo", "kcal": 220, "prot": 6, "carb": 36, "fat": 6, "porcion": "1 tazón"}, {"nombre": "Caldo de pollo (1 tazón)", "kcal": 180, "prot": 18, "carb": 10, "fat": 6, "porcion": "1 tazón"}, {"nombre": "Guacamole (2 cucharadas)", "kcal": 50, "prot": 1, "carb": 3, "fat": 5, "porcion": "30g"}, {"nombre": "Salsa verde (2 cucharadas)", "kcal": 10, "prot": 0, "carb": 2, "fat": 0, "porcion": "30g"}, {"nombre": "Crema ácida (1 cucharada)", "kcal": 60, "prot": 1, "carb": 1, "fat": 6, "porcion": "15g"}, {"nombre": "Chile relleno (1 pieza)", "kcal": 280, "prot": 14, "carb": 18, "fat": 18, "porcion": "1 pieza"}, {"nombre": "Sope (1 pieza)", "kcal": 260, "prot": 10, "carb": 34, "fat": 10, "porcion": "1 pieza"}, {"nombre": "Tlayuda (1 pieza grande)", "kcal": 480, "prot": 20, "carb": 58, "fat": 18, "porcion": "1 pieza"}, {"nombre": "Chilaquiles (1 porción)", "kcal": 420, "prot": 16, "carb": 44, "fat": 20, "porcion": "1 porción"}, {"nombre": "Pan de muerto (1 pieza)", "kcal": 320, "prot": 6, "carb": 54, "fat": 9, "porcion": "1 pieza"}, {"nombre": "Torta de jamón", "kcal": 480, "prot": 22, "carb": 50, "fat": 20, "porcion": "1 pieza"}, {"nombre": "Cemita", "kcal": 560, "prot": 28, "carb": 52, "fat": 24, "porcion": "1 pieza"}, {"nombre": "Elote con crema y queso", "kcal": 220, "prot": 6, "carb": 30, "fat": 10, "porcion": "1 pieza"}, {"nombre": "Esquite (vaso)", "kcal": 180, "prot": 5, "carb": 28, "fat": 7, "porcion": "1 vaso"}, {"nombre": "Caldo de res (1 tazón)", "kcal": 260, "prot": 22, "carb": 18, "fat": 10, "porcion": "1 tazón"}, {"nombre": "Hamburguesa sencilla (casera)", "kcal": 350, "prot": 20, "carb": 30, "fat": 15, "porcion": "1 pieza"}, {"nombre": "Hamburguesa doble (casera)", "kcal": 550, "prot": 36, "carb": 32, "fat": 28, "porcion": "1 pieza"}, {"nombre": "Hamburguesa Big Mac", "kcal": 563, "prot": 27, "carb": 44, "fat": 33, "porcion": "1 pieza"}, {"nombre": "Hamburguesa McDonald's sencilla", "kcal": 250, "prot": 12, "carb": 31, "fat": 9, "porcion": "1 pieza"}, {"nombre": "Hamburguesa Whopper BK", "kcal": 650, "prot": 28, "carb": 49, "fat": 40, "porcion": "1 pieza"}, {"nombre": "Pan de hamburguesa", "kcal": 120, "prot": 4, "carb": 22, "fat": 2, "porcion": "1 pieza"}, {"nombre": "Carne para hamburguesa (100g)", "kcal": 250, "prot": 26, "carb": 0, "fat": 16, "porcion": "100g"}, {"nombre": "Chow mein (1 porción)", "kcal": 400, "prot": 16, "carb": 50, "fat": 16, "porcion": "1 porción"}, {"nombre": "Arroz frito chino (1 porción)", "kcal": 340, "prot": 12, "carb": 52, "fat": 10, "porcion": "1 porción"}, {"nombre": "Pollo general Tso (1 porción)", "kcal": 480, "prot": 25, "carb": 48, "fat": 22, "porcion": "1 porción"}, {"nombre": "Pollo agridulce (1 porción)", "kcal": 420, "prot": 22, "carb": 46, "fat": 16, "porcion": "1 porción"}, {"nombre": "Camarones al ajo (1 porción)", "kcal": 260, "prot": 28, "carb": 8, "fat": 14, "porcion": "1 porción"}, {"nombre": "Wonton (4 piezas)", "kcal": 200, "prot": 10, "carb": 26, "fat": 6, "porcion": "4 piezas"}, {"nombre": "Rollito primavera (1 pieza)", "kcal": 130, "prot": 4, "carb": 18, "fat": 5, "porcion": "1 pieza"}, {"nombre": "Nigiri de salmón (2 piezas)", "kcal": 130, "prot": 10, "carb": 18, "fat": 2, "porcion": "2 piezas"}, {"nombre": "Nigiri de atún (2 piezas)", "kcal": 110, "prot": 12, "carb": 16, "fat": 1, "porcion": "2 piezas"}, {"nombre": "Maki roll (6 piezas)", "kcal": 200, "prot": 8, "carb": 30, "fat": 5, "porcion": "6 piezas"}, {"nombre": "California roll (6 piezas)", "kcal": 255, "prot": 9, "carb": 38, "fat": 7, "porcion": "6 piezas"}, {"nombre": "Roll Filadelfia (6 piezas)", "kcal": 290, "prot": 12, "carb": 34, "fat": 12, "porcion": "6 piezas"}, {"nombre": "Roll spicy tuna (6 piezas)", "kcal": 260, "prot": 12, "carb": 32, "fat": 9, "porcion": "6 piezas"}, {"nombre": "Sashimi de salmón (3 piezas)", "kcal": 105, "prot": 16, "carb": 0, "fat": 4, "porcion": "3 piezas"}, {"nombre": "Edamame (1/2 taza)", "kcal": 95, "prot": 8, "carb": 8, "fat": 4, "porcion": "1/2 taza"}, {"nombre": "Sopa miso", "kcal": 36, "prot": 2, "carb": 5, "fat": 1, "porcion": "1 tazón"}, {"nombre": "Pan blanco (1 rebanada)", "kcal": 79, "prot": 3, "carb": 15, "fat": 1, "porcion": "1 rebanada"}, {"nombre": "Pan integral (1 rebanada)", "kcal": 69, "prot": 4, "carb": 12, "fat": 1, "porcion": "1 rebanada"}, {"nombre": "Bolillo", "kcal": 200, "prot": 6, "carb": 40, "fat": 2, "porcion": "1 pieza"}, {"nombre": "Telera", "kcal": 220, "prot": 7, "carb": 44, "fat": 2, "porcion": "1 pieza"}, {"nombre": "Avena cocida (1/2 taza)", "kcal": 83, "prot": 3, "carb": 14, "fat": 2, "porcion": "1/2 taza"}, {"nombre": "Cereal Zucaritas (30g)", "kcal": 110, "prot": 1, "carb": 26, "fat": 0, "porcion": "30g"}, {"nombre": "Pan dulce concha", "kcal": 320, "prot": 6, "carb": 52, "fat": 10, "porcion": "1 pieza"}, {"nombre": "Dona glaseada", "kcal": 270, "prot": 3, "carb": 35, "fat": 13, "porcion": "1 pieza"}, {"nombre": "Yogur natural (150g)", "kcal": 90, "prot": 6, "carb": 12, "fat": 2, "porcion": "150g"}, {"nombre": "Yogur griego (150g)", "kcal": 100, "prot": 10, "carb": 8, "fat": 3, "porcion": "150g"}, {"nombre": "Mantequilla (1 cucharadita)", "kcal": 35, "prot": 0, "carb": 0, "fat": 4, "porcion": "5g"}, {"nombre": "Crema Lala (1 cucharada)", "kcal": 55, "prot": 1, "carb": 1, "fat": 6, "porcion": "15g"}, {"nombre": "Aceite vegetal (1 cucharada)", "kcal": 120, "prot": 0, "carb": 0, "fat": 14, "porcion": "15ml"}, {"nombre": "Aceite de oliva (1 cucharada)", "kcal": 119, "prot": 0, "carb": 0, "fat": 14, "porcion": "15ml"}, {"nombre": "Lentejas cocidas (1/2 taza)", "kcal": 115, "prot": 9, "carb": 20, "fat": 0, "porcion": "1/2 taza"}, {"nombre": "Garbanzos cocidos (1/2 taza)", "kcal": 135, "prot": 7, "carb": 22, "fat": 2, "porcion": "1/2 taza"}, {"nombre": "Habas cocidas (1/2 taza)", "kcal": 94, "prot": 7, "carb": 17, "fat": 0, "porcion": "1/2 taza"}, {"nombre": "Helado (1 bola)", "kcal": 140, "prot": 2, "carb": 18, "fat": 7, "porcion": "100g"}, {"nombre": "Flan (1 porción)", "kcal": 220, "prot": 7, "carb": 30, "fat": 8, "porcion": "1 porción"}, {"nombre": "Arroz con leche (1 taza)", "kcal": 240, "prot": 6, "carb": 42, "fat": 5, "porcion": "1 taza"}, {"nombre": "Pastel de chocolate (1 rebanada)", "kcal": 350, "prot": 5, "carb": 50, "fat": 15, "porcion": "1 rebanada"}, {"nombre": "Nieve de vainilla (1 bola)", "kcal": 100, "prot": 2, "carb": 18, "fat": 3, "porcion": "80g"}, {"nombre": "Gelatina (1 taza)", "kcal": 70, "prot": 2, "carb": 17, "fat": 0, "porcion": "1 taza"}];
+
+let acIndex = -1;
+let acResults = [];
+
+function acInput(val) {
+  const q = val.trim().toLowerCase();
+  const dd = document.getElementById('ac-dropdown');
+  if (!q || q.length < 2) { dd.classList.remove('open'); acResults = []; return; }
+
+  // Buscar: primero coincidencias que empiecen con el término, luego las que lo contienen
+  const starts   = FOOD_DB.filter(f => f.nombre.toLowerCase().startsWith(q));
+  const contains = FOOD_DB.filter(f => !f.nombre.toLowerCase().startsWith(q) && f.nombre.toLowerCase().includes(q));
+  acResults = [...starts, ...contains].slice(0, 10);
+
+  if (!acResults.length) { dd.classList.remove('open'); return; }
+
+  acIndex = -1;
+  dd.innerHTML = acResults.map((f, i) => {
+    // Resaltar el término buscado
+    const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    const highlighted = f.nombre.replace(re, '<mark>$1</mark>');
+    return `<div class="ac-item" id="ac-item-${i}" onmousedown="acSelect(${i})">
+      <div class="ac-item-left">
+        <div class="ac-item-name">${highlighted}</div>
+        <div class="ac-item-porcion">${f.porcion}</div>
+      </div>
+      <div class="ac-item-kcal">${f.kcal} kcal</div>
+    </div>`;
+  }).join('');
+  dd.classList.add('open');
+}
+
+function acKeydown(e) {
+  const dd = document.getElementById('ac-dropdown');
+  if (!dd.classList.contains('open')) {
+    if (e.key === 'Enter') { addExtra(); return; }
+    return;
+  }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    acIndex = Math.min(acIndex + 1, acResults.length - 1);
+    acHighlight();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    acIndex = Math.max(acIndex - 1, -1);
+    acHighlight();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (acIndex >= 0) acSelect(acIndex);
+    else { acClose(); addExtra(); }
+  } else if (e.key === 'Escape') {
+    acClose();
+  }
+}
+
+function acHighlight() {
+  document.querySelectorAll('.ac-item').forEach((el, i) => {
+    el.classList.toggle('ac-active', i === acIndex);
+  });
+}
+
+function acSelect(i) {
+  const food = acResults[i];
+  if (!food) return;
+  document.getElementById('ex-name').value = food.nombre;
+  document.getElementById('ex-kcal').value = food.kcal;
+  document.getElementById('ex-prot').value = food.prot;
+  document.getElementById('ex-carb').value = food.carb;
+  document.getElementById('ex-fat').value  = food.fat;
+  const pl = document.getElementById('ac-porcion-label');
+  if (pl) pl.textContent = `porción: ${food.porcion}`;
+  acClose();
+}
+
+function acClose() {
+  const dd = document.getElementById('ac-dropdown');
+  if (dd) dd.classList.remove('open');
+  acIndex = -1;
+}
+
 function addExtra() {
   const name = document.getElementById('ex-name').value.trim();
   if (!name) return;
@@ -502,6 +600,9 @@ function addExtra() {
     fat:  parseFloat(document.getElementById('ex-fat').value)  || 0,
   });
   ['ex-name','ex-kcal','ex-prot','ex-carb','ex-fat'].forEach(id => document.getElementById(id).value = '');
+  const pl = document.getElementById('ac-porcion-label');
+  if (pl) pl.textContent = '';
+  acClose();
   renderExtras();
   updateSummary();
 }
@@ -722,5 +823,7 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+  <script>window.PAGE_FILES = {food_data:"data/food.json",food_diet:"data/food_diet.json"};</script>
+  <script src="github-sync.js"></script>
 </body>
 </html>

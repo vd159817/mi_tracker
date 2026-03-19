@@ -149,6 +149,7 @@
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
   </style>
+  <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
 <!-- MENU OVERLAY -->
@@ -172,21 +173,9 @@
     <div class="menu-section-label">registros</div>
     <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
     <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">planeación</div>
-    <a class="menu-link" href="planeacion.html"><span class="menu-link-num">07</span><span class="menu-link-text">planeación</span><span class="menu-link-sub">década · calendario · mallas</span></a>
-    <a class="menu-link" href="planeacion_anual.html"><span class="menu-link-num">08</span><span class="menu-link-text">planeación anual</span><span class="menu-link-sub">tabla 2026 · progreso</span></a>
-    <a class="menu-link" href="malla_psic.html"><span class="menu-link-num">09</span><span class="menu-link-text">malla psicología</span><span class="menu-link-sub">UAS · calculadora</span></a>
-    <a class="menu-link" href="malla_software.html"><span class="menu-link-num">10</span><span class="menu-link-text">malla software</span><span class="menu-link-sub">pendiente de iniciar</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">listas</div>
-    <a class="menu-link" href="listas.html"><span class="menu-link-num">11</span><span class="menu-link-text">listas</span><span class="menu-link-sub">películas · podcasts · temas</span></a>
+    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
   </div>
 </div>
-
-
 
 <div class="top-bar">
   <div>
@@ -317,18 +306,10 @@
       <div class="save-status hidden" id="curr-status"></div>
     </div>
   </div>
-
-  <div class="nav-grid">
-    <a class="nav-card" href="planeacion.html">
-      <div class="nav-num">←</div>
       <div class="nav-title">planeación</div>
       <div class="nav-sub">volver</div>
     </a>
-    <a class="nav-card" href="malla_software.html">
-      <div class="nav-num">→</div>
-      <div class="nav-title">software</div>
-      <div class="nav-sub">malla de desarrollo de software</div>
-    </a>
+    
   </div>
 
 </div>
@@ -525,5 +506,7 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+  <script>window.PAGE_FILES = {psic_curriculum:"data/malla_psic.json"};</script>
+  <script src="github-sync.js"></script>
 </body>
 </html>

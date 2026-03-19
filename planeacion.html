@@ -224,6 +224,7 @@
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
   </style>
+  <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
 <!-- MENU OVERLAY -->
@@ -247,21 +248,9 @@
     <div class="menu-section-label">registros</div>
     <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
     <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">planeación</div>
-    <a class="menu-link" href="planeacion.html"><span class="menu-link-num">07</span><span class="menu-link-text">planeación</span><span class="menu-link-sub">década · calendario · mallas</span></a>
-    <a class="menu-link" href="planeacion_anual.html"><span class="menu-link-num">08</span><span class="menu-link-text">planeación anual</span><span class="menu-link-sub">tabla 2026 · progreso</span></a>
-    <a class="menu-link" href="malla_psic.html"><span class="menu-link-num">09</span><span class="menu-link-text">malla psicología</span><span class="menu-link-sub">UAS · calculadora</span></a>
-    <a class="menu-link" href="malla_software.html"><span class="menu-link-num">10</span><span class="menu-link-text">malla software</span><span class="menu-link-sub">pendiente de iniciar</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">listas</div>
-    <a class="menu-link" href="listas.html"><span class="menu-link-num">11</span><span class="menu-link-text">listas</span><span class="menu-link-sub">películas · podcasts · temas</span></a>
+    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
   </div>
 </div>
-
-
 
 <!-- DIPLOMA MODALS -->
 <div class="modal-overlay" id="modal-psic">
@@ -374,32 +363,17 @@
   <!-- ══════════════ MALLAS CURRICULARES ══════════════ -->
   <div>
     <div class="section-label">mallas curriculares</div>
-    <div class="nav-grid">
-      <a class="nav-card" href="malla_psic.html">
-        <div class="nav-num" style="color:var(--psic);">◉</div>
         <div class="nav-title">psicología</div>
         <div class="nav-sub">UAS · 43 materias · calculadora de promedio</div>
       </a>
-      <a class="nav-card" href="malla_software.html">
-        <div class="nav-num" style="color:var(--soft);">◉</div>
-        <div class="nav-title">software</div>
-        <div class="nav-sub">pendiente de iniciar</div>
-      </a>
+      
     </div>
   </div>
 
   <!-- NAV -->
   <div class="nav-grid" style="margin-top:0;">
-    <a class="nav-card" href="index.html">
-      <div class="nav-num">←</div>
-      <div class="nav-title">inicio</div>
-      <div class="nav-sub">dashboard</div>
-    </a>
-    <a class="nav-card" href="listas.html">
-      <div class="nav-num">→</div>
-      <div class="nav-title">listas</div>
-      <div class="nav-sub">películas, podcasts, temas</div>
-    </a>
+    
+    
   </div>
 
 </div>
@@ -757,5 +731,7 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+  <script>window.PAGE_FILES = {cal_events:"data/cal_events.json"};</script>
+  <script src="github-sync.js"></script>
 </body>
 </html>

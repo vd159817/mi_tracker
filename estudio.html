@@ -302,6 +302,75 @@
     }
 
     /* ── TIMELINE ── */
+    /* ── CRONÓMETRO ── */
+    .chrono-card {
+      background: var(--surface2); border: 0.5px solid var(--border);
+      border-radius: var(--r); padding: 1rem 1.125rem; margin-bottom: 0.875rem;
+    }
+    .chrono-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 6px; }
+    .chrono-ctx-toggle { display: flex; border: 0.5px solid var(--border2); border-radius: var(--r-sm); overflow: hidden; }
+    .chrono-ctx-btn { font-family: 'DM Mono', monospace; font-size: 10px; padding: 4px 10px; border: none; background: transparent; color: var(--text2); cursor: pointer; transition: all 0.15s; }
+    .chrono-ctx-btn.active { background: var(--auto); color: #fff; }
+    .chrono-ctx-btn:last-child.active { background: var(--uni); }
+
+    .chrono-display { text-align: center; padding: 0.75rem 0 0.625rem; }
+    .chrono-time { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--text); line-height: 1; letter-spacing: -0.02em; }
+    .chrono-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
+
+    .chrono-actions { display: flex; gap: 8px; justify-content: center; margin-bottom: 6px; }
+    .btn-chrono {
+      font-family: 'DM Mono', monospace; font-size: 12px;
+      padding: 8px 18px; border-radius: var(--r-sm); border: none;
+      cursor: pointer; transition: all 0.18s; font-weight: 500;
+    }
+    .btn-chrono.start { background: var(--normal); color: #fff; }
+    .btn-chrono.start:hover { opacity: 0.85; }
+    .btn-chrono.stop { background: var(--urgent); color: #fff; }
+    .btn-chrono.stop:hover { opacity: 0.85; }
+    .btn-chrono.pause { background: var(--surface); border: 0.5px solid var(--border2); color: var(--text2); }
+    .btn-chrono.pause:hover { border-color: var(--accent2); color: var(--accent); }
+    .btn-chrono.hidden { display: none; }
+    .chrono-status { font-size: 11px; color: var(--normal); text-align: center; margin-top: 4px; }
+    .chrono-status.hidden { display: none; }
+    .chrono-status.err { color: var(--urgent); }
+
+    /* ── POMODORO ── */
+    .pomo-card {
+      background: var(--surface2); border: 0.5px solid var(--border);
+      border-radius: var(--r); padding: 1rem 1.125rem; margin-bottom: 0.875rem;
+    }
+    .pomo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px; }
+    .pomo-config-row { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .pomo-config-label { font-size: 10px; color: var(--text3); white-space: nowrap; }
+
+    .pomo-ring-wrap { position: relative; width: 140px; height: 140px; margin: 0 auto 0.875rem; }
+    .pomo-ring-svg { width: 100%; height: 100%; }
+    .pomo-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .pomo-time-display { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--text); line-height: 1; }
+    .pomo-phase-label { font-size: 10px; color: var(--text3); margin-top: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .pomo-cycle-label { font-size: 9px; color: var(--text3); margin-top: 2px; }
+
+    .pomo-actions { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; }
+    .btn-pomo {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      padding: 7px 14px; border-radius: var(--r-sm);
+      border: none; cursor: pointer; transition: all 0.18s; font-weight: 500;
+      background: var(--auto); color: #fff;
+    }
+    .btn-pomo:hover { opacity: 0.85; }
+    .btn-pomo.secondary { background: var(--surface); border: 0.5px solid var(--border2); color: var(--text2); }
+    .btn-pomo.secondary:hover { border-color: var(--accent2); color: var(--accent); }
+    .btn-pomo.break-mode { background: var(--normal); }
+
+    .pomo-history { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; min-height: 16px; }
+    .pomo-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .pomo-dot.work { background: var(--auto); }
+    .pomo-dot.brk  { background: var(--normal); }
+    .pomo-dot.empty { background: var(--border2); }
+
     .timeline-section { margin-bottom: 0.875rem; }
 
     .timeline-header {
@@ -509,6 +578,7 @@
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
   </style>
+  <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
 <!-- MENU OVERLAY -->
@@ -532,21 +602,9 @@
     <div class="menu-section-label">registros</div>
     <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
     <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">planeación</div>
-    <a class="menu-link" href="planeacion.html"><span class="menu-link-num">07</span><span class="menu-link-text">planeación</span><span class="menu-link-sub">década · calendario · mallas</span></a>
-    <a class="menu-link" href="planeacion_anual.html"><span class="menu-link-num">08</span><span class="menu-link-text">planeación anual</span><span class="menu-link-sub">tabla 2026 · progreso</span></a>
-    <a class="menu-link" href="malla_psic.html"><span class="menu-link-num">09</span><span class="menu-link-text">malla psicología</span><span class="menu-link-sub">UAS · calculadora</span></a>
-    <a class="menu-link" href="malla_software.html"><span class="menu-link-num">10</span><span class="menu-link-text">malla software</span><span class="menu-link-sub">pendiente de iniciar</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">listas</div>
-    <a class="menu-link" href="listas.html"><span class="menu-link-num">11</span><span class="menu-link-text">listas</span><span class="menu-link-sub">películas · podcasts · temas</span></a>
+    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
   </div>
 </div>
-
-
 
 <!-- TOP BAR -->
 <div class="top-bar">
@@ -649,6 +707,64 @@
         </div>
       </div>
 
+      <!-- ── CRONÓMETRO DE SESIÓN ── -->
+      <div class="chrono-card" id="chrono-card">
+        <div class="chrono-header">
+          <div class="metric-label" style="margin:0;">sesión en tiempo real</div>
+          <div class="chrono-ctx-toggle">
+            <button class="chrono-ctx-btn active" id="chrono-ctx-auto" onclick="setChronoCtx('auto')">autodidacta</button>
+            <button class="chrono-ctx-btn" id="chrono-ctx-uni" onclick="setChronoCtx('uni')">universidad</button>
+          </div>
+        </div>
+        <div class="chrono-display">
+          <div class="chrono-time" id="chrono-display">00:00:00</div>
+          <div class="chrono-sub" id="chrono-sub">listo para iniciar</div>
+        </div>
+        <div class="chrono-actions">
+          <button class="btn-chrono start" id="btn-chrono-start" onclick="chronoStart()">▶ iniciar sesión</button>
+          <button class="btn-chrono stop hidden" id="btn-chrono-stop" onclick="chronoStop()">■ terminar sesión</button>
+          <button class="btn-chrono pause hidden" id="btn-chrono-pause" onclick="chronoPause()">⏸ pausar</button>
+        </div>
+        <div class="chrono-status hidden" id="chrono-status"></div>
+      </div>
+
+      <!-- ── POMODORO ── -->
+      <div class="pomo-card" id="pomo-card">
+        <div class="pomo-header">
+          <div class="metric-label" style="margin:0;">pomodoro</div>
+          <div class="pomo-config-row">
+            <span class="pomo-config-label">trabajo</span>
+            <input type="number" id="pomo-work" value="25" min="5" max="90" style="width:48px; font-size:11px; padding:3px 6px;" onchange="pomoReset()" />
+            <span class="pomo-config-label">min · descanso</span>
+            <input type="number" id="pomo-break" value="5" min="1" max="30" style="width:42px; font-size:11px; padding:3px 6px;" onchange="pomoReset()" />
+            <span class="pomo-config-label">min</span>
+          </div>
+        </div>
+
+        <div class="pomo-ring-wrap">
+          <svg class="pomo-ring-svg" viewBox="0 0 120 120" id="pomo-svg">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="8"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--auto)" stroke-width="8"
+              stroke-dasharray="314" stroke-dashoffset="0"
+              stroke-linecap="round" transform="rotate(-90 60 60)"
+              id="pomo-arc" style="transition: stroke-dashoffset 0.8s, stroke 0.3s;"/>
+          </svg>
+          <div class="pomo-center">
+            <div class="pomo-time-display" id="pomo-time">25:00</div>
+            <div class="pomo-phase-label" id="pomo-phase">trabajo</div>
+            <div class="pomo-cycle-label" id="pomo-cycle">ciclo 1</div>
+          </div>
+        </div>
+
+        <div class="pomo-actions">
+          <button class="btn-pomo" id="btn-pomo-start" onclick="pomoToggle()">▶ iniciar</button>
+          <button class="btn-pomo secondary" id="btn-pomo-reset" onclick="pomoReset()">↺ reiniciar</button>
+          <button class="btn-pomo secondary" id="btn-pomo-skip" onclick="pomoSkip()">⏭ saltar</button>
+        </div>
+
+        <div class="pomo-history" id="pomo-history"></div>
+      </div>
+
       <!-- LÍNEA DE TIEMPO -->
       <div class="timeline-section">
         <div class="timeline-header">
@@ -709,9 +825,8 @@
       </div>
 
       <div style="display:flex; justify-content:flex-end;">
-        <button class="btn-primary" onclick="saveSession()">guardar sesión</button>
+        <button class="btn-ghost" onclick="Historial.show('study')">📋 historial estudio</button>
       </div>
-      <div class="save-status hidden" id="save-status"></div>
 
     </div>
   </div>
@@ -744,21 +859,7 @@
     </div>
   </div>
 
-  <!-- NAV -->
-  <div class="nav-grid">
-    <a class="nav-card" href="hoy.html">
-      <div class="nav-num">←</div>
-      <div class="nav-title">hoy</div>
-      <div class="nav-sub">registro diario</div>
-    </a>
-    <a class="nav-card" href="index.html">
-      <div class="nav-num">←</div>
-      <div class="nav-title">inicio</div>
-      <div class="nav-sub">dashboard</div>
-    </a>
-  </div>
-
-</div><!-- /content -->
+  <!-- /content -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
@@ -1248,6 +1349,273 @@ function renderStats() {
 renderChart();
 renderStats();
 
+// ══════════════════════════════════════════════════════════
+// CRONÓMETRO DE SESIÓN
+// ══════════════════════════════════════════════════════════
+let chronoRunning  = false;
+let chronoPaused   = false;
+let chronoStart_ts = null;   // timestamp cuando se inició
+let chronoPause_ts = null;   // timestamp cuando se pausó
+let chronoAccum    = 0;      // ms acumulados antes de pausas
+let chronoInterval = null;
+let chronoCtx      = 'auto'; // contexto de esta sesión
+let chronoSessionStart = null; // hora absoluta de inicio (para el segmento)
+
+function setChronoCtx(ctx) {
+  chronoCtx = ctx;
+  document.getElementById('chrono-ctx-auto').classList.toggle('active', ctx === 'auto');
+  document.getElementById('chrono-ctx-uni').classList.toggle('active', ctx === 'uni');
+}
+
+function chronoFmt(ms) {
+  const total = Math.floor(ms / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function chronoTick() {
+  if (!chronoRunning || chronoPaused) return;
+  const elapsed = chronoAccum + (Date.now() - chronoStart_ts);
+  document.getElementById('chrono-display').textContent = chronoFmt(elapsed);
+}
+
+function chronoStart() {
+  if (chronoRunning && !chronoPaused) return;
+
+  if (!chronoRunning) {
+    // Primera vez: registrar hora de inicio para el segmento
+    const now = new Date();
+    chronoSessionStart = now.getHours() + (now.getMinutes() >= 30 ? 0.5 : 0); // redondear a media hora
+    chronoSessionStart = HOUR_START + Math.round((chronoSessionStart - HOUR_START) * 2) / 2;
+    chronoAccum = 0;
+  }
+
+  chronoRunning = true;
+  chronoPaused  = false;
+  chronoStart_ts = Date.now();
+
+  clearInterval(chronoInterval);
+  chronoInterval = setInterval(chronoTick, 500);
+
+  document.getElementById('btn-chrono-start').classList.add('hidden');
+  document.getElementById('btn-chrono-stop').classList.remove('hidden');
+  document.getElementById('btn-chrono-pause').classList.remove('hidden');
+
+  const now = new Date();
+  document.getElementById('chrono-sub').textContent =
+    `iniciado a las ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  chronoSetStatus('');
+}
+
+function chronoPause() {
+  if (!chronoRunning || chronoPaused) {
+    // Reanudar
+    chronoPaused = false;
+    chronoStart_ts = Date.now();
+    clearInterval(chronoInterval);
+    chronoInterval = setInterval(chronoTick, 500);
+    document.getElementById('btn-chrono-pause').textContent = '⏸ pausar';
+    document.getElementById('chrono-sub').textContent = 'sesión en curso...';
+    return;
+  }
+  // Pausar
+  chronoPaused = true;
+  chronoAccum += Date.now() - chronoStart_ts;
+  clearInterval(chronoInterval);
+  document.getElementById('btn-chrono-pause').textContent = '▶ reanudar';
+  document.getElementById('chrono-sub').textContent = 'en pausa';
+}
+
+function chronoStop() {
+  if (!chronoRunning) return;
+
+  const totalMs = chronoAccum + (chronoPaused ? 0 : Date.now() - chronoStart_ts);
+  const totalH  = totalMs / 3600000;
+
+  clearInterval(chronoInterval);
+  chronoRunning = false;
+  chronoPaused  = false;
+
+  // Calcular hora de fin aproximada
+  const nowH   = new Date().getHours() + new Date().getMinutes() / 60;
+  let startH = chronoSessionStart || HOUR_START;
+  let endH   = Math.min(HOUR_START + HOUR_COUNT, Math.round(nowH * 2) / 2);
+  // Asegurarse que end > start
+  if (endH <= startH) endH = startH + 1;
+
+  // Añadir segmento al timeline
+  segments.push({ start: Math.round(startH), end: Math.round(endH), ctx: chronoCtx });
+  renderSegments();
+
+  // Resetear UI
+  document.getElementById('btn-chrono-start').classList.remove('hidden');
+  document.getElementById('btn-chrono-start').textContent = '▶ iniciar sesión';
+  document.getElementById('btn-chrono-stop').classList.add('hidden');
+  document.getElementById('btn-chrono-pause').classList.add('hidden');
+  document.getElementById('btn-chrono-pause').textContent = '⏸ pausar';
+  document.getElementById('chrono-display').textContent = '00:00:00';
+
+  const hh = Math.floor(totalH);
+  const mm = Math.round((totalH - hh) * 60);
+  document.getElementById('chrono-sub').textContent = 'listo para iniciar';
+  chronoSetStatus(`✓ sesión de ${hh}h ${mm}min agregada al timeline`, false);
+  setTimeout(() => chronoSetStatus(''), 4000);
+
+  chronoAccum = 0;
+  chronoStart_ts = null;
+  chronoSessionStart = null;
+}
+
+function chronoSetStatus(msg, isErr = false) {
+  const el = document.getElementById('chrono-status');
+  el.textContent = msg;
+  el.className = 'chrono-status' + (isErr ? ' err' : '') + (msg ? '' : ' hidden');
+}
+
+// ══════════════════════════════════════════════════════════
+// POMODORO
+// ══════════════════════════════════════════════════════════
+let pomoRunning   = false;
+let pomoIsBreak   = false;
+let pomoCycle     = 1;
+let pomoSecsLeft  = 25 * 60;
+let pomoTotalSecs = 25 * 60;
+let pomoInterval  = null;
+let pomoHistory   = []; // 'work' | 'brk'
+const POMO_TOTAL_CYCLES = 4;
+
+const ARC_LEN = 2 * Math.PI * 50; // circumference r=50
+
+function pomoWorkSecs()  { return (parseInt(document.getElementById('pomo-work').value)  || 25) * 60; }
+function pomoBreakSecs() { return (parseInt(document.getElementById('pomo-break').value) || 5)  * 60; }
+
+function pomoFmt(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function pomoUpdateRing() {
+  const arc   = document.getElementById('pomo-arc');
+  const ratio = pomoSecsLeft / pomoTotalSecs;
+  const offset = ARC_LEN * (1 - ratio);
+  arc.style.strokeDashoffset = offset;
+  arc.style.stroke = pomoIsBreak ? 'var(--normal)' : 'var(--auto)';
+}
+
+function pomoUpdateUI() {
+  document.getElementById('pomo-time').textContent  = pomoFmt(pomoSecsLeft);
+  document.getElementById('pomo-phase').textContent = pomoIsBreak ? 'descanso' : 'trabajo';
+  document.getElementById('pomo-cycle').textContent = `ciclo ${pomoCycle} de ${POMO_TOTAL_CYCLES}`;
+  pomoUpdateRing();
+
+  const startBtn = document.getElementById('btn-pomo-start');
+  startBtn.textContent = pomoRunning ? '⏸ pausar' : '▶ iniciar';
+  startBtn.className   = 'btn-pomo' + (pomoIsBreak ? ' break-mode' : '');
+
+  // Historial de puntos
+  const hist = document.getElementById('pomo-history');
+  const dots = [];
+  for (let i = 0; i < POMO_TOTAL_CYCLES; i++) {
+    const done = pomoHistory[i];
+    const cls  = done === 'work' ? 'pomo-dot work' :
+                 done === 'brk'  ? 'pomo-dot brk'  : 'pomo-dot empty';
+    dots.push(`<div class="${cls}" title="ciclo ${i+1}"></div>`);
+  }
+  hist.innerHTML = dots.join('');
+}
+
+function pomoTick() {
+  if (!pomoRunning) return;
+  pomoSecsLeft--;
+  pomoUpdateUI();
+
+  if (pomoSecsLeft <= 0) {
+    pomoPhaseEnd();
+  }
+}
+
+function pomoPhaseEnd() {
+  clearInterval(pomoInterval);
+  pomoRunning = false;
+
+  // Notificación
+  const msg = pomoIsBreak ? '¡Descanso terminado! A estudiar.' : '¡Pomodoro completo! Descansa.';
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('🍅 Pomodoro', { body: msg, silent: false });
+  }
+  // Beep con Web Audio
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = pomoIsBreak ? 440 : 660;
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    osc.start(); osc.stop(ctx.currentTime + 0.8);
+  } catch(e) {}
+
+  if (!pomoIsBreak) {
+    // Registrar ciclo de trabajo terminado
+    pomoHistory[pomoCycle - 1] = 'work';
+    pomoIsBreak   = true;
+    pomoTotalSecs = pomoBreakSecs();
+    pomoSecsLeft  = pomoTotalSecs;
+  } else {
+    // Registrar descanso terminado
+    pomoHistory[pomoCycle - 1] = 'brk';
+    if (pomoCycle >= POMO_TOTAL_CYCLES) {
+      // Serie completa
+      pomoHistory = [];
+      pomoCycle   = 1;
+    } else {
+      pomoCycle++;
+    }
+    pomoIsBreak   = false;
+    pomoTotalSecs = pomoWorkSecs();
+    pomoSecsLeft  = pomoTotalSecs;
+  }
+  pomoUpdateUI();
+}
+
+function pomoToggle() {
+  if (pomoRunning) {
+    clearInterval(pomoInterval);
+    pomoRunning = false;
+  } else {
+    // Pedir permisos de notificación la primera vez
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+    pomoInterval = setInterval(pomoTick, 1000);
+    pomoRunning  = true;
+  }
+  pomoUpdateUI();
+}
+
+function pomoReset() {
+  clearInterval(pomoInterval);
+  pomoRunning   = false;
+  pomoIsBreak   = false;
+  pomoCycle     = 1;
+  pomoHistory   = [];
+  pomoTotalSecs = pomoWorkSecs();
+  pomoSecsLeft  = pomoTotalSecs;
+  pomoUpdateUI();
+}
+
+function pomoSkip() {
+  clearInterval(pomoInterval);
+  pomoRunning = false;
+  pomoPhaseEnd();
+}
+
+// Inicializar pomodoro
+pomoReset();
+
 // ── MENU ──
 function openMenu() {
   document.getElementById('menu-drawer').classList.add('open');
@@ -1258,5 +1626,8 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+  <script src="historial.js"></script>
+  <script>window.PAGE_FILES = {tracker_study:"data/study.json"};</script>
+  <script src="github-sync.js"></script>
 </body>
 </html>

@@ -666,6 +666,7 @@
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
   </style>
+  <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
 
@@ -720,38 +721,10 @@
       <span class="menu-link-text">finanzas</span>
       <span class="menu-link-sub">presupuesto y gastos</span>
     </a>
-  </div>
-
-  <div class="menu-section">
-    <div class="menu-section-label">planeación</div>
-    <a class="menu-link" href="planeacion.html">
+    <a class="menu-link" href="periodo.html">
       <span class="menu-link-num">07</span>
-      <span class="menu-link-text">planeación</span>
-      <span class="menu-link-sub">década · calendario · mallas</span>
-    </a>
-    <a class="menu-link" href="planeacion_anual.html">
-      <span class="menu-link-num">08</span>
-      <span class="menu-link-text">planeación anual</span>
-      <span class="menu-link-sub">tabla 2026 · progreso</span>
-    </a>
-    <a class="menu-link" href="malla_psic.html">
-      <span class="menu-link-num">09</span>
-      <span class="menu-link-text">malla psicología</span>
-      <span class="menu-link-sub">UAS · calculadora</span>
-    </a>
-    <a class="menu-link" href="malla_software.html">
-      <span class="menu-link-num">10</span>
-      <span class="menu-link-text">malla software</span>
-      <span class="menu-link-sub">pendiente de iniciar</span>
-    </a>
-  </div>
-
-  <div class="menu-section">
-    <div class="menu-section-label">listas</div>
-    <a class="menu-link" href="listas.html">
-      <span class="menu-link-num">11</span>
-      <span class="menu-link-text">listas</span>
-      <span class="menu-link-sub">películas · podcasts · temas</span>
+      <span class="menu-link-text">período</span>
+      <span class="menu-link-sub">ciclo · fases · síntomas</span>
     </a>
   </div>
 </div>
@@ -854,8 +827,7 @@
           <input class="tag-field" id="journal-tag" placeholder="#etiqueta" />
           <button class="icon-btn" title="borrar" onclick="clearJournal()">✕</button>
           <button class="icon-btn" title="pegar" onclick="pasteJournal()">⎘</button>
-          <button class="btn-guardar" onclick="saveDay()">guardar</button>
-        </div>
+                  </div>
         <div class="save-status hidden" id="save-status">guardado</div>
       </div>
     </div>
@@ -932,30 +904,10 @@
         <div class="nav-title">finanzas</div>
         <div class="nav-sub">presupuesto y gastos</div>
       </a>
-      <a class="nav-card" href="planeacion.html">
+      <a class="nav-card" href="periodo.html">
         <div class="nav-icon">07</div>
-        <div class="nav-title">planeación</div>
-        <div class="nav-sub">década · calendario · mallas</div>
-      </a>
-      <a class="nav-card" href="planeacion_anual.html">
-        <div class="nav-icon">08</div>
-        <div class="nav-title">plan anual</div>
-        <div class="nav-sub">tabla 2026 · progreso</div>
-      </a>
-      <a class="nav-card" href="malla_psic.html">
-        <div class="nav-icon">09</div>
-        <div class="nav-title">psicología</div>
-        <div class="nav-sub">malla · calculadora UAS</div>
-      </a>
-      <a class="nav-card" href="malla_software.html">
-        <div class="nav-icon">10</div>
-        <div class="nav-title">software</div>
-        <div class="nav-sub">malla pendiente</div>
-      </a>
-      <a class="nav-card" href="listas.html">
-        <div class="nav-icon">11</div>
-        <div class="nav-title">listas</div>
-        <div class="nav-sub">películas · podcasts · temas</div>
+        <div class="nav-title">período</div>
+        <div class="nav-sub">ciclo · fases · síntomas</div>
       </a>
     </div>
   </div>
@@ -1407,7 +1359,8 @@ function getAllData() {
     'tracker_diary', 'tracker_tasks', 'tracker_sleep', 'tracker_exercise',
     'tracker_study', 'tracker_chess', 'food_data', 'finance_movements',
     'annual_habits_data', 'annual_done', 'lists_data', 'annual_plan_overrides',
-    'psic_curriculum', 'cal_events', 'finance_budget', 'finance_projection'
+    'psic_curriculum', 'cal_events', 'finance_budget', 'finance_projection',
+    'food_data', 'period_data', 'period_config', 'tracker_habits_data', 'tracker_habits_config'
   ];
   const all = {};
   keys.forEach(k => {
@@ -1504,6 +1457,30 @@ function exportCSV() {
     lines.push('');
   }
 
+
+  // ALIMENTACIÓN
+  if (data.food_data?.length) {
+    lines.push('## ALIMENTACIÓN');
+    lines.push('fecha,kcal,proteína_g,carbs_g,grasa_g,extras');
+    data.food_data.forEach(e => {
+      const t = e.totals || {};
+      const extras = (e.extras||[]).map(x=>x.name||x).join('|');
+      lines.push(`${e.date},${Math.round(t.kcal||0)},${Math.round(t.prot||0)},${Math.round(t.carb||0)},${Math.round(t.fat||0)},"${extras}"`);
+    });
+    lines.push('');
+  }
+
+  // PERÍODO
+  if (data.period_data?.length) {
+    lines.push('## PERÍODO');
+    lines.push('fecha,fase_calculada,fase_percibida,flujo,energía,dolor,ánimo,hinchazón,ansiedad,síntomas,notas');
+    data.period_data.forEach(e => {
+      const syms = (e.symptoms||[]).join('|');
+      lines.push(`${e.date},"${e.calculatedPhase||''}","${e.perceivedPhase||''}","${e.flow||''}",${e.energia||''},${e.dolor||''},${e.animo||''},${e.hincha||''},${e.ansiedad||''},"${syms}","${(e.notes||'').replace(/"/g,'""')}"`);
+    });
+    lines.push('');
+  }
+
   const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -1514,5 +1491,7 @@ function exportCSV() {
 }
 </script>
 
+  <script>window.PAGE_FILES = {tracker_diary:"data/diary.json",tracker_tasks:"data/tasks.json"};</script>
+  <script src="github-sync.js"></script>
 </body>
 </html>

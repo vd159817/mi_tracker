@@ -197,6 +197,7 @@
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
   </style>
+  <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
 <!-- MENU OVERLAY -->
@@ -220,21 +221,9 @@
     <div class="menu-section-label">registros</div>
     <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
     <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">planeación</div>
-    <a class="menu-link" href="planeacion.html"><span class="menu-link-num">07</span><span class="menu-link-text">planeación</span><span class="menu-link-sub">década · calendario · mallas</span></a>
-    <a class="menu-link" href="planeacion_anual.html"><span class="menu-link-num">08</span><span class="menu-link-text">planeación anual</span><span class="menu-link-sub">tabla 2026 · progreso</span></a>
-    <a class="menu-link" href="malla_psic.html"><span class="menu-link-num">09</span><span class="menu-link-text">malla psicología</span><span class="menu-link-sub">UAS · calculadora</span></a>
-    <a class="menu-link" href="malla_software.html"><span class="menu-link-num">10</span><span class="menu-link-text">malla software</span><span class="menu-link-sub">pendiente de iniciar</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">listas</div>
-    <a class="menu-link" href="listas.html"><span class="menu-link-num">11</span><span class="menu-link-text">listas</span><span class="menu-link-sub">películas · podcasts · temas</span></a>
+    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
   </div>
 </div>
-
-
 
 <!-- FULL LIST MODAL -->
 <div class="modal-overlay" id="full-list-modal">
@@ -242,6 +231,12 @@
     <div class="modal-header">
       <span class="modal-title" id="full-list-title"></span>
       <button class="btn-back" onclick="closeFullList()">✕</button>
+    </div>
+    <div class="quick-add" style="padding:8px 0 10px; border-bottom:0.5px solid var(--border); margin-bottom:8px;">
+      <input type="text" id="modal-add-input" placeholder="agregar elemento..."
+        style="flex:1; font-size:13px; padding:7px 10px;"
+        onkeydown="if(event.key==='Enter') modalQuickAdd()" />
+      <button class="quick-add-btn" onclick="modalQuickAdd()">+ agregar</button>
     </div>
     <div class="full-list" id="full-list-body"></div>
   </div>
@@ -291,18 +286,10 @@
   </div>
 
   <div id="lists-container" style="display:flex; flex-direction:column; gap:10px;"></div>
-
-  <div class="nav-grid">
-    <a class="nav-card" href="planeacion.html">
-      <div class="nav-num">←</div>
       <div class="nav-title">planeación</div>
       <div class="nav-sub">volver</div>
     </a>
-    <a class="nav-card" href="index.html">
-      <div class="nav-num">←</div>
-      <div class="nav-title">inicio</div>
-      <div class="nav-sub">dashboard</div>
-    </a>
+    
   </div>
 
 </div>
@@ -453,8 +440,23 @@ function openFullList(listId) {
   openListId = listId;
   const list = listsConfig.find(l => l.id === listId);
   document.getElementById('full-list-title').textContent = list ? `${list.icon} ${list.name}` : listId;
+  // actualizar placeholder del input interno
+  const inp = document.getElementById('modal-add-input');
+  if (inp) { inp.value = ''; inp.placeholder = `agregar a ${list ? list.name : listId}...`; }
   renderFullListBody(listId);
   document.getElementById('full-list-modal').classList.add('open');
+  setTimeout(() => { if (inp) inp.focus(); }, 80);
+}
+
+function modalQuickAdd() {
+  if (!openListId) return;
+  const inp = document.getElementById('modal-add-input');
+  if (!inp || !inp.value.trim()) return;
+  addItem(openListId, inp.value.trim());
+  inp.value = '';
+  inp.focus();
+  renderFullListBody(openListId);
+  renderLists();
 }
 
 function closeFullList() {
@@ -469,7 +471,7 @@ function renderFullListBody(listId) {
   const body  = document.getElementById('full-list-body');
 
   if (items.length === 0) {
-    body.innerHTML = `<div style="font-size:13px; color:var(--text3); text-align:center; padding:2rem 0; font-style:italic; font-family:'Cormorant Garamond',serif;">lista vacía — agrega elementos desde la tarjeta</div>`;
+    body.innerHTML = `<div style="font-size:13px; color:var(--text3); text-align:center; padding:2rem 0; font-style:italic; font-family:'Cormorant Garamond',serif;">lista vacía — escribe arriba para agregar</div>`;
     return;
   }
 
@@ -478,8 +480,14 @@ function renderFullListBody(listId) {
 
   body.innerHTML = sorted.map(item => `
     <div class="full-item ${item.noAction ? 'no-action' : ''}" id="fitem-${item.id}">
-      <div style="flex:1;">
-        <div class="full-item-text">${item.text.replace(/</g,'&lt;')}</div>
+      <div style="flex:1; min-width:0;">
+        <input type="text"
+          value="${item.text.replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
+          style="width:100%; font-size:13px; font-family:'DM Mono',monospace;
+                 background:transparent; border:none; outline:none; color:var(--text);
+                 padding:0; ${item.noAction ? 'opacity:0.5; text-decoration:line-through;' : ''}"
+          onchange="editItem('${listId}',${item.id},this.value)"
+          onblur="editItem('${listId}',${item.id},this.value)" />
         ${item.note ? `<div class="full-item-note">${item.note}</div>` : ''}
       </div>
       <div class="full-item-actions">
@@ -492,6 +500,13 @@ function renderFullListBody(listId) {
       </div>
     </div>
   `).join('');
+}
+
+function editItem(listId, itemId, newText) {
+  if (!newText.trim()) return;
+  const items = listsData[listId] || [];
+  const item = items.find(i => i.id === itemId);
+  if (item) { item.text = newText.trim(); saveAll(); }
 }
 
 // ── LISTS MANAGER ──
@@ -553,5 +568,7 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+  <script>window.PAGE_FILES = {lists_config:"data/lists_config.json",lists_data:"data/lists_data.json"};</script>
+  <script src="github-sync.js"></script>
 </body>
 </html>

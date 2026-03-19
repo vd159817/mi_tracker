@@ -181,6 +181,7 @@
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
   </style>
+  <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
 <!-- MENU OVERLAY -->
@@ -204,21 +205,9 @@
     <div class="menu-section-label">registros</div>
     <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
     <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">planeación</div>
-    <a class="menu-link" href="planeacion.html"><span class="menu-link-num">07</span><span class="menu-link-text">planeación</span><span class="menu-link-sub">década · calendario · mallas</span></a>
-    <a class="menu-link" href="planeacion_anual.html"><span class="menu-link-num">08</span><span class="menu-link-text">planeación anual</span><span class="menu-link-sub">tabla 2026 · progreso</span></a>
-    <a class="menu-link" href="malla_psic.html"><span class="menu-link-num">09</span><span class="menu-link-text">malla psicología</span><span class="menu-link-sub">UAS · calculadora</span></a>
-    <a class="menu-link" href="malla_software.html"><span class="menu-link-num">10</span><span class="menu-link-text">malla software</span><span class="menu-link-sub">pendiente de iniciar</span></a>
-  </div>
-  <div class="menu-section">
-    <div class="menu-section-label">listas</div>
-    <a class="menu-link" href="listas.html"><span class="menu-link-num">11</span><span class="menu-link-text">listas</span><span class="menu-link-sub">películas · podcasts · temas</span></a>
+    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
   </div>
 </div>
-
-
 
 <!-- BUDGET EDITOR MODAL -->
 <div class="modal-overlay" id="budget-modal">
@@ -238,8 +227,7 @@
     </button>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeBudgetEditor()">cancelar</button>
-      <button class="btn-primary" onclick="saveBudget()">guardar presupuesto</button>
-    </div>
+          </div>
   </div>
 </div>
 
@@ -354,10 +342,6 @@
           <span class="proj-result-val" id="proj-diff" style="font-size:16px;">—</span>
         </div>
       </div>
-
-      <div style="margin-top:8px; display:flex; justify-content:flex-end;">
-        <button class="btn-primary" onclick="saveProjection()">guardar proyección</button>
-      </div>
       <div class="save-status hidden" id="proj-status"></div>
     </div>
   </div>
@@ -428,17 +412,10 @@
   </div>
 
   <!-- NAV -->
-  <div class="nav-grid">
-    <a class="nav-card" href="registros.html">
-      <div class="nav-num">←</div>
       <div class="nav-title">registros</div>
       <div class="nav-sub">hábitos y ajedrez</div>
     </a>
-    <a class="nav-card" href="index.html">
-      <div class="nav-num">←</div>
-      <div class="nav-title">inicio</div>
-      <div class="nav-sub">dashboard</div>
-    </a>
+    
   </div>
 
 </div>
@@ -936,5 +913,7 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 </script>
+  <script>window.PAGE_FILES = {finance_movements:"data/finance.json",finance_budget:"data/finance_budget.json",finance_projection:"data/finance_projection.json"};</script>
+  <script src="github-sync.js"></script>
 </body>
 </html>
