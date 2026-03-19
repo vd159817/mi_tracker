@@ -223,6 +223,50 @@
     .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text2); }
     .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
+    /* ── BOTÓN GUARDAR TODO ── */
+    .save-all-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0 3rem;
+    }
+    
+    .save-all-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 32px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.1em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .save-all-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .save-message {
+      font-size: 12px;
+      color: var(--normal);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      opacity: 0;
+      transition: opacity 0.3s;
+      min-height: 20px;
+    }
+    
+    .save-message.visible {
+      opacity: 1;
+    }
+
     /* ── NAV GRID ── */
     .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.5rem; }
     .nav-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--r); padding: 1rem; text-decoration: none; display: flex; flex-direction: column; gap: 5px; transition: border-color 0.2s; }
@@ -459,12 +503,14 @@
     </div>
   </div>
 
-  <!-- ══ 5. HISTORIAL MODAL ══ -->
-      <div class="nav-title">hoy</div>
-      <div class="nav-sub">registro diario</div>
-    </a>
-    
+  <!-- ══ 5. BOTÓN GUARDAR TODO ══ -->
+  <div class="save-all-container">
+    <button class="save-all-btn" onclick="saveAll()">
+      guardar todo
+    </button>
+    <div id="save-message" class="save-message">guardado correctamente</div>
   </div>
+
 </div>
 
 <!-- HISTORIAL MODAL -->
@@ -849,21 +895,22 @@ function saveEntry() {
   if (idx >= 0) periodData[idx] = entry; else periodData.push(entry);
   localStorage.setItem('period_data', JSON.stringify(periodData));
 
-  // GitHub sync si está configurado
-  const cfg = JSON.parse(localStorage.getItem('tracker_config') || '{}');
-  if (cfg.token && typeof saveToGitHub === 'function') {
-    saveToGitHub('data/period.json', periodData).catch(console.error);
-  }
-
-  showStatus();
   renderCalendar();
 }
 
-function showStatus() {
-  const el = document.getElementById('save-status');
-  el.textContent = 'guardado ✓';
-  el.classList.remove('hidden');
-  setTimeout(() => el.classList.add('hidden'), 2500);
+function showSaveMessage() {
+  const msg = document.getElementById('save-message');
+  msg.classList.add('visible');
+  setTimeout(() => {
+    msg.classList.remove('visible');
+  }, 2000);
+}
+
+// ── GUARDAR TODO ───────────────────────────────────────────────────────────
+function saveAll() {
+  saveCycleConfig();
+  saveEntry();
+  showSaveMessage();
 }
 
 // ── HISTORIAL ──────────────────────────────────────────────────────────────
@@ -994,8 +1041,5 @@ function closeMenu() { document.getElementById('menu-drawer').classList.remove('
   }
 })();
 </script>
-
-  <script>window.PAGE_FILES = {period_data:"data/period.json",period_config:"data/period_config.json"};</script>
-  <script src="github-sync.js"></script>
 </body>
 </html>

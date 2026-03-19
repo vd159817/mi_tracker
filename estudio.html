@@ -18,6 +18,7 @@
       --accent: #8a6a4a;
       --accent2: #b09070;
       --normal: #3a6a52;
+      --urgent: #b84030;
       --r: 10px;
       --r-sm: 6px;
       --auto: #2c6fad;
@@ -302,6 +303,112 @@
     }
 
     /* ── TIMELINE ── */
+    .timeline-section { margin-bottom: 0.875rem; }
+
+    .timeline-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .total-hours-wrap {
+      display: flex; align-items: baseline; gap: 5px;
+    }
+
+    .total-hours-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px; font-weight: 300; color: var(--accent);
+    }
+
+    .total-hours-label { font-size: 10px; color: var(--text3); }
+
+    .timeline-canvas-wrap {
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+      position: relative;
+    }
+
+    .hour-grid {
+      display: flex;
+      height: 160px;
+      gap: 0;
+      position: relative;
+    }
+
+    .hour-col {
+      flex: 1;
+      border-right: 0.5px solid var(--border);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .hour-col:last-child { border-right: none; }
+    .hour-col:hover { background: rgba(138,106,74,0.06); }
+
+    .seg-block {
+      position: absolute;
+      top: 8px; bottom: 8px;
+      border-radius: 3px;
+      opacity: 0.85;
+      transition: opacity 0.15s;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      min-width: 4px;
+    }
+    .seg-block:hover { opacity: 1; }
+    .seg-block.auto-seg { background: var(--auto); }
+    .seg-block.uni-seg  { background: var(--uni); }
+
+    .seg-label {
+      font-size: 8px; color: #fff; font-weight: 500;
+      writing-mode: vertical-rl; text-orientation: mixed;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-height: 100%;
+      letter-spacing: 0.04em;
+    }
+
+    .hour-labels-row {
+      display: flex; margin-top: 22px; padding: 0 0 4px;
+    }
+
+    .seg-form {
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      padding: 10px 12px;
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .seg-form select { width: auto; flex-shrink: 0; font-size: 11px; padding: 5px 8px; }
+    .seg-form input[type=number] { width: 65px; flex-shrink: 0; font-size: 11px; padding: 5px 8px; }
+
+    .seg-time-label { font-size: 10px; color: var(--text3); white-space: nowrap; }
+
+    .seg-list { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+
+    .seg-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 10px; border-radius: var(--r-sm);
+      font-size: 11px; color: var(--text2);
+    }
+    .seg-item.auto-item { background: var(--auto-light); border: 0.5px solid var(--auto); }
+    .seg-item.uni-item  { background: var(--uni-light);  border: 0.5px solid var(--uni); }
+
+    .seg-item-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .seg-item-dot.auto { background: var(--auto); }
+    .seg-item-dot.uni  { background: var(--uni); }
+
+    .seg-item-text { flex: 1; }
+    .seg-item-del {
+      background: none; border: none; color: var(--text3);
+      font-size: 12px; cursor: pointer; padding: 0 2px; transition: color 0.15s;
+    }
+    .seg-item-del:hover { color: #d4694a; }
+
     /* ── CRONÓMETRO ── */
     .chrono-card {
       background: var(--surface2); border: 0.5px solid var(--border);
@@ -364,130 +471,13 @@
     .btn-pomo.secondary { background: var(--surface); border: 0.5px solid var(--border2); color: var(--text2); }
     .btn-pomo.secondary:hover { border-color: var(--accent2); color: var(--accent); }
     .btn-pomo.break-mode { background: var(--normal); }
+    .btn-pomo.timeline-btn { background: var(--accent); font-size: 10px; padding: 4px 8px; }
 
     .pomo-history { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; min-height: 16px; }
     .pomo-dot { width: 10px; height: 10px; border-radius: 50%; }
     .pomo-dot.work { background: var(--auto); }
     .pomo-dot.brk  { background: var(--normal); }
     .pomo-dot.empty { background: var(--border2); }
-
-    .timeline-section { margin-bottom: 0.875rem; }
-
-    .timeline-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .total-hours-wrap {
-      display: flex; align-items: baseline; gap: 5px;
-    }
-
-    .total-hours-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px; font-weight: 300; color: var(--accent);
-    }
-
-    .total-hours-label { font-size: 10px; color: var(--text3); }
-
-    .timeline-canvas-wrap {
-      background: var(--surface2);
-      border-radius: var(--r-sm);
-      padding: 10px 12px;
-      position: relative;
-    }
-
-    /* hour grid */
-    .hour-grid {
-      display: flex;
-      height: 160px;
-      gap: 0;
-      position: relative;
-    }
-
-    .hour-col {
-      flex: 1;
-      border-right: 0.5px solid var(--border);
-      position: relative;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .hour-col:last-child { border-right: none; }
-    .hour-col:hover { background: rgba(138,106,74,0.06); }
-
-    .hour-label {
-      position: absolute;
-      bottom: -18px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 8px;
-      color: var(--text3);
-      white-space: nowrap;
-    }
-
-    .seg-block {
-      position: absolute;
-      top: 8px; bottom: 8px;
-      border-radius: 3px;
-      opacity: 0.85;
-      transition: opacity 0.15s;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      min-width: 6px;
-    }
-    .seg-block:hover { opacity: 1; }
-    .seg-block.auto-seg { background: var(--auto); }
-    .seg-block.uni-seg  { background: var(--uni); }
-
-    .seg-label {
-      font-size: 8px; color: #fff; font-weight: 500;
-      writing-mode: vertical-rl; text-orientation: mixed;
-      white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis; max-height: 100%;
-      letter-spacing: 0.04em;
-    }
-
-    .hour-labels-row {
-      display: flex; margin-top: 22px; padding: 0 0 4px;
-    }
-
-    /* segment add form */
-    .seg-form {
-      background: var(--surface2);
-      border: 0.5px solid var(--border2);
-      border-radius: var(--r-sm);
-      padding: 10px 12px;
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .seg-form select { width: auto; flex-shrink: 0; font-size: 11px; padding: 5px 8px; }
-    .seg-form input[type=number] { width: 65px; flex-shrink: 0; font-size: 11px; padding: 5px 8px; }
-
-    .seg-time-label { font-size: 10px; color: var(--text3); white-space: nowrap; }
-
-    .seg-list { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
-
-    .seg-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 6px 10px; border-radius: var(--r-sm);
-      font-size: 11px; color: var(--text2);
-    }
-    .seg-item.auto-item { background: var(--auto-light); border: 0.5px solid var(--auto); }
-    .seg-item.uni-item  { background: var(--uni-light);  border: 0.5px solid var(--uni); }
-
-    .seg-item-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .seg-item-dot.auto { background: var(--auto); }
-    .seg-item-dot.uni  { background: var(--uni); }
-
-    .seg-item-text { flex: 1; }
-    .seg-item-del {
-      background: none; border: none; color: var(--text3);
-      font-size: 12px; cursor: pointer; padding: 0 2px; transition: color 0.15s;
-    }
-    .seg-item-del:hover { color: #d4694a; }
 
     /* ── OBSERVATIONS ── */
     .obs-textarea {
@@ -499,6 +489,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: 17px; font-weight: 300; line-height: 1.6;
       padding: 10px 12px; resize: none; outline: none;
+      margin-bottom: 0.5rem;
     }
     .obs-textarea::placeholder { color: var(--text3); font-style: italic; }
 
@@ -535,6 +526,50 @@
 
     .chart-wrap canvas { width: 100% !important; height: 180px !important; }
 
+    /* ── GUARDAR TODO ── */
+    .save-all-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0 3rem;
+    }
+    
+    .save-all-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 32px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.1em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .save-all-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .save-message {
+      font-size: 12px;
+      color: var(--normal);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      opacity: 0;
+      transition: opacity 0.3s;
+      min-height: 20px;
+    }
+    
+    .save-message.visible {
+      opacity: 1;
+    }
+
     /* ── NAV ── */
     .nav-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.5rem;
@@ -553,7 +588,6 @@
     .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; color: var(--text); }
     .nav-sub { font-size: 10px; color: var(--text3); }
 
-    /* ── SCROLLBAR ── */
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
@@ -622,10 +656,10 @@
 <div class="content">
 
   <!-- ══════════════════════════════════════
-       REGISTRO DE SESIÓN
+       1. ENTRADA MANUAL (PRE/POST ESTUDIO)
   ══════════════════════════════════════ -->
   <div>
-    <div class="section-label">registro del estudio</div>
+    <div class="section-label">registro manual</div>
     <div class="card">
 
       <!-- CONTEXTO -->
@@ -686,10 +720,10 @@
         </div>
         <div class="metric-block">
           <div class="metric-label">interrupciones</div>
-          <div class="likert3" id="l-interacciones">
-            <button class="l3-btn" data-val="1" onclick="selectL3(this,'interacciones')">bajas</button>
-            <button class="l3-btn" data-val="2" onclick="selectL3(this,'interacciones')">medias</button>
-            <button class="l3-btn" data-val="3" onclick="selectL3(this,'interacciones')">altas</button>
+          <div class="likert3" id="l-interrupciones">
+            <button class="l3-btn" data-val="1" onclick="selectL3(this,'interrupciones')">bajas</button>
+            <button class="l3-btn" data-val="2" onclick="selectL3(this,'interrupciones')">medias</button>
+            <button class="l3-btn" data-val="3" onclick="selectL3(this,'interrupciones')">altas</button>
           </div>
         </div>
       </div>
@@ -707,65 +741,7 @@
         </div>
       </div>
 
-      <!-- ── CRONÓMETRO DE SESIÓN ── -->
-      <div class="chrono-card" id="chrono-card">
-        <div class="chrono-header">
-          <div class="metric-label" style="margin:0;">sesión en tiempo real</div>
-          <div class="chrono-ctx-toggle">
-            <button class="chrono-ctx-btn active" id="chrono-ctx-auto" onclick="setChronoCtx('auto')">autodidacta</button>
-            <button class="chrono-ctx-btn" id="chrono-ctx-uni" onclick="setChronoCtx('uni')">universidad</button>
-          </div>
-        </div>
-        <div class="chrono-display">
-          <div class="chrono-time" id="chrono-display">00:00:00</div>
-          <div class="chrono-sub" id="chrono-sub">listo para iniciar</div>
-        </div>
-        <div class="chrono-actions">
-          <button class="btn-chrono start" id="btn-chrono-start" onclick="chronoStart()">▶ iniciar sesión</button>
-          <button class="btn-chrono stop hidden" id="btn-chrono-stop" onclick="chronoStop()">■ terminar sesión</button>
-          <button class="btn-chrono pause hidden" id="btn-chrono-pause" onclick="chronoPause()">⏸ pausar</button>
-        </div>
-        <div class="chrono-status hidden" id="chrono-status"></div>
-      </div>
-
-      <!-- ── POMODORO ── -->
-      <div class="pomo-card" id="pomo-card">
-        <div class="pomo-header">
-          <div class="metric-label" style="margin:0;">pomodoro</div>
-          <div class="pomo-config-row">
-            <span class="pomo-config-label">trabajo</span>
-            <input type="number" id="pomo-work" value="25" min="5" max="90" style="width:48px; font-size:11px; padding:3px 6px;" onchange="pomoReset()" />
-            <span class="pomo-config-label">min · descanso</span>
-            <input type="number" id="pomo-break" value="5" min="1" max="30" style="width:42px; font-size:11px; padding:3px 6px;" onchange="pomoReset()" />
-            <span class="pomo-config-label">min</span>
-          </div>
-        </div>
-
-        <div class="pomo-ring-wrap">
-          <svg class="pomo-ring-svg" viewBox="0 0 120 120" id="pomo-svg">
-            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="8"/>
-            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--auto)" stroke-width="8"
-              stroke-dasharray="314" stroke-dashoffset="0"
-              stroke-linecap="round" transform="rotate(-90 60 60)"
-              id="pomo-arc" style="transition: stroke-dashoffset 0.8s, stroke 0.3s;"/>
-          </svg>
-          <div class="pomo-center">
-            <div class="pomo-time-display" id="pomo-time">25:00</div>
-            <div class="pomo-phase-label" id="pomo-phase">trabajo</div>
-            <div class="pomo-cycle-label" id="pomo-cycle">ciclo 1</div>
-          </div>
-        </div>
-
-        <div class="pomo-actions">
-          <button class="btn-pomo" id="btn-pomo-start" onclick="pomoToggle()">▶ iniciar</button>
-          <button class="btn-pomo secondary" id="btn-pomo-reset" onclick="pomoReset()">↺ reiniciar</button>
-          <button class="btn-pomo secondary" id="btn-pomo-skip" onclick="pomoSkip()">⏭ saltar</button>
-        </div>
-
-        <div class="pomo-history" id="pomo-history"></div>
-      </div>
-
-      <!-- LÍNEA DE TIEMPO -->
+      <!-- LÍNEA DE TIEMPO (ENTRADA MANUAL) -->
       <div class="timeline-section">
         <div class="timeline-header">
           <div class="metric-label" style="margin:0;">línea de tiempo</div>
@@ -799,11 +775,11 @@
         <!-- FORMULARIO AGREGAR SEGMENTO -->
         <div class="seg-form">
           <span class="seg-time-label">de</span>
-          <select id="seg-start" style="width:80px;">
+          <select id="seg-start" style="width:100px;">
             <!-- filled by JS -->
           </select>
           <span class="seg-time-label">a</span>
-          <select id="seg-end" style="width:80px;">
+          <select id="seg-end" style="width:100px;">
             <!-- filled by JS -->
           </select>
           <select id="seg-ctx" style="width:110px;">
@@ -814,20 +790,89 @@
         </div>
       </div>
 
-      <!-- OBSERVACIONES -->
-      <div style="margin-bottom:0.75rem;">
-        <div class="metric-label" style="margin-bottom:6px;">observaciones</div>
-        <textarea class="obs-textarea" id="obs-text" placeholder="notas sobre la sesión de hoy..."></textarea>
-        <div style="display:flex; gap:8px; margin-top:6px;">
-          <button class="icon-btn" onclick="document.getElementById('obs-text').value=''">✕</button>
-          <button class="icon-btn" onclick="pasteField('obs-text')">⎘</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       2. HERRAMIENTAS EN TIEMPO REAL
+  ══════════════════════════════════════ -->
+  <div>
+    <div class="section-label">herramientas en tiempo real</div>
+    <div class="card">
+
+      <!-- CRONÓMETRO DE SESIÓN -->
+      <div class="chrono-card" id="chrono-card">
+        <div class="chrono-header">
+          <div class="metric-label" style="margin:0;">cronómetro</div>
+          <div class="chrono-ctx-toggle">
+            <button class="chrono-ctx-btn active" id="chrono-ctx-auto" onclick="setChronoCtx('auto')">autodidacta</button>
+            <button class="chrono-ctx-btn" id="chrono-ctx-uni" onclick="setChronoCtx('uni')">universidad</button>
+          </div>
         </div>
+        <div class="chrono-display">
+          <div class="chrono-time" id="chrono-display">00:00:00</div>
+          <div class="chrono-sub" id="chrono-sub">listo para iniciar</div>
+        </div>
+        <div class="chrono-actions">
+          <button class="btn-chrono start" id="btn-chrono-start" onclick="chronoStart()">▶ iniciar sesión</button>
+          <button class="btn-chrono stop hidden" id="btn-chrono-stop" onclick="chronoStop()">■ terminar</button>
+          <button class="btn-chrono pause hidden" id="btn-chrono-pause" onclick="chronoPause()">⏸ pausar</button>
+        </div>
+        <div class="chrono-status hidden" id="chrono-status"></div>
       </div>
 
-      <div style="display:flex; justify-content:flex-end;">
-        <button class="btn-ghost" onclick="Historial.show('study')">📋 historial estudio</button>
+      <!-- POMODORO -->
+      <div class="pomo-card" id="pomo-card">
+        <div class="pomo-header">
+          <div class="metric-label" style="margin:0;">pomodoro</div>
+          <div class="pomo-config-row">
+            <span class="pomo-config-label">trabajo</span>
+            <input type="number" id="pomo-work" value="25" min="5" max="90" style="width:48px; font-size:11px; padding:3px 6px;" onchange="pomoReset()" />
+            <span class="pomo-config-label">min · descanso</span>
+            <input type="number" id="pomo-break" value="5" min="1" max="30" style="width:42px; font-size:11px; padding:3px 6px;" onchange="pomoReset()" />
+            <span class="pomo-config-label">min</span>
+          </div>
+        </div>
+
+        <div class="pomo-ring-wrap">
+          <svg class="pomo-ring-svg" viewBox="0 0 120 120" id="pomo-svg">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="8"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--auto)" stroke-width="8"
+              stroke-dasharray="314" stroke-dashoffset="0"
+              stroke-linecap="round" transform="rotate(-90 60 60)"
+              id="pomo-arc" style="transition: stroke-dashoffset 0.8s, stroke 0.3s;"/>
+          </svg>
+          <div class="pomo-center">
+            <div class="pomo-time-display" id="pomo-time">25:00</div>
+            <div class="pomo-phase-label" id="pomo-phase">trabajo</div>
+            <div class="pomo-cycle-label" id="pomo-cycle">ciclo 1</div>
+          </div>
+        </div>
+
+        <div class="pomo-actions">
+          <button class="btn-pomo" id="btn-pomo-start" onclick="pomoToggle()">▶ iniciar</button>
+          <button class="btn-pomo secondary" id="btn-pomo-reset" onclick="pomoReset()">↺ reiniciar</button>
+          <button class="btn-pomo secondary" id="btn-pomo-skip" onclick="pomoSkip()">⏭ saltar</button>
+          <button class="btn-pomo timeline-btn" id="btn-pomo-timeline" onclick="pomoAddToTimeline()">+ agregar al timeline</button>
+        </div>
+
+        <div class="pomo-history" id="pomo-history"></div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       3. OBSERVACIONES
+  ══════════════════════════════════════ -->
+  <div>
+    <div class="section-label">observaciones</div>
+    <div class="card">
+      <textarea class="obs-textarea" id="obs-text" placeholder="notas sobre la sesión de hoy..."></textarea>
+      <div style="display:flex; gap:8px; margin-top:6px;">
+        <button class="icon-btn" onclick="document.getElementById('obs-text').value=''">✕</button>
+        <button class="icon-btn" onclick="pasteField('obs-text')">⎘</button>
+      </div>
     </div>
   </div>
 
@@ -859,6 +904,16 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════
+       BOTÓN GUARDAR TODO
+  ══════════════════════════════════════ -->
+  <div class="save-all-container">
+    <button class="save-all-btn" onclick="saveAll()">
+      guardar todo
+    </button>
+    <div id="save-message" class="save-message">guardado correctamente</div>
+  </div>
+
   <!-- /content -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -869,7 +924,7 @@ function toggleTheme() {
   const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
   html.setAttribute('data-theme', next);
   localStorage.setItem('tracker_theme', next);
-  renderChart(); // re-render with new colors
+  renderChart();
 }
 (function applyTheme() {
   const t = localStorage.getItem('tracker_theme');
@@ -892,21 +947,6 @@ const REPO   = config.repo || 'vd159817/mi_tracker';
 
 let studyData = JSON.parse(localStorage.getItem('tracker_study') || '[]');
 
-// ── GITHUB ──
-async function saveToGitHub(path, data) {
-  if (!config.token) return;
-  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  let sha = '';
-  try { const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
-    if (r.ok) { const j = await r.json(); sha = j.sha; } } catch(e) {}
-  const body = { message: `update ${path}`, content };
-  if (sha) body.sha = sha;
-  await fetch(url, { method: 'PUT',
-    headers: { Authorization: `token ${config.token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body) });
-}
-
 // ── HELPERS ──
 async function pasteField(id) {
   try {
@@ -915,11 +955,12 @@ async function pasteField(id) {
   } catch(e) { alert('Permite acceso al portapapeles.'); }
 }
 
-function showStatus(msg) {
-  const el = document.getElementById('save-status');
-  el.textContent = msg;
-  el.classList.remove('hidden');
-  setTimeout(() => el.classList.add('hidden'), 2500);
+function showSaveMessage() {
+  const msg = document.getElementById('save-message');
+  msg.classList.add('visible');
+  setTimeout(() => {
+    msg.classList.remove('visible');
+  }, 2000);
 }
 
 // ── CONTEXT TOGGLE ──
@@ -974,31 +1015,39 @@ function setL3(key, val) {
   l3State[key] = val;
 }
 
-// ── TIMELINE ──
-// Hours: 6am → 12am (next day) = 18 slots
+// ── TIMELINE CON DURACIONES DECIMALES ──
 const HOUR_START = 6;   // 6am
 const HOUR_COUNT = 20;  // 6am to 2am next day
 
-let segments = []; // { start, end, ctx }  (start/end in 0-based index from HOUR_START)
+let segments = [];
 
-function hourLabel(h) {
-  // h is absolute 0-23
-  const real = h % 24;
+function formatTimeWithMinutes(h) {
+  // h es decimal (ej: 14.5 = 2:30pm)
+  const wholeHour = Math.floor(h);
+  const minutes = Math.round((h - wholeHour) * 60);
+  const real = wholeHour % 24;
   const ampm = real < 12 ? 'am' : 'pm';
   const h12  = real === 0 ? 12 : real > 12 ? real - 12 : real;
-  return `${h12}${ampm}`;
+  
+  if (minutes === 0) {
+    return `${h12}${ampm}`;
+  } else {
+    return `${h12}:${minutes.toString().padStart(2,'0')}${ampm}`;
+  }
 }
 
 function buildTimeSelects() {
   const start = document.getElementById('seg-start');
   const end   = document.getElementById('seg-end');
+  
   [start, end].forEach((sel, i) => {
     sel.innerHTML = '';
-    for (let h = 0; h <= HOUR_COUNT; h++) {
+    // Opciones cada 30 minutos
+    for (let h = 0; h <= HOUR_COUNT; h += 0.5) {
       const absH = HOUR_START + h;
       const opt  = document.createElement('option');
       opt.value  = absH;
-      opt.textContent = hourLabel(absH);
+      opt.textContent = formatTimeWithMinutes(absH);
       if (i === 0 && h === 0) opt.selected = true;
       if (i === 1 && h === 1) opt.selected = true;
       sel.appendChild(opt);
@@ -1014,22 +1063,28 @@ function buildHourGrid() {
   grid.innerHTML   = '';
   labels.innerHTML = '';
 
-  for (let h = 0; h < HOUR_COUNT; h++) {
+  for (let h = 0; h < HOUR_COUNT; h += 0.5) {
     const absH = HOUR_START + h;
     const col  = document.createElement('div');
     col.className = 'hour-col';
     col.style.position = 'relative';
+    col.style.flex = '0.5'; // cada media hora ocupa medio ancho
     grid.appendChild(col);
 
-    // label every 2 hours
-    const lbl = document.createElement('div');
-    lbl.style.flex = '1';
-    lbl.style.textAlign = 'center';
-    lbl.style.fontSize  = '8px';
-    lbl.style.color     = 'var(--text3)';
-    lbl.style.fontFamily = 'DM Mono, monospace';
-    lbl.textContent = h % 2 === 0 ? hourLabel(absH) : '';
-    labels.appendChild(lbl);
+    if (h % 1 === 0) { // solo etiquetas en horas enteras
+      const lbl = document.createElement('div');
+      lbl.style.flex = '0.5';
+      lbl.style.textAlign = 'center';
+      lbl.style.fontSize  = '8px';
+      lbl.style.color     = 'var(--text3)';
+      lbl.style.fontFamily = 'DM Mono, monospace';
+      lbl.textContent = formatTimeWithMinutes(absH);
+      labels.appendChild(lbl);
+    } else {
+      const lbl = document.createElement('div');
+      lbl.style.flex = '0.5';
+      labels.appendChild(lbl);
+    }
   }
 
   renderSegments();
@@ -1037,29 +1092,31 @@ function buildHourGrid() {
 
 function renderSegments() {
   const grid = document.getElementById('hour-grid');
-  // Remove old seg blocks
   grid.querySelectorAll('.seg-block').forEach(el => el.remove());
 
   segments.forEach((seg, idx) => {
-    const startCol = seg.start - HOUR_START;
-    const endCol   = seg.end   - HOUR_START;
-    if (startCol < 0 || endCol > HOUR_COUNT || startCol >= endCol) return;
+    const startCol = (seg.start - HOUR_START) * 2; // multiplicamos por 2 por medias horas
+    const endCol   = (seg.end - HOUR_START) * 2;
+    if (startCol < 0 || endCol > HOUR_COUNT * 2 || startCol >= endCol) return;
 
-    const gridWidth = grid.offsetWidth || 300;
-    const colW      = gridWidth / HOUR_COUNT;
+    const gridWidth = grid.offsetWidth || 600;
+    const colW      = gridWidth / (HOUR_COUNT * 2); // ancho por media hora
     const left      = startCol * colW;
     const width     = (endCol - startCol) * colW - 2;
 
     const block = document.createElement('div');
     block.className = `seg-block ${seg.ctx}-seg`;
     block.style.left  = left + 'px';
-    block.style.width = Math.max(width, 6) + 'px';
+    block.style.width = Math.max(width, 4) + 'px';
     block.style.position = 'absolute';
-    block.title = `${hourLabel(seg.start)}–${hourLabel(seg.end)} · ${seg.ctx === 'auto' ? 'autodidacta' : 'universidad'}`;
+    
+    const duracionHoras = seg.end - seg.start;
+    const duracionMin = Math.round(duracionHoras * 60);
+    block.title = `${formatTimeWithMinutes(seg.start)}–${formatTimeWithMinutes(seg.end)} · ${duracionMin}min · ${seg.ctx === 'auto' ? 'autodidacta' : 'universidad'}`;
 
     const lbl = document.createElement('div');
     lbl.className = 'seg-label';
-    lbl.textContent = seg.ctx === 'auto' ? 'auto' : 'uni';
+    lbl.textContent = seg.ctx === 'auto' ? 'A' : 'U';
     block.appendChild(lbl);
 
     block.onclick = () => removeSegment(idx);
@@ -1073,22 +1130,32 @@ function renderSegments() {
 function renderSegList() {
   const list = document.getElementById('seg-list');
   if (segments.length === 0) { list.innerHTML = ''; return; }
-  list.innerHTML = segments.map((seg, i) => `
-    <div class="seg-item ${seg.ctx}-item">
-      <div class="seg-item-dot ${seg.ctx}"></div>
-      <span class="seg-item-text">
-        ${hourLabel(seg.start)} → ${hourLabel(seg.end)}
-        &nbsp;·&nbsp; ${seg.ctx === 'auto' ? 'autodidacta' : 'universidad'}
-        &nbsp;·&nbsp; ${seg.end - seg.start}h
-      </span>
-      <button class="seg-item-del" onclick="removeSegment(${i})">✕</button>
-    </div>
-  `).join('');
+  
+  list.innerHTML = segments.map((seg, i) => {
+    const duracionHoras = seg.end - seg.start;
+    const horas = Math.floor(duracionHoras);
+    const minutos = Math.round((duracionHoras - horas) * 60);
+    const duracionTexto = horas > 0 
+      ? `${horas}h ${minutos}min` 
+      : `${minutos}min`;
+    
+    return `
+      <div class="seg-item ${seg.ctx}-item">
+        <div class="seg-item-dot ${seg.ctx}"></div>
+        <span class="seg-item-text">
+          ${formatTimeWithMinutes(seg.start)} → ${formatTimeWithMinutes(seg.end)}
+          &nbsp;·&nbsp; ${seg.ctx === 'auto' ? 'autodidacta' : 'universidad'}
+          &nbsp;·&nbsp; ${duracionTexto}
+        </span>
+        <button class="seg-item-del" onclick="removeSegment(${i})">✕</button>
+      </div>
+    `;
+  }).join('');
 }
 
 function addSegment() {
-  const start = parseInt(document.getElementById('seg-start').value);
-  const end   = parseInt(document.getElementById('seg-end').value);
+  const start = parseFloat(document.getElementById('seg-start').value);
+  const end   = parseFloat(document.getElementById('seg-end').value);
   const ctx   = document.getElementById('seg-ctx').value;
   if (end <= start) { alert('La hora de fin debe ser mayor que la de inicio.'); return; }
   segments.push({ start, end, ctx });
@@ -1106,12 +1173,287 @@ function updateTotalHours() {
 }
 
 buildHourGrid();
-
-// Rebuild grid on resize
 window.addEventListener('resize', () => renderSegments());
 
-// ── SAVE SESSION ──
-async function saveSession() {
+// ── CRONÓMETRO CON DURACIONES DECIMALES ──
+let chronoRunning  = false;
+let chronoPaused   = false;
+let chronoStart_ts = null;
+let chronoAccum    = 0;
+let chronoInterval = null;
+let chronoCtx      = 'auto';
+let chronoSessionStart = null;
+
+function setChronoCtx(ctx) {
+  chronoCtx = ctx;
+  document.getElementById('chrono-ctx-auto').classList.toggle('active', ctx === 'auto');
+  document.getElementById('chrono-ctx-uni').classList.toggle('active', ctx === 'uni');
+}
+
+function chronoFmt(ms) {
+  const total = Math.floor(ms / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function chronoTick() {
+  if (!chronoRunning || chronoPaused) return;
+  const elapsed = chronoAccum + (Date.now() - chronoStart_ts);
+  document.getElementById('chrono-display').textContent = chronoFmt(elapsed);
+}
+
+function chronoStart() {
+  if (chronoRunning && !chronoPaused) return;
+
+  if (!chronoRunning) {
+    const now = new Date();
+    chronoSessionStart = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+    chronoAccum = 0;
+  }
+
+  chronoRunning = true;
+  chronoPaused  = false;
+  chronoStart_ts = Date.now();
+
+  clearInterval(chronoInterval);
+  chronoInterval = setInterval(chronoTick, 500);
+
+  document.getElementById('btn-chrono-start').classList.add('hidden');
+  document.getElementById('btn-chrono-stop').classList.remove('hidden');
+  document.getElementById('btn-chrono-pause').classList.remove('hidden');
+
+  const now = new Date();
+  document.getElementById('chrono-sub').textContent =
+    `iniciado a las ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('chrono-status').classList.add('hidden');
+}
+
+function chronoPause() {
+  if (!chronoRunning || chronoPaused) {
+    chronoPaused = false;
+    chronoStart_ts = Date.now();
+    clearInterval(chronoInterval);
+    chronoInterval = setInterval(chronoTick, 500);
+    document.getElementById('btn-chrono-pause').textContent = '⏸ pausar';
+    document.getElementById('chrono-sub').textContent = 'sesión en curso...';
+    return;
+  }
+  chronoPaused = true;
+  chronoAccum += Date.now() - chronoStart_ts;
+  clearInterval(chronoInterval);
+  document.getElementById('btn-chrono-pause').textContent = '▶ reanudar';
+  document.getElementById('chrono-sub').textContent = 'en pausa';
+}
+
+function chronoStop() {
+  if (!chronoRunning) return;
+
+  const totalMs = chronoAccum + (chronoPaused ? 0 : Date.now() - chronoStart_ts);
+  const totalH  = totalMs / 3600000;
+
+  clearInterval(chronoInterval);
+  chronoRunning = false;
+  chronoPaused  = false;
+
+  const now = new Date();
+  const nowH = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+  
+  let startH = chronoSessionStart || HOUR_START;
+  let endH = nowH;
+  
+  if (endH < startH) endH += 24;
+  endH = Math.min(HOUR_START + HOUR_COUNT, endH);
+  
+  if (endH - startH > 0.016) { // más de 1 minuto
+    segments.push({ 
+      start: startH, 
+      end: endH, 
+      ctx: chronoCtx 
+    });
+    renderSegments();
+  }
+
+  document.getElementById('btn-chrono-start').classList.remove('hidden');
+  document.getElementById('btn-chrono-start').textContent = '▶ iniciar sesión';
+  document.getElementById('btn-chrono-stop').classList.add('hidden');
+  document.getElementById('btn-chrono-pause').classList.add('hidden');
+  document.getElementById('btn-chrono-pause').textContent = '⏸ pausar';
+  document.getElementById('chrono-display').textContent = '00:00:00';
+
+  const hh = Math.floor(totalH);
+  const mm = Math.round((totalH - hh) * 60);
+  document.getElementById('chrono-sub').textContent = 'listo para iniciar';
+  
+  const status = document.getElementById('chrono-status');
+  status.textContent = `✓ sesión de ${hh}h ${mm}min agregada al timeline`;
+  status.className = 'chrono-status';
+  setTimeout(() => status.classList.add('hidden'), 4000);
+
+  chronoAccum = 0;
+  chronoStart_ts = null;
+  chronoSessionStart = null;
+}
+
+// ── POMODORO CON TIMELINE ──
+let pomoRunning   = false;
+let pomoIsBreak   = false;
+let pomoCycle     = 1;
+let pomoSecsLeft  = 25 * 60;
+let pomoTotalSecs = 25 * 60;
+let pomoInterval  = null;
+let pomoHistory   = [];
+const POMO_TOTAL_CYCLES = 4;
+const ARC_LEN = 2 * Math.PI * 50;
+
+function pomoWorkSecs()  { return (parseInt(document.getElementById('pomo-work').value)  || 25) * 60; }
+function pomoBreakSecs() { return (parseInt(document.getElementById('pomo-break').value) || 5)  * 60; }
+
+function pomoFmt(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function pomoUpdateRing() {
+  const arc   = document.getElementById('pomo-arc');
+  const ratio = pomoSecsLeft / pomoTotalSecs;
+  const offset = ARC_LEN * (1 - ratio);
+  arc.style.strokeDashoffset = offset;
+  arc.style.stroke = pomoIsBreak ? 'var(--normal)' : 'var(--auto)';
+}
+
+function pomoUpdateUI() {
+  document.getElementById('pomo-time').textContent  = pomoFmt(pomoSecsLeft);
+  document.getElementById('pomo-phase').textContent = pomoIsBreak ? 'descanso' : 'trabajo';
+  document.getElementById('pomo-cycle').textContent = `ciclo ${pomoCycle} de ${POMO_TOTAL_CYCLES}`;
+  pomoUpdateRing();
+
+  const startBtn = document.getElementById('btn-pomo-start');
+  startBtn.textContent = pomoRunning ? '⏸ pausar' : '▶ iniciar';
+  startBtn.className   = 'btn-pomo' + (pomoIsBreak ? ' break-mode' : '');
+
+  const hist = document.getElementById('pomo-history');
+  const dots = [];
+  for (let i = 0; i < POMO_TOTAL_CYCLES; i++) {
+    const done = pomoHistory[i];
+    const cls  = done === 'work' ? 'pomo-dot work' :
+                 done === 'brk'  ? 'pomo-dot brk'  : 'pomo-dot empty';
+    dots.push(`<div class="${cls}" title="ciclo ${i+1}"></div>`);
+  }
+  hist.innerHTML = dots.join('');
+}
+
+function pomoTick() {
+  if (!pomoRunning) return;
+  pomoSecsLeft--;
+  pomoUpdateUI();
+
+  if (pomoSecsLeft <= 0) {
+    pomoPhaseEnd();
+  }
+}
+
+function pomoAddToTimeline() {
+  // Determinar contexto actual (usar el último activo o auto por defecto)
+  const ctx = activeCtx.auto ? 'auto' : activeCtx.uni ? 'uni' : 'auto';
+  
+  const now = new Date();
+  const endH = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+  const startH = endH - (pomoTotalSecs / 3600);
+  
+  segments.push({ 
+    start: Math.max(HOUR_START, startH), 
+    end: Math.min(HOUR_START + HOUR_COUNT, endH), 
+    ctx: ctx 
+  });
+  renderSegments();
+  
+  const minutos = Math.round(pomoTotalSecs / 60);
+  const status = document.getElementById('chrono-status');
+  status.textContent = `✓ pomodoro de ${minutos}min agregado al timeline`;
+  status.className = 'chrono-status';
+  setTimeout(() => status.classList.add('hidden'), 3000);
+}
+
+function pomoPhaseEnd() {
+  clearInterval(pomoInterval);
+  pomoRunning = false;
+
+  // Agregar automáticamente al timeline al finalizar
+  pomoAddToTimeline();
+
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('🍅 Pomodoro', { body: pomoIsBreak ? '¡Descanso terminado! A estudiar.' : '¡Pomodoro completo! Descansa.' });
+  }
+
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = pomoIsBreak ? 440 : 660;
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    osc.start(); osc.stop(ctx.currentTime + 0.8);
+  } catch(e) {}
+
+  if (!pomoIsBreak) {
+    pomoHistory[pomoCycle - 1] = 'work';
+    pomoIsBreak   = true;
+    pomoTotalSecs = pomoBreakSecs();
+    pomoSecsLeft  = pomoTotalSecs;
+  } else {
+    pomoHistory[pomoCycle - 1] = 'brk';
+    if (pomoCycle >= POMO_TOTAL_CYCLES) {
+      pomoHistory = [];
+      pomoCycle   = 1;
+    } else {
+      pomoCycle++;
+    }
+    pomoIsBreak   = false;
+    pomoTotalSecs = pomoWorkSecs();
+    pomoSecsLeft  = pomoTotalSecs;
+  }
+  pomoUpdateUI();
+}
+
+function pomoToggle() {
+  if (pomoRunning) {
+    clearInterval(pomoInterval);
+    pomoRunning = false;
+  } else {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+    pomoInterval = setInterval(pomoTick, 1000);
+    pomoRunning  = true;
+  }
+  pomoUpdateUI();
+}
+
+function pomoReset() {
+  clearInterval(pomoInterval);
+  pomoRunning   = false;
+  pomoIsBreak   = false;
+  pomoCycle     = 1;
+  pomoHistory   = [];
+  pomoTotalSecs = pomoWorkSecs();
+  pomoSecsLeft  = pomoTotalSecs;
+  pomoUpdateUI();
+}
+
+function pomoSkip() {
+  clearInterval(pomoInterval);
+  pomoRunning = false;
+  pomoPhaseEnd();
+}
+
+pomoReset();
+
+// ── GUARDAR TODO ──
+function saveAll() {
   const entry = {
     date: TODAY,
     context: { auto: activeCtx.auto, uni: activeCtx.uni },
@@ -1120,7 +1462,7 @@ async function saveSession() {
     calidad: l3State['calidad'] || null,
     dificultad: l3State['dificultad'] || null,
     concentracion: l3State['concentracion'] || null,
-    interacciones: l3State['interacciones'] || null,
+    interrupciones: l3State['interrupciones'] || null,
     pages: parseInt(document.getElementById('pages-slider').value),
     segments: segments.map(s => ({...s})),
     totalHours: segments.reduce((sum, s) => sum + (s.end - s.start), 0),
@@ -1131,12 +1473,10 @@ async function saveSession() {
   if (idx >= 0) studyData[idx] = entry; else studyData.push(entry);
 
   localStorage.setItem('tracker_study', JSON.stringify(studyData));
-  if (config.token) await saveToGitHub('data/study.json', studyData);
 
-  document.getElementById('obs-text').value = '';
-  showStatus(config.token ? 'guardado en github ✓' : 'guardado localmente ✓');
   renderChart();
   renderStats();
+  showSaveMessage();
 }
 
 // ── LOAD TODAY ──
@@ -1154,7 +1494,7 @@ if (todayEntry) {
   if (todayEntry.calidad)        setL3('calidad', todayEntry.calidad);
   if (todayEntry.dificultad)     setL3('dificultad', todayEntry.dificultad);
   if (todayEntry.concentracion)  setL3('concentracion', todayEntry.concentracion);
-  if (todayEntry.interacciones)  setL3('interacciones', todayEntry.interacciones);
+  if (todayEntry.interrupciones) setL3('interrupciones', todayEntry.interrupciones);
   if (todayEntry.pages) {
     document.getElementById('pages-slider').value = todayEntry.pages;
     document.getElementById('pages-val').textContent = todayEntry.pages;
@@ -1163,6 +1503,7 @@ if (todayEntry) {
     segments = todayEntry.segments.map(s => ({...s}));
     renderSegments();
   }
+  if (todayEntry.obs) document.getElementById('obs-text').value = todayEntry.obs;
 }
 
 // ── CHART ──
@@ -1197,124 +1538,27 @@ function renderChart() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
   const tickColor = isDark ? '#7a6a55' : '#aaa89f';
-  const tooltipBg = isDark ? '#1e1e1e' : '#ffffff';
-  const tooltipTitle = '#2c7be5';
 
   chartInstance = new Chart(ctx, {
     type: 'line',
     data: {
       labels,
       datasets: [
-        {
-          label: 'horas',
-          data: hours,
-          borderColor: '#2c7be5',
-          backgroundColor: 'rgba(44,123,229,0.08)',
-          borderWidth: 2,
-          pointRadius: 3,
-          pointBackgroundColor: '#2c7be5',
-          tension: 0.4, spanGaps: true,
-          yAxisID: 'y'
-        },
-        {
-          label: 'calidad',
-          data: calidad,
-          borderColor: '#28b463',
-          backgroundColor: 'rgba(40,180,99,0.06)',
-          borderWidth: 1.5,
-          pointRadius: 2.5,
-          pointBackgroundColor: '#28b463',
-          tension: 0.4, spanGaps: true,
-          yAxisID: 'y2'
-        },
-        {
-          label: 'dificultad',
-          data: dific,
-          borderColor: '#e6a817',
-          backgroundColor: 'rgba(230,168,23,0.06)',
-          borderWidth: 1.5,
-          pointRadius: 2.5,
-          pointBackgroundColor: '#e6a817',
-          tension: 0.4, spanGaps: true,
-          borderDash: [4,3],
-          yAxisID: 'y2'
-        },
-        {
-          label: 'concentración',
-          data: conc,
-          borderColor: '#9b59b6',
-          backgroundColor: 'rgba(155,89,182,0.06)',
-          borderWidth: 1.5,
-          pointRadius: 2.5,
-          pointBackgroundColor: '#9b59b6',
-          tension: 0.4, spanGaps: true,
-          yAxisID: 'y2'
-        },
-        {
-          label: 'páginas÷10',
-          data: pages,
-          borderColor: '#e74c3c',
-          backgroundColor: 'rgba(231,76,60,0.06)',
-          borderWidth: 1,
-          pointRadius: 2,
-          pointBackgroundColor: '#e74c3c',
-          tension: 0.4, spanGaps: true,
-          borderDash: [2,4],
-          yAxisID: 'y'
-        }
+        { label: 'horas', data: hours, borderColor: '#2c7be5', backgroundColor: 'rgba(44,123,229,0.08)', borderWidth: 2, pointRadius: 3, tension: 0.4, spanGaps: true, yAxisID: 'y' },
+        { label: 'calidad', data: calidad, borderColor: '#28b463', backgroundColor: 'rgba(40,180,99,0.06)', borderWidth: 1.5, pointRadius: 2.5, tension: 0.4, spanGaps: true, yAxisID: 'y2' },
+        { label: 'dificultad', data: dific, borderColor: '#e6a817', backgroundColor: 'rgba(230,168,23,0.06)', borderWidth: 1.5, pointRadius: 2.5, tension: 0.4, spanGaps: true, borderDash: [4,3], yAxisID: 'y2' },
+        { label: 'concentración', data: conc, borderColor: '#9b59b6', backgroundColor: 'rgba(155,89,182,0.06)', borderWidth: 1.5, pointRadius: 2.5, tension: 0.4, spanGaps: true, yAxisID: 'y2' },
+        { label: 'páginas÷10', data: pages, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.06)', borderWidth: 1, pointRadius: 2, tension: 0.4, spanGaps: true, borderDash: [2,4], yAxisID: 'y' }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: {
-          display: false // we use custom legend above
-        },
-        tooltip: {
-          backgroundColor: tooltipBg,
-          titleColor: tooltipTitle,
-          bodyColor: tickColor,
-          borderColor: gridColor,
-          borderWidth: 1,
-          titleFont: { family: 'DM Mono', size: 10, weight: '500' },
-          bodyFont:  { family: 'DM Mono', size: 10 },
-          padding: 10,
-          callbacks: {
-            label: ctx => {
-              const v = ctx.parsed.y;
-              if (v === null) return null;
-              const names = ['horas','calidad (1-3)','dificultad (1-3)','concentración (1-3)','páginas÷10'];
-              return ` ${names[ctx.datasetIndex]}: ${v}`;
-            }
-          }
-        }
-      },
+      plugins: { legend: { display: false } },
       scales: {
-        x: {
-          ticks: { color: tickColor, font: { family: 'DM Mono', size: 8 }, maxRotation: 0, maxTicksLimit: 10 },
-          grid: { color: gridColor },
-          border: { color: gridColor }
-        },
-        y: {
-          position: 'left',
-          min: 0,
-          title: { display: true, text: 'horas / páginas÷10', color: tickColor, font: { family: 'DM Mono', size: 8 } },
-          ticks: { color: tickColor, font: { family: 'DM Mono', size: 8 } },
-          grid: { color: gridColor },
-          border: { color: gridColor }
-        },
-        y2: {
-          position: 'right',
-          min: 0, max: 3,
-          title: { display: true, text: 'escala 1-3', color: tickColor, font: { family: 'DM Mono', size: 8 } },
-          ticks: {
-            color: tickColor, font: { family: 'DM Mono', size: 8 }, stepSize: 1,
-            callback: v => ['','baja','media','alta'][v] || v
-          },
-          grid: { drawOnChartArea: false },
-          border: { color: gridColor }
-        }
+        x: { ticks: { color: tickColor, font: { family: 'DM Mono', size: 8 }, maxRotation: 0, maxTicksLimit: 10 }, grid: { color: gridColor }, border: { color: gridColor } },
+        y: { position: 'left', min: 0, title: { display: true, text: 'horas / páginas÷10', color: tickColor, font: { family: 'DM Mono', size: 8 } }, ticks: { color: tickColor }, grid: { color: gridColor }, border: { color: gridColor } },
+        y2: { position: 'right', min: 0, max: 3, title: { display: true, text: 'escala 1-3', color: tickColor, font: { family: 'DM Mono', size: 8 } }, ticks: { color: tickColor, stepSize: 1, callback: v => ['','baja','media','alta'][v] || v }, grid: { drawOnChartArea: false }, border: { color: gridColor } }
       }
     }
   });
@@ -1345,277 +1589,6 @@ function renderStats() {
   `).join('');
 }
 
-// ── INIT ──
-renderChart();
-renderStats();
-
-// ══════════════════════════════════════════════════════════
-// CRONÓMETRO DE SESIÓN
-// ══════════════════════════════════════════════════════════
-let chronoRunning  = false;
-let chronoPaused   = false;
-let chronoStart_ts = null;   // timestamp cuando se inició
-let chronoPause_ts = null;   // timestamp cuando se pausó
-let chronoAccum    = 0;      // ms acumulados antes de pausas
-let chronoInterval = null;
-let chronoCtx      = 'auto'; // contexto de esta sesión
-let chronoSessionStart = null; // hora absoluta de inicio (para el segmento)
-
-function setChronoCtx(ctx) {
-  chronoCtx = ctx;
-  document.getElementById('chrono-ctx-auto').classList.toggle('active', ctx === 'auto');
-  document.getElementById('chrono-ctx-uni').classList.toggle('active', ctx === 'uni');
-}
-
-function chronoFmt(ms) {
-  const total = Math.floor(ms / 1000);
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-}
-
-function chronoTick() {
-  if (!chronoRunning || chronoPaused) return;
-  const elapsed = chronoAccum + (Date.now() - chronoStart_ts);
-  document.getElementById('chrono-display').textContent = chronoFmt(elapsed);
-}
-
-function chronoStart() {
-  if (chronoRunning && !chronoPaused) return;
-
-  if (!chronoRunning) {
-    // Primera vez: registrar hora de inicio para el segmento
-    const now = new Date();
-    chronoSessionStart = now.getHours() + (now.getMinutes() >= 30 ? 0.5 : 0); // redondear a media hora
-    chronoSessionStart = HOUR_START + Math.round((chronoSessionStart - HOUR_START) * 2) / 2;
-    chronoAccum = 0;
-  }
-
-  chronoRunning = true;
-  chronoPaused  = false;
-  chronoStart_ts = Date.now();
-
-  clearInterval(chronoInterval);
-  chronoInterval = setInterval(chronoTick, 500);
-
-  document.getElementById('btn-chrono-start').classList.add('hidden');
-  document.getElementById('btn-chrono-stop').classList.remove('hidden');
-  document.getElementById('btn-chrono-pause').classList.remove('hidden');
-
-  const now = new Date();
-  document.getElementById('chrono-sub').textContent =
-    `iniciado a las ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-  chronoSetStatus('');
-}
-
-function chronoPause() {
-  if (!chronoRunning || chronoPaused) {
-    // Reanudar
-    chronoPaused = false;
-    chronoStart_ts = Date.now();
-    clearInterval(chronoInterval);
-    chronoInterval = setInterval(chronoTick, 500);
-    document.getElementById('btn-chrono-pause').textContent = '⏸ pausar';
-    document.getElementById('chrono-sub').textContent = 'sesión en curso...';
-    return;
-  }
-  // Pausar
-  chronoPaused = true;
-  chronoAccum += Date.now() - chronoStart_ts;
-  clearInterval(chronoInterval);
-  document.getElementById('btn-chrono-pause').textContent = '▶ reanudar';
-  document.getElementById('chrono-sub').textContent = 'en pausa';
-}
-
-function chronoStop() {
-  if (!chronoRunning) return;
-
-  const totalMs = chronoAccum + (chronoPaused ? 0 : Date.now() - chronoStart_ts);
-  const totalH  = totalMs / 3600000;
-
-  clearInterval(chronoInterval);
-  chronoRunning = false;
-  chronoPaused  = false;
-
-  // Calcular hora de fin aproximada
-  const nowH   = new Date().getHours() + new Date().getMinutes() / 60;
-  let startH = chronoSessionStart || HOUR_START;
-  let endH   = Math.min(HOUR_START + HOUR_COUNT, Math.round(nowH * 2) / 2);
-  // Asegurarse que end > start
-  if (endH <= startH) endH = startH + 1;
-
-  // Añadir segmento al timeline
-  segments.push({ start: Math.round(startH), end: Math.round(endH), ctx: chronoCtx });
-  renderSegments();
-
-  // Resetear UI
-  document.getElementById('btn-chrono-start').classList.remove('hidden');
-  document.getElementById('btn-chrono-start').textContent = '▶ iniciar sesión';
-  document.getElementById('btn-chrono-stop').classList.add('hidden');
-  document.getElementById('btn-chrono-pause').classList.add('hidden');
-  document.getElementById('btn-chrono-pause').textContent = '⏸ pausar';
-  document.getElementById('chrono-display').textContent = '00:00:00';
-
-  const hh = Math.floor(totalH);
-  const mm = Math.round((totalH - hh) * 60);
-  document.getElementById('chrono-sub').textContent = 'listo para iniciar';
-  chronoSetStatus(`✓ sesión de ${hh}h ${mm}min agregada al timeline`, false);
-  setTimeout(() => chronoSetStatus(''), 4000);
-
-  chronoAccum = 0;
-  chronoStart_ts = null;
-  chronoSessionStart = null;
-}
-
-function chronoSetStatus(msg, isErr = false) {
-  const el = document.getElementById('chrono-status');
-  el.textContent = msg;
-  el.className = 'chrono-status' + (isErr ? ' err' : '') + (msg ? '' : ' hidden');
-}
-
-// ══════════════════════════════════════════════════════════
-// POMODORO
-// ══════════════════════════════════════════════════════════
-let pomoRunning   = false;
-let pomoIsBreak   = false;
-let pomoCycle     = 1;
-let pomoSecsLeft  = 25 * 60;
-let pomoTotalSecs = 25 * 60;
-let pomoInterval  = null;
-let pomoHistory   = []; // 'work' | 'brk'
-const POMO_TOTAL_CYCLES = 4;
-
-const ARC_LEN = 2 * Math.PI * 50; // circumference r=50
-
-function pomoWorkSecs()  { return (parseInt(document.getElementById('pomo-work').value)  || 25) * 60; }
-function pomoBreakSecs() { return (parseInt(document.getElementById('pomo-break').value) || 5)  * 60; }
-
-function pomoFmt(s) {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-}
-
-function pomoUpdateRing() {
-  const arc   = document.getElementById('pomo-arc');
-  const ratio = pomoSecsLeft / pomoTotalSecs;
-  const offset = ARC_LEN * (1 - ratio);
-  arc.style.strokeDashoffset = offset;
-  arc.style.stroke = pomoIsBreak ? 'var(--normal)' : 'var(--auto)';
-}
-
-function pomoUpdateUI() {
-  document.getElementById('pomo-time').textContent  = pomoFmt(pomoSecsLeft);
-  document.getElementById('pomo-phase').textContent = pomoIsBreak ? 'descanso' : 'trabajo';
-  document.getElementById('pomo-cycle').textContent = `ciclo ${pomoCycle} de ${POMO_TOTAL_CYCLES}`;
-  pomoUpdateRing();
-
-  const startBtn = document.getElementById('btn-pomo-start');
-  startBtn.textContent = pomoRunning ? '⏸ pausar' : '▶ iniciar';
-  startBtn.className   = 'btn-pomo' + (pomoIsBreak ? ' break-mode' : '');
-
-  // Historial de puntos
-  const hist = document.getElementById('pomo-history');
-  const dots = [];
-  for (let i = 0; i < POMO_TOTAL_CYCLES; i++) {
-    const done = pomoHistory[i];
-    const cls  = done === 'work' ? 'pomo-dot work' :
-                 done === 'brk'  ? 'pomo-dot brk'  : 'pomo-dot empty';
-    dots.push(`<div class="${cls}" title="ciclo ${i+1}"></div>`);
-  }
-  hist.innerHTML = dots.join('');
-}
-
-function pomoTick() {
-  if (!pomoRunning) return;
-  pomoSecsLeft--;
-  pomoUpdateUI();
-
-  if (pomoSecsLeft <= 0) {
-    pomoPhaseEnd();
-  }
-}
-
-function pomoPhaseEnd() {
-  clearInterval(pomoInterval);
-  pomoRunning = false;
-
-  // Notificación
-  const msg = pomoIsBreak ? '¡Descanso terminado! A estudiar.' : '¡Pomodoro completo! Descansa.';
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification('🍅 Pomodoro', { body: msg, silent: false });
-  }
-  // Beep con Web Audio
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value = pomoIsBreak ? 440 : 660;
-    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-    osc.start(); osc.stop(ctx.currentTime + 0.8);
-  } catch(e) {}
-
-  if (!pomoIsBreak) {
-    // Registrar ciclo de trabajo terminado
-    pomoHistory[pomoCycle - 1] = 'work';
-    pomoIsBreak   = true;
-    pomoTotalSecs = pomoBreakSecs();
-    pomoSecsLeft  = pomoTotalSecs;
-  } else {
-    // Registrar descanso terminado
-    pomoHistory[pomoCycle - 1] = 'brk';
-    if (pomoCycle >= POMO_TOTAL_CYCLES) {
-      // Serie completa
-      pomoHistory = [];
-      pomoCycle   = 1;
-    } else {
-      pomoCycle++;
-    }
-    pomoIsBreak   = false;
-    pomoTotalSecs = pomoWorkSecs();
-    pomoSecsLeft  = pomoTotalSecs;
-  }
-  pomoUpdateUI();
-}
-
-function pomoToggle() {
-  if (pomoRunning) {
-    clearInterval(pomoInterval);
-    pomoRunning = false;
-  } else {
-    // Pedir permisos de notificación la primera vez
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-    pomoInterval = setInterval(pomoTick, 1000);
-    pomoRunning  = true;
-  }
-  pomoUpdateUI();
-}
-
-function pomoReset() {
-  clearInterval(pomoInterval);
-  pomoRunning   = false;
-  pomoIsBreak   = false;
-  pomoCycle     = 1;
-  pomoHistory   = [];
-  pomoTotalSecs = pomoWorkSecs();
-  pomoSecsLeft  = pomoTotalSecs;
-  pomoUpdateUI();
-}
-
-function pomoSkip() {
-  clearInterval(pomoInterval);
-  pomoRunning = false;
-  pomoPhaseEnd();
-}
-
-// Inicializar pomodoro
-pomoReset();
-
 // ── MENU ──
 function openMenu() {
   document.getElementById('menu-drawer').classList.add('open');
@@ -1625,39 +1598,11 @@ function closeMenu() {
   document.getElementById('menu-drawer').classList.remove('open');
   document.getElementById('menu-overlay').classList.remove('open');
 }
+
+// ── INIT ──
+renderChart();
+renderStats();
 </script>
   <script src="historial.js"></script>
-
-<script>
-// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
-(function() {
-  function debounce(fn, ms) {
-    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
-  }
-  const autoSession = debounce(saveSession, 1500);
-
-  // Campos de texto y sliders
-  ['subject-input','obs-text','pages-slider'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', autoSession);
-  });
-
-  // Contexto, tipos de sesión, métricas Likert, segmentos de timeline
-  document.addEventListener('click', function(e) {
-    if (e.target.closest('.ctx-badge') || e.target.closest('.type-btn') ||
-        e.target.closest('.l3-btn')    || e.target.closest('.seg-form') ||
-        e.target.closest('.seg-item')) {
-      autoSession();
-    }
-  });
-  document.addEventListener('change', function(e) {
-    if (e.target.id === 'seg-start' || e.target.id === 'seg-end' ||
-        e.target.id === 'seg-ctx') autoSession();
-  });
-})();
-</script>
-
-  <script>window.PAGE_FILES = {tracker_study:"data/study.json"};</script>
-  <script src="github-sync.js"></script>
 </body>
 </html>

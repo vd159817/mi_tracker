@@ -458,18 +458,6 @@ const YEAR   = new Date().getFullYear();
 const config = JSON.parse(localStorage.getItem('tracker_config') || '{}');
 const REPO   = config.repo || 'vd159817/mi_tracker';
 
-async function saveToGitHub(path, data) {
-  if (!config.token) return;
-  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  let sha = '';
-  try { const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
-    if (r.ok) { const j = await r.json(); sha = j.sha; } } catch(e) {}
-  const body = { message: `update ${path}`, content };
-  if (sha) body.sha = sha;
-  await fetch(url, { method: 'PUT', headers: { Authorization: `token ${config.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-}
-
 async function pasteField(id) {
   try { const t = await navigator.clipboard.readText(); document.getElementById(id).value = t; }
   catch(e) { alert('Permite acceso al portapapeles.'); }
@@ -477,7 +465,7 @@ async function pasteField(id) {
 
 function showStatus(id, msg) {
   const el = document.getElementById(id);
-  el.textContent = msg || (config.token ? 'guardado en github ✓' : 'guardado localmente ✓');
+  el.textContent = msg || ('guardado ✓');
   el.classList.remove('hidden');
   setTimeout(() => el.classList.add('hidden'), 2500);
 }
@@ -679,7 +667,6 @@ function toggleHabitDay(name, bad, ds, cell) {
   }
 
   localStorage.setItem('annual_habits_data', JSON.stringify(habitData));
-  if (config.token) saveToGitHub('data/annual_habits.json', habitData);
 
   // refresh streak
   renderHeatmaps();
@@ -763,7 +750,6 @@ function saveChessEntry() {
 
   chessData.unshift(entry);
   localStorage.setItem('tracker_chess', JSON.stringify(chessData));
-  if (config.token) saveToGitHub('data/chess.json', chessData);
 
   // reset form
   selResult = null; selColor = null;
@@ -797,7 +783,6 @@ function markToday(name, bad) {
   }
 
   localStorage.setItem('annual_habits_data', JSON.stringify(habitData));
-  if (config.token) saveToGitHub('data/annual_habits.json', habitData);
   renderHeatmaps();
 }
 
@@ -951,8 +936,5 @@ function closeMenu() {
   // Hábito anual marcado ya llama saveHabitData → OK (tiene su propio save inline)
 })();
 </script>
-
-  <script>window.PAGE_FILES = {tracker_chess:"data/chess.json",annual_habits_config:"data/annual_habits_config.json",annual_habits_data:"data/annual_habits.json"};</script>
-  <script src="github-sync.js"></script>
 </body>
 </html>

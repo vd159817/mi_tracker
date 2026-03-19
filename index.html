@@ -915,13 +915,8 @@
 
 <script>
 // ── CONFIG ──
-const REPO = 'vd159817/mi_tracker';
-const FILES = {
-  diary: 'data/diary.json',
-  tasks: 'data/tasks.json'
-};
 
-let config = JSON.parse(localStorage.getItem('tracker_config') || '{}');
+const config = {};  // sincronización eliminada — solo localStorage
 let diaryData = JSON.parse(localStorage.getItem('tracker_diary') || '[]');
 let tasksData = JSON.parse(localStorage.getItem('tracker_tasks') || '[]');
 
@@ -1005,9 +1000,6 @@ async function saveDay() {
   localStorage.setItem('tracker_diary', JSON.stringify(diaryData));
 
   // Save to GitHub if configured
-  if (config.token) {
-    await saveToGitHub(FILES.diary, diaryData);
-  }
 
   showStatus();
   renderChart();
@@ -1020,42 +1012,9 @@ async function saveDay() {
 
 function showStatus() {
   const el = document.getElementById('save-status');
-  el.textContent = config.token ? 'guardado en github ✓' : 'guardado localmente ✓';
+  el.textContent = 'guardado ✓';
   el.classList.remove('hidden');
   setTimeout(() => el.classList.add('hidden'), 2500);
-}
-
-// ── GITHUB ──
-async function saveToGitHub(path, data) {
-  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-
-  // Get current SHA
-  let sha = '';
-  try {
-    const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
-    if (r.ok) { const j = await r.json(); sha = j.sha; }
-  } catch(e) {}
-
-  const body = { message: `update ${path}`, content };
-  if (sha) body.sha = sha;
-
-  await fetch(url, {
-    method: 'PUT',
-    headers: { Authorization: `token ${config.token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-}
-
-async function loadFromGitHub(path) {
-  if (!config.token) return null;
-  try {
-    const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
-    const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
-    if (!r.ok) return null;
-    const j = await r.json();
-    return JSON.parse(decodeURIComponent(escape(atob(j.content))));
-  } catch(e) { return null; }
 }
 
 // ── CHART ──
@@ -1197,7 +1156,6 @@ function addTask() {
 
   tasksData.unshift(task);
   localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
-  if (config.token) saveToGitHub(FILES.tasks, tasksData);
 
   input.value = '';
   renderTasks();
@@ -1270,16 +1228,6 @@ function toggleTheme() {
   if (saved) document.documentElement.setAttribute('data-theme', saved);
 })();
 
-  const remoteTasks = await loadFromGitHub(FILES.tasks);
-  if (remoteTasks && remoteTasks.length > 0) {
-    tasksData = remoteTasks;
-    localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
-  }
-  renderChart();
-  renderStreak();
-  renderTasks();
-}
-
 // ── INIT ──
 initDate();
 renderChart();
@@ -1305,8 +1253,6 @@ if (todayEntry) {
   if (todayEntry.journal) document.getElementById('journal-text').value = todayEntry.journal;
   if (todayEntry.tag) document.getElementById('journal-tag').value = '#' + todayEntry.tag;
 }
-
-if (config.token) syncFromGitHub();
 
 // ── EXPORT ──
 // Mapa completo lsKey → archivo GitHub
@@ -1357,32 +1303,6 @@ function resetExportBtns() {
 }
 
 // Fetch todos los archivos desde GitHub y mezcla con localStorage
-async function fetchAllFromGitHub() {
-  const token = config.token;
-  if (!token) return getLocalData(); // sin token, usar solo local
-
-  const data  = getLocalData(); // base: datos locales
-  const repo  = REPO;
-  let fetched = 0;
-
-  await Promise.all(Object.entries(ALL_FILES_MAP).map(async ([lsKey, ghPath]) => {
-    try {
-      const url = `https://api.github.com/repos/${repo}/contents/${ghPath}`;
-      const r   = await fetch(url, { headers: { Authorization: `token ${token}` } });
-      if (!r.ok) return;
-      const j    = await r.json();
-      const raw  = JSON.parse(decodeURIComponent(escape(atob(j.content))));
-      // Mezclar: preferir GitHub (más actualizado) sobre local
-      data[lsKey] = raw;
-      // También actualizar localStorage con los datos frescos
-      localStorage.setItem(lsKey, JSON.stringify(raw));
-      fetched++;
-    } catch(e) { /* archivo no existe aún, ignorar */ }
-  }));
-
-  console.log(`✓ ${fetched} archivos cargados desde GitHub`);
-  return data;
-}
 
 async function exportJSON() {
   setExportStatus('↻ cargando...', true);
@@ -1539,8 +1459,5 @@ async function exportCSV() {
   // Tareas: agregar/completar/eliminar ya llaman saveTasks → OK
 })();
 </script>
-
-  <script>window.PAGE_FILES = {tracker_diary:"data/diary.json",tracker_tasks:"data/tasks.json"};</script>
-  <script src="server-sync.js"></script>
 </body>
 </html>

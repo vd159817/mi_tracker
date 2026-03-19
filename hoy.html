@@ -977,6 +977,50 @@
     .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
+
+    /* ── GUARDAR TODO ── */
+    .save-all-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0 3rem;
+    }
+    
+    .save-all-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 32px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.1em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .save-all-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .save-message {
+      font-size: 12px;
+      color: var(--normal);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      opacity: 0;
+      transition: opacity 0.3s;
+      min-height: 20px;
+    }
+    
+    .save-message.visible {
+      opacity: 1;
+    }
   </style>
   <link rel="stylesheet" href="tracker.css" />
 </head>
@@ -1076,6 +1120,7 @@
         </div>
         <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end;">
           <button class="btn-ghost" onclick="toggleHabitEditor()">cerrar</button>
+          <button class="btn-primary" onclick="saveHabits()">guardar configuración</button>
         </div>
       </div>
 
@@ -1104,6 +1149,7 @@
         </div>
         <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end;">
           <button class="btn-ghost" onclick="toggleRoutineEditor()">cerrar</button>
+          <button class="btn-primary" onclick="saveRoutines()">guardar rutinas</button>
         </div>
       </div>
 
@@ -1317,6 +1363,16 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════
+       BOTÓN GUARDAR TODO (único)
+  ══════════════════════════════════════ -->
+  <div class="save-all-container">
+    <button class="save-all-btn" onclick="saveAll()">
+      guardar todo
+    </button>
+    <div id="save-message" class="save-message">guardado correctamente</div>
+  </div>
+
   <!-- /content -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -1355,31 +1411,13 @@ const DAY_IDX = new Date().getDay(); // 0=Dom,1=Lun,...,6=Sáb
   document.getElementById('full-date').textContent = `${now.getDate()} de ${months[now.getMonth()]}, ${now.getFullYear()}`;
 })();
 
-// ── GITHUB ──
-async function saveToGitHub(path, data) {
-  if (!config.token) return;
-  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  let sha = '';
-  try {
-    const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
-    if (r.ok) { const j = await r.json(); sha = j.sha; }
-  } catch(e) {}
-  const body = { message: `update ${path}`, content };
-  if (sha) body.sha = sha;
-  await fetch(url, {
-    method: 'PUT',
-    headers: { Authorization: `token ${config.token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-}
-
 // ── HELPERS ──
-function showStatus(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg || (config.token ? 'guardado en github ✓' : 'guardado localmente ✓');
-  el.classList.remove('hidden');
-  setTimeout(() => el.classList.add('hidden'), 2500);
+function showSaveMessage() {
+  const msg = document.getElementById('save-message');
+  msg.classList.add('visible');
+  setTimeout(() => {
+    msg.classList.remove('visible');
+  }, 2000);
 }
 
 async function pasteField(id) {
@@ -1406,8 +1444,14 @@ function habitAppliestoday(days) {
 // ── HABITS ──
 function toggleHabitEditor() {
   const ed = document.getElementById('habit-editor');
+  const wasOpen = ed.classList.contains('open');
   ed.classList.toggle('open');
-  if (ed.classList.contains('open')) renderHabitEditorList();
+  if (wasOpen) {
+    localStorage.setItem('tracker_habits_config', JSON.stringify(habitsConfig));
+    renderHabitsList();
+  } else {
+    renderHabitEditorList();
+  }
 }
 
 function renderHabitEditorList() {
@@ -1434,20 +1478,21 @@ function addHabit() {
   });
   document.getElementById('new-habit-name').value = '';
   document.getElementById('new-habit-cat').value = '';
+  localStorage.setItem('tracker_habits_config', JSON.stringify(habitsConfig));
   renderHabitEditorList();
+  renderHabitsList();
 }
 
 function removeHabit(i) {
   habitsConfig.splice(i, 1);
+  localStorage.setItem('tracker_habits_config', JSON.stringify(habitsConfig));
   renderHabitEditorList();
+  renderHabitsList();
 }
 
-async function saveHabits() {
+function saveHabits() {
   localStorage.setItem('tracker_habits_config', JSON.stringify(habitsConfig));
-  if (config.token) await saveToGitHub('data/habits_config.json', habitsConfig);
   renderHabitsList();
-  showStatus('habits-status');
-  document.getElementById('habit-editor').classList.remove('open');
 }
 
 function renderHabitsList() {
@@ -1460,7 +1505,6 @@ function renderHabitsList() {
     return;
   }
 
-  // Group by category
   const cats = {};
   todayHabits.forEach(h => {
     const cat = h.category || 'general';
@@ -1493,11 +1537,9 @@ function renderHabitsList() {
   document.getElementById('habits-summary').textContent = `${done}/${todayHabits.length} completados`;
 }
 
-async function toggleHabit(name) {
+function toggleHabit(name) {
   const key = `${TODAY}_${name}`;
   habitsData[key] = !habitsData[key];
-  localStorage.setItem('tracker_habits_data', JSON.stringify(habitsData));
-  if (config.token) await saveToGitHub('data/habits_data.json', habitsData);
   renderHabitsList();
 }
 
@@ -1553,11 +1595,9 @@ function removeStep(ri, si) {
   renderRoutineEditorBlocks();
 }
 
-async function saveRoutines() {
+function saveRoutines() {
   localStorage.setItem('tracker_routines', JSON.stringify(routinesData));
-  if (config.token) await saveToGitHub('data/routines.json', routinesData);
   renderRoutinesList();
-  showStatus('routines-status');
   document.getElementById('routine-editor').classList.remove('open');
 }
 
@@ -1591,10 +1631,7 @@ function renderRoutinesList() {
 }
 
 // ── SLEEP TIME ──
-// Sleep slider: 0=12pm, 1=1pm... 11=11pm, 12=12am, 13=1am... 23=11am
-function sliderToTimeLabel(val, type) {
-  // type 'sleep': 0=12pm→23=11am (full 24h)
-  // we map: 0=12pm(12:00), 1=13:00... 11=23:00, 12=0:00, 13=1:00... 23=11:00
+function sliderToTimeLabel(val) {
   const hour = (val + 12) % 24;
   const ampm = hour < 12 ? 'am' : 'pm';
   const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
@@ -1613,7 +1650,6 @@ function updateSleepTime() {
 
 function updateWakeTime() {
   const val = parseInt(document.getElementById('wake-slider').value);
-  // wake slider: 0=12am, 1=1am...11=11am, 12=12pm...23=11pm
   const hour = val;
   const ampm = hour < 12 ? 'am' : 'pm';
   const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
@@ -1671,43 +1707,6 @@ function selectDreamType(btn) {
   document.querySelectorAll('.dream-type-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   selectedDreamType = btn.dataset.type;
-}
-
-// ── SAVE SLEEP ──
-async function saveSleep() {
-  const sleepHour = sliderToHour(parseInt(document.getElementById('sleep-slider').value));
-  const wakeHour  = parseInt(document.getElementById('wake-slider').value);
-  let diff = wakeHour - sleepHour;
-  if (diff <= 0) diff += 24;
-  const siesta = parseInt(document.getElementById('siesta-min').value || 0);
-
-  const entry = {
-    date: TODAY,
-    sleepHour,
-    wakeHour,
-    hours: parseFloat((diff + siesta/60).toFixed(1)),
-    siesta,
-    quality:   getLikertValue('quality-row'),
-    conciliation: getLikertValue('conciliation-row'),
-    wakeups:   getLikertValue('wakeups-row'),
-    wakeFeeling: getLikertValue('wakefeeling-row'),
-    dreamType: selectedDreamType,
-    dreamText: document.getElementById('dream-text').value.trim(),
-    obs: document.getElementById('sleep-obs').value.trim()
-  };
-
-  const idx = sleepData.findIndex(d => d.date === TODAY);
-  if (idx >= 0) sleepData[idx] = entry; else sleepData.push(entry);
-
-  localStorage.setItem('tracker_sleep', JSON.stringify(sleepData));
-  if (config.token) await saveToGitHub('data/sleep.json', sleepData);
-
-  // Clear text fields
-  document.getElementById('dream-text').value = '';
-  document.getElementById('sleep-obs').value = '';
-
-  showStatus('sleep-status');
-  renderSleepChart();
 }
 
 // ── SLEEP CHART ──
@@ -1814,34 +1813,6 @@ function renderDisciplineRows() {
   `).join('');
 }
 
-async function saveExercise() {
-  const entry = {
-    date: TODAY,
-    week: parseInt(document.getElementById('ex-week').value) || getWeekNumber(),
-    tren: exTren,
-    rest: parseInt(document.getElementById('ex-rest').value) || null,
-    rir: parseInt(document.getElementById('ex-rir').value) || null,
-    weight: parseFloat(document.getElementById('ex-weight').value) || null,
-    ateWell: exChecks['check-food'] || false,
-    sleptWell: exChecks['check-sleep'] || false,
-    goodTech: exChecks['check-tech'] || false,
-    usedWeight: exChecks['check-extra'] || false,
-    exercises: exRows.filter(r => r.name),
-    disciplines: discRows.filter(r => r.name),
-    notes: document.getElementById('ex-notes').value.trim()
-  };
-
-  const idx = exerciseData.findIndex(d => d.date === TODAY);
-  if (idx >= 0) exerciseData[idx] = entry; else exerciseData.push(entry);
-
-  localStorage.setItem('tracker_exercise', JSON.stringify(exerciseData));
-  if (config.token) await saveToGitHub('data/exercise.json', exerciseData);
-
-  document.getElementById('ex-notes').value = '';
-  showStatus('ex-status');
-  renderExChart();
-}
-
 function getWeekNumber() {
   const d = new Date();
   d.setHours(0,0,0,0);
@@ -1896,6 +1867,69 @@ function renderExChart() {
   });
 }
 
+// ── GUARDAR TODO (función única) ──
+function saveAll() {
+  // Guardar hábitos
+  localStorage.setItem('tracker_habits_data', JSON.stringify(habitsData));
+  
+  // Guardar rutinas
+  localStorage.setItem('tracker_routines', JSON.stringify(routinesData));
+  
+  // Guardar sueño
+  const sleepHour = sliderToHour(parseInt(document.getElementById('sleep-slider').value));
+  const wakeHour  = parseInt(document.getElementById('wake-slider').value);
+  let diff = wakeHour - sleepHour;
+  if (diff <= 0) diff += 24;
+  const siesta = parseInt(document.getElementById('siesta-min').value || 0);
+  
+  const sleepEntry = {
+    date: TODAY,
+    sleepHour,
+    wakeHour,
+    hours: parseFloat((diff + siesta/60).toFixed(1)),
+    siesta,
+    quality: getLikertValue('quality-row'),
+    conciliation: getLikertValue('conciliation-row'),
+    wakeups: getLikertValue('wakeups-row'),
+    wakeFeeling: getLikertValue('wakefeeling-row'),
+    dreamType: selectedDreamType,
+    dreamText: document.getElementById('dream-text').value.trim(),
+    obs: document.getElementById('sleep-obs').value.trim()
+  };
+  
+  const sleepIdx = sleepData.findIndex(d => d.date === TODAY);
+  if (sleepIdx >= 0) sleepData[sleepIdx] = sleepEntry; else sleepData.push(sleepEntry);
+  localStorage.setItem('tracker_sleep', JSON.stringify(sleepData));
+  
+  // Guardar ejercicio
+  const exerciseEntry = {
+    date: TODAY,
+    week: parseInt(document.getElementById('ex-week').value) || getWeekNumber(),
+    tren: exTren,
+    rest: parseInt(document.getElementById('ex-rest').value) || null,
+    rir: parseInt(document.getElementById('ex-rir').value) || null,
+    weight: parseFloat(document.getElementById('ex-weight').value) || null,
+    ateWell: exChecks['check-food'] || false,
+    sleptWell: exChecks['check-sleep'] || false,
+    goodTech: exChecks['check-tech'] || false,
+    usedWeight: exChecks['check-extra'] || false,
+    exercises: exRows.filter(r => r.name),
+    disciplines: discRows.filter(r => r.name),
+    notes: document.getElementById('ex-notes').value.trim()
+  };
+  
+  const exIdx = exerciseData.findIndex(d => d.date === TODAY);
+  if (exIdx >= 0) exerciseData[exIdx] = exerciseEntry; else exerciseData.push(exerciseEntry);
+  localStorage.setItem('tracker_exercise', JSON.stringify(exerciseData));
+  
+  // Actualizar gráficas
+  renderSleepChart();
+  renderExChart();
+  
+  // Mostrar mensaje de confirmación
+  showSaveMessage();
+}
+
 // ── INIT ──
 document.getElementById('ex-week').value = getWeekNumber();
 updateSleepTime();
@@ -1904,7 +1938,6 @@ updateWakeTime();
 // Load today's sleep if exists
 const todaySleep = sleepData.find(s => s.date === TODAY);
 if (todaySleep) {
-  // Reverse map sleep hour to slider val
   const sleepSliderVal = (todaySleep.sleepHour + 12) % 24;
   document.getElementById('sleep-slider').value = sleepSliderVal;
   document.getElementById('wake-slider').value = todaySleep.wakeHour;
@@ -1914,6 +1947,47 @@ if (todaySleep) {
   if (todaySleep.conciliation) setLikertValue('conciliation-row', todaySleep.conciliation);
   if (todaySleep.wakeups) setLikertValue('wakeups-row', todaySleep.wakeups);
   if (todaySleep.wakeFeeling) setLikertValue('wakefeeling-row', todaySleep.wakeFeeling);
+  if (todaySleep.dreamType) {
+    selectedDreamType = todaySleep.dreamType;
+    document.querySelectorAll('.dream-type-btn').forEach(btn => {
+      if (btn.dataset.type === todaySleep.dreamType) btn.classList.add('selected');
+    });
+  }
+  if (todaySleep.dreamText) document.getElementById('dream-text').value = todaySleep.dreamText;
+  if (todaySleep.obs) document.getElementById('sleep-obs').value = todaySleep.obs;
+}
+
+// Load today's exercise if exists
+const todayExercise = exerciseData.find(e => e.date === TODAY);
+if (todayExercise) {
+  exTren = todayExercise.tren;
+  if (exTren) {
+    document.querySelectorAll('.tren-btn').forEach(btn => {
+      if (btn.dataset.tren === exTren) btn.classList.add('selected');
+    });
+  }
+  if (todayExercise.rest) document.getElementById('ex-rest').value = todayExercise.rest;
+  if (todayExercise.rir) document.getElementById('ex-rir').value = todayExercise.rir;
+  if (todayExercise.weight) document.getElementById('ex-weight').value = todayExercise.weight;
+  
+  exChecks['check-food'] = todayExercise.ateWell || false;
+  exChecks['check-sleep'] = todayExercise.sleptWell || false;
+  exChecks['check-tech'] = todayExercise.goodTech || false;
+  exChecks['check-extra'] = todayExercise.usedWeight || false;
+  
+  ['check-food','check-sleep','check-tech','check-extra'].forEach(id => {
+    if (exChecks[id]) document.getElementById(id).classList.add('checked');
+  });
+  
+  if (todayExercise.exercises) {
+    exRows = todayExercise.exercises;
+    renderExerciseRows();
+  }
+  if (todayExercise.disciplines) {
+    discRows = todayExercise.disciplines;
+    renderDisciplineRows();
+  }
+  if (todayExercise.notes) document.getElementById('ex-notes').value = todayExercise.notes;
 }
 
 renderHabitsList();
@@ -1921,8 +1995,8 @@ renderRoutinesList();
 renderSleepChart();
 renderExChart();
 
-// ── HISTORIAL DE HÁBITOS ──────────────────────────────────────────────────
-let habitHistFilter = '30'; // '7' | '30' | '90' | 'año'
+// ── HISTORIAL DE HÁBITOS ──
+let habitHistFilter = '30';
 
 function openHabitHistory() {
   renderHabitHistory();
@@ -1956,7 +2030,6 @@ function renderHabitHistory() {
     return;
   }
 
-  // Construir array de fechas (más reciente a más antigua)
   const dates = [];
   for (let i = 0; i < days; i++) {
     const d = new Date();
@@ -1964,7 +2037,6 @@ function renderHabitHistory() {
     dates.unshift(d.toISOString().split('T')[0]);
   }
 
-  // Calcular estadísticas globales
   let totalDone = 0, totalPossible = 0;
   const habitStats = config.map(h => {
     let done = 0, applicable = 0;
@@ -1981,12 +2053,10 @@ function renderHabitHistory() {
     return { ...h, done, applicable, pct };
   });
 
-  // Mejor hábito
   const best = [...habitStats].sort((a,b) => b.pct - a.pct)[0];
   const worst = [...habitStats].filter(h => h.applicable > 0).sort((a,b) => a.pct - b.pct)[0];
   const globalPct = totalPossible > 0 ? Math.round(totalDone / totalPossible * 100) : 0;
 
-  // Racha actual (días consecutivos con al menos 1 hábito)
   let streak = 0;
   for (let i = dates.length - 1; i >= 0; i--) {
     const date = dates[i];
@@ -1998,14 +2068,12 @@ function renderHabitHistory() {
     else break;
   }
 
-  // Filtros
   const filtersHtml = ['7','30','90','año'].map(f => `
     <button class="habit-hist-filter ${f === habitHistFilter ? 'active' : ''}"
       onclick="habitHistFilter='${f}'; renderHabitHistory();">
       ${f === 'año' ? 'año' : f + ' días'}
     </button>`).join('');
 
-  // Estadísticas
   const statsHtml = `
     <div class="habit-hist-stat-row">
       <div class="habit-stat-block">
@@ -2026,14 +2094,12 @@ function renderHabitHistory() {
       </div>` : ''}
     </div>`;
 
-  // Etiquetas de fechas (cada 7 días aprox)
   const step = days <= 30 ? 7 : days <= 90 ? 14 : 30;
   const dateLabels = dates.map((d, i) => {
     const show = i % step === 0 || i === dates.length - 1;
     return `<div class="habit-hist-date-cell">${show ? d.slice(5) : ''}</div>`;
   }).join('');
 
-  // Tabla de calor por hábito, agrupada por categoría
   const categories = [...new Set(config.map(h => h.category || 'general'))];
 
   let heatmapHtml = '';
@@ -2076,7 +2142,6 @@ function renderHabitHistory() {
     </div>`;
 }
 
-// Helper: saber si un hábito aplica en un día de la semana
 function habitAppliesOnDay(daysConfig, dayOfWeek) {
   const allowed = DAY_MAP[daysConfig] || [0,1,2,3,4,5,6];
   return allowed.includes(dayOfWeek);
@@ -2093,71 +2158,5 @@ function closeMenu() {
 }
 </script>
   <script src="historial.js"></script>
-
-<script>
-// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
-(function() {
-  function debounce(fn, ms) {
-    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
-  }
-
-  const autoSleep    = debounce(saveSleep,    1500);
-  const autoExercise = debounce(saveExercise, 1500);
-  const autoHabits   = debounce(saveHabits,   1500);
-  const autoRoutines = debounce(saveRoutines, 1500);
-
-  // Campos de sueño
-  ['sleep-slider','wake-slider','siesta-min','dream-text','sleep-obs'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', autoSleep);
-  });
-
-  // Likert de sueño — parchear selectL para que también dispare
-  const _origSelectL = window.selectL;
-  if (typeof _origSelectL === 'function') {
-    window.selectL = function(btn, key) {
-      _origSelectL(btn, key);
-      // Si es métrica de sueño, autoguardar sueño
-      const sleepKeys = ['quality','conciliation','wakeups','wakefeeling'];
-      if (sleepKeys.some(k => key.toLowerCase().includes(k))) autoSleep();
-    };
-  }
-
-  // Tipo de sueño
-  document.querySelectorAll('.dream-type-btn').forEach(btn => {
-    btn.addEventListener('click', autoSleep);
-  });
-
-  // Tren muscular y checks de ejercicio
-  document.querySelectorAll('.tren-btn, .exercise-check').forEach(btn => {
-    btn.addEventListener('click', autoExercise);
-  });
-
-  // Campos de ejercicio (dinámicos) — usar delegación de eventos
-  document.addEventListener('input', function(e) {
-    const el = e.target;
-    if (el.closest('.exercise-item') || el.closest('.discipline-item') ||
-        el.id === 'ex-week' || el.id === 'ex-rest' || el.id === 'ex-rir' ||
-        el.id === 'ex-weight' || el.id === 'ex-notes') {
-      autoExercise();
-    }
-    if (el.closest('.habit-editor-item')) autoHabits();
-    if (el.closest('.routine-editor-block')) autoRoutines();
-  });
-
-  document.addEventListener('change', function(e) {
-    const el = e.target;
-    if (el.closest('.exercise-item') || el.closest('.discipline-item')) autoExercise();
-    if (el.closest('.habit-editor-item')) autoHabits();
-    if (el.closest('.routine-editor-block')) autoRoutines();
-  });
-
-  // Hábito marcado/desmarcado ya llama saveHabitsData directamente → OK
-
-})();
-</script>
-
-  <script>window.PAGE_FILES = {tracker_sleep:"data/sleep.json",tracker_exercise:"data/exercise.json",tracker_habits_config:"data/habits_config.json",tracker_habits_data:"data/habits_data.json",tracker_routines:"data/routines.json"};</script>
-  <script src="server-sync.js"></script>
 </body>
 </html>

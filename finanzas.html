@@ -450,21 +450,9 @@ const WEEKS_IN_YEAR = 52;
 const config = JSON.parse(localStorage.getItem('tracker_config') || '{}');
 const REPO   = config.repo || 'vd159817/mi_tracker';
 
-async function saveToGitHub(path, data) {
-  if (!config.token) return;
-  const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-  let sha = '';
-  try { const r = await fetch(url, { headers: { Authorization: `token ${config.token}` } });
-    if (r.ok) { const j = await r.json(); sha = j.sha; } } catch(e) {}
-  const body = { message: `update ${path}`, content };
-  if (sha) body.sha = sha;
-  await fetch(url, { method: 'PUT', headers: { Authorization: `token ${config.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-}
-
 function showStatus(id, msg) {
   const el = document.getElementById(id);
-  el.textContent = msg || (config.token ? 'guardado en github ✓' : 'guardado localmente ✓');
+  el.textContent = msg || ('guardado ✓');
   el.classList.remove('hidden');
   setTimeout(() => el.classList.add('hidden'), 2500);
 }
@@ -719,7 +707,6 @@ function addMovement() {
 
   movements.unshift({ id: Date.now(), type: movTypeSelected, desc, amount, cat, date });
   localStorage.setItem('finance_movements', JSON.stringify(movements));
-  if (config.token) saveToGitHub('data/finance.json', movements);
 
   document.getElementById('mov-desc').value   = '';
   document.getElementById('mov-amount').value = '';
@@ -791,7 +778,6 @@ function saveProjection() {
     earned:  parseFloat(document.getElementById('proj-earned').value) || 0,
   };
   localStorage.setItem('finance_projection', JSON.stringify(projectionData));
-  if (config.token) saveToGitHub('data/finance_projection.json', projectionData);
   showStatus('proj-status');
 }
 
@@ -942,7 +928,6 @@ function closeMenu() {
   const _origAdd = window.addMovement;
   if (typeof _origAdd === 'function') {
     window.addMovement = function() { _origAdd(); };
-    // addMovement ya llama saveToGitHub internamente → OK
   }
   const _origDel = window.deleteMovement;
   if (typeof _origDel === 'function') {
@@ -950,8 +935,5 @@ function closeMenu() {
   }
 })();
 </script>
-
-  <script>window.PAGE_FILES = {finance_movements:"data/finance.json",finance_budget:"data/finance_budget.json",finance_projection:"data/finance_projection.json"};</script>
-  <script src="github-sync.js"></script>
 </body>
 </html>
