@@ -33,5 +33,22 @@
       "carb": 177,
       "fat": 50
     }
+  },
+  {
+    "date": "2026-03-19",
+    "checks": {
+      "principales_0": true,
+      "principales_1": true,
+      "principales_2": true,
+      "principales_3": true,
+      "secundarios_0": true
+    },
+    "extras": [],
+    "totals": {
+      "kcal": 1126,
+      "prot": 66,
+      "carb": 126,
+      "fat": 36
+    }
   }
 ]
