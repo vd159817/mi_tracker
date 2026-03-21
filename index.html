@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>mi tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #f5f3ef;
@@ -57,19 +57,18 @@
     [data-theme="dark"] .full-date,
     [data-theme="dark"] .streak-num,
     [data-theme="dark"] .time-display { font-weight: 500; }
-
-    html, body { transition: background 0.2s, color 0.2s; }
-
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-    html { font-size: 24px; }
+    html { font-size: var(--fs, 16px); }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       min-height: 100vh;
       padding: 0 0 6rem;
+          font-size: 1rem;
+          font-weight: 600;
     }
 
     /* ── HEADER ── */
@@ -104,7 +103,7 @@
       border: 0.5px solid var(--border2);
       border-radius: var(--r-sm);
       color: var(--text2);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 11px;
       padding: 6px 12px;
       cursor: pointer;
@@ -158,7 +157,7 @@
       border: 0.5px solid var(--border2);
       border-radius: var(--r-sm);
       color: var(--text);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 12px;
       padding: 8px 10px;
       outline: none;
@@ -178,7 +177,7 @@
       color: var(--bg);
       border: none;
       border-radius: var(--r-sm);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 12px;
       font-weight: 500;
       padding: 10px;
@@ -194,7 +193,7 @@
       color: var(--text2);
       border: 0.5px solid var(--border2);
       border-radius: var(--r-sm);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 12px;
       padding: 10px;
       cursor: pointer;
@@ -341,7 +340,7 @@
       border: 0.5px solid var(--border);
       border-radius: var(--r-sm);
       color: var(--text2);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 13px;
       padding: 7px 10px;
       outline: none;
@@ -374,7 +373,7 @@
       border: 0.5px solid var(--border2);
       border-radius: var(--r-sm);
       color: var(--accent);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 13px;
       font-weight: 500;
       padding: 7px 14px;
@@ -447,7 +446,7 @@
       border: 0.5px solid var(--border);
       border-radius: var(--r-sm);
       color: var(--text);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 14px;
       padding: 8px 10px;
       outline: none;
@@ -462,7 +461,7 @@
       border: 0.5px solid var(--border);
       border-radius: var(--r-sm);
       color: var(--text2);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 13px;
       padding: 8px 10px;
       outline: none;
@@ -569,7 +568,7 @@
       font-size: 16px;
       line-height: 1;
       color: var(--text3);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       letter-spacing: -0.05em;
     }
 
@@ -607,7 +606,7 @@
     .menu-btn {
       background: none; border: 0.5px solid var(--border2);
       border-radius: var(--r-sm); color: var(--text2);
-      font-family: 'DM Mono', monospace; font-size: 16px;
+      font-family: 'IBM Plex Sans', sans-serif; font-size: 16px;
       padding: 5px 10px; cursor: pointer; transition: all 0.2s;
       line-height: 1;
     }
@@ -656,7 +655,7 @@
     .menu-link {
       display: flex; align-items: center; gap: 10px;
       padding: 10px 1.25rem; text-decoration: none;
-      color: var(--text2); font-family: 'DM Mono', monospace;
+      color: var(--text2); font-family: 'IBM Plex Sans', sans-serif;
       font-size: 13px; transition: all 0.15s; cursor: pointer;
       border: none; background: none; width: 100%; text-align: left;
     }
@@ -665,10 +664,218 @@
     .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
+  
+    /* ── FONT SIZE CONTROL ── */
+    .font-size-ctrl {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .fs-btn {
+      background: var(--surface2, #f0ede8);
+      border: 0.5px solid var(--border2, rgba(0,0,0,0.15));
+      border-radius: 6px;
+      color: var(--text2, #6a6760);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .fs-btn:hover { color: var(--accent, #8a6a4a); border-color: var(--accent2, #b09070); }
+  
+    /* ═══════════════════════════════════════
+       COLOR THEMES
+       Selector: html[data-color-theme="X"]
+       El atributo se pone en <html>, CSS vars
+       sobreescriben las de :root automáticamente.
+    ═══════════════════════════════════════ */
+
+    /* BW */
+    html[data-color-theme="bw"] {
+      --bg: #f7f7f7; --surface: #ffffff; --surface2: #eeeeee;
+      --border: rgba(0,0,0,0.09); --border2: rgba(0,0,0,0.2);
+      --text: #111111; --text2: #444444; --text3: #999999;
+      --accent: #222222; --accent2: #555555;
+      --normal: #333333; --urgent: #000000;
+    }
+    html[data-color-theme="bw"][data-theme="dark"] {
+      --bg: #0a0a0a; --surface: #141414; --surface2: #1e1e1e;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.18);
+      --text: #f0f0f0; --text2: #aaaaaa; --text3: #666666;
+      --accent: #dddddd; --accent2: #999999;
+      --normal: #bbbbbb; --urgent: #ffffff;
+    }
+
+    /* ROSA */
+    html[data-color-theme="rosa"] {
+      --bg: #fff0f5; --surface: #ffffff; --surface2: #fde4ee;
+      --border: rgba(220,100,140,0.12); --border2: rgba(220,100,140,0.28);
+      --text: #3a1528; --text2: #8a4060; --text3: #c090a8;
+      --accent: #c04878; --accent2: #e080a8;
+      --normal: #d4689a; --urgent: #e03060;
+    }
+    html[data-color-theme="rosa"][data-theme="dark"] {
+      --bg: #1a0810; --surface: #260d18; --surface2: #341220;
+      --border: rgba(220,100,140,0.15); --border2: rgba(220,100,140,0.3);
+      --text: #fce8f0; --text2: #e090b8; --text3: #904060;
+      --accent: #e870a8; --accent2: #c05088;
+      --normal: #e090b8; --urgent: #ff5080;
+    }
+
+    /* SALVIA */
+    html[data-color-theme="salvia"] {
+      --bg: #f2f5f0; --surface: #ffffff; --surface2: #e6ede3;
+      --border: rgba(80,120,80,0.1); --border2: rgba(80,120,80,0.22);
+      --text: #1a2e1a; --text2: #4a6a4a; --text3: #90aa90;
+      --accent: #3d7050; --accent2: #6a9870;
+      --normal: #3d7050; --urgent: #8b2020;
+    }
+    html[data-color-theme="salvia"][data-theme="dark"] {
+      --bg: #0d1a0d; --surface: #142014; --surface2: #1c2c1c;
+      --border: rgba(80,160,80,0.12); --border2: rgba(80,160,80,0.25);
+      --text: #e0f0e0; --text2: #90c890; --text3: #4a704a;
+      --accent: #70c870; --accent2: #50a050;
+      --normal: #70c870; --urgent: #e06060;
+    }
+
+    /* NOCHE */
+    html[data-color-theme="noche"] {
+      --bg: #eef2f8; --surface: #ffffff; --surface2: #dde6f2;
+      --border: rgba(50,80,160,0.1); --border2: rgba(50,80,160,0.22);
+      --text: #0d1a38; --text2: #3a5088; --text3: #8090b8;
+      --accent: #2a5298; --accent2: #4a72c8;
+      --normal: #2a7848; --urgent: #c82828;
+    }
+    html[data-color-theme="noche"][data-theme="dark"] {
+      --bg: #070d1c; --surface: #0e1830; --surface2: #162040;
+      --border: rgba(80,120,220,0.13); --border2: rgba(80,120,220,0.28);
+      --text: #d8e4ff; --text2: #7a9ae8; --text3: #3a5088;
+      --accent: #6a9af0; --accent2: #4a78d0;
+      --normal: #5ad890; --urgent: #ff6060;
+    }
+
+    /* TIERRA */
+    html[data-color-theme="tierra"] {
+      --bg: #f4efe8; --surface: #fdf8f2; --surface2: #ece4d6;
+      --border: rgba(140,90,40,0.1); --border2: rgba(140,90,40,0.22);
+      --text: #2c1a08; --text2: #7a5030; --text3: #b8956a;
+      --accent: #a0521e; --accent2: #c87840;
+      --normal: #5a7a30; --urgent: #c03020;
+    }
+    html[data-color-theme="tierra"][data-theme="dark"] {
+      --bg: #120a02; --surface: #1e1008; --surface2: #2c1c0e;
+      --border: rgba(180,120,60,0.12); --border2: rgba(180,120,60,0.28);
+      --text: #f0e0c8; --text2: #d09060; --text3: #785030;
+      --accent: #e09050; --accent2: #c07030;
+      --normal: #90c050; --urgent: #ff6040;
+    }
+
+    /* LAVANDA */
+    html[data-color-theme="lavanda"] {
+      --bg: #f4f0fa; --surface: #ffffff; --surface2: #ebe4f5;
+      --border: rgba(120,80,180,0.1); --border2: rgba(120,80,180,0.22);
+      --text: #1e1030; --text2: #604890; --text3: #a088c0;
+      --accent: #6040a8; --accent2: #8860c8;
+      --normal: #3a8860; --urgent: #c03060;
+    }
+    html[data-color-theme="lavanda"][data-theme="dark"] {
+      --bg: #0e0818; --surface: #160d24; --surface2: #201430;
+      --border: rgba(160,120,220,0.13); --border2: rgba(160,120,220,0.28);
+      --text: #ecdeff; --text2: #c090f0; --text3: #6040a0;
+      --accent: #c090f0; --accent2: #9060c0;
+      --normal: #70d0a0; --urgent: #ff60a0;
+    }
+
+  
+    /* ── THEME PICKER MODAL ── */
+    .tpicker-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 500;
+      align-items: flex-end; justify-content: center;
+    }
+    .tpicker-overlay.open { display: flex; }
+    .tpicker-sheet {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 18px 18px 0 0;
+      padding: 1.25rem 1.25rem 2.5rem;
+      width: 100%; max-width: 500px;
+      animation: tpSlideUp 0.22s ease;
+    }
+    @keyframes tpSlideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .tpicker-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.1rem;
+    }
+    .tpicker-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem; font-weight: 400;
+      color: var(--accent); font-style: italic;
+    }
+    .tpicker-close {
+      background: none; border: none; color: var(--text3);
+      font-size: 1.1rem; cursor: pointer; padding: 4px; transition: color 0.15s;
+    }
+    .tpicker-close:hover { color: var(--text); }
+    .tpicker-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 9px;
+    }
+    .tpicker-card {
+      border: 1.5px solid var(--border2);
+      border-radius: 10px; padding: 11px 12px;
+      cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 9px;
+      background: transparent; width: 100%; text-align: left;
+    }
+    .tpicker-card:hover { border-color: var(--accent); background: var(--surface2); }
+    .tpicker-card.tpactive {
+      border-color: var(--accent); background: var(--surface2);
+    }
+    .tpicker-swatches { display: flex; gap: 3px; flex-shrink: 0; }
+    .tpicker-swatch {
+      width: 13px; height: 13px; border-radius: 50%;
+      border: 0.5px solid rgba(0,0,0,0.1);
+    }
+    .tpicker-info { flex: 1; min-width: 0; }
+    .tpicker-name { font-size: 0.8rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .tpicker-desc { font-size: 0.62rem; color: var(--text3); margin-top: 2px; }
+    .tpicker-check {
+      font-size: 0.8rem; color: var(--accent);
+      opacity: 0; transition: opacity 0.15s; flex-shrink: 0;
+    }
+    .tpicker-card.tpactive .tpicker-check { opacity: 1; }
+
+    .btn-temas {
+      background: var(--surface2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm, 6px);
+      color: var(--text2);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.78rem; font-weight: 700;
+      padding: 6px 11px; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-temas:hover { color: var(--accent); border-color: var(--accent2); }
+
   </style>
   <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
+
+<!-- THEME PICKER -->
+<div class="tpicker-overlay" id="tpicker-overlay">
+  <div class="tpicker-sheet">
+    <div class="tpicker-header">
+      <span class="tpicker-title">elige un tema</span>
+      <button class="tpicker-close" onclick="closeTpicker()">✕</button>
+    </div>
+    <div class="tpicker-grid" id="tpicker-grid"></div>
+  </div>
+</div>
+
 
 <!-- MENU OVERLAY -->
 <div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
@@ -736,6 +943,7 @@
     <div class="full-date" id="full-date"></div>
   </div>
   <div style="display:flex; gap:8px; align-items:center;">
+    <div class="font-size-ctrl"><button class="fs-btn" onclick="changeFontSize(-1)" title="letra más pequeña">A−</button><button class="fs-btn" onclick="changeFontSize(1)" title="letra más grande">A+</button></div><button class="btn-temas" onclick="openTpicker()">◈ temas</button>
     <button class="btn-config" id="theme-btn" onclick="toggleTheme()">◐</button>
     <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
   </div>
@@ -914,6 +1122,52 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
 <script>
+
+// ── COLOR THEME ENGINE (all pages) ──────────────────────────────
+(function initColorTheme() {
+  var saved = localStorage.getItem('tracker_color_theme');
+  if (saved && saved !== 'crema') {
+    document.documentElement.setAttribute('data-color-theme', saved);
+  }
+})();
+
+function setColorTheme(name) {
+  localStorage.setItem('tracker_color_theme', name);
+  if (!name || name === 'crema') {
+    document.documentElement.removeAttribute('data-color-theme');
+  } else {
+    document.documentElement.setAttribute('data-color-theme', name);
+  }
+}
+// ────────────────────────────────────────────────────────────────
+
+// ── FONT SIZE ──
+(function() {
+  var saved = localStorage.getItem('tracker_fs');
+  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
+})();
+function changeFontSize(delta) {
+  var root = document.documentElement;
+  var cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
+  var next = Math.max(12, Math.min(26, cur + delta));
+  root.style.setProperty('--fs', next + 'px');
+  localStorage.setItem('tracker_fs', next);
+}
+
+
+// ── FONT SIZE ──
+(function() {
+  const saved = localStorage.getItem('tracker_fs');
+  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
+})();
+function changeFontSize(delta) {
+  const root = document.documentElement;
+  const cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
+  const next = Math.max(12, Math.min(26, cur + delta));
+  root.style.setProperty('--fs', next + 'px');
+  localStorage.setItem('tracker_fs', next);
+}
+
 // ── CONFIG ──
 
 const config = {};  // sincronización eliminada — solo localStorage
@@ -1079,7 +1333,7 @@ function renderChart() {
         legend: {
           labels: {
             color: '#6a6760',
-            font: { family: 'DM Mono', size: 9 },
+            font: { family: 'IBM Plex Sans', size: 9 },
             boxWidth: 10,
             padding: 8
           }
@@ -1090,19 +1344,19 @@ function renderChart() {
           bodyColor: '#6a6760',
           borderColor: 'rgba(0,0,0,0.1)',
           borderWidth: 0.5,
-          titleFont: { family: 'DM Mono', size: 10 },
-          bodyFont: { family: 'DM Mono', size: 10 }
+          titleFont: { family: 'IBM Plex Sans', size: 10 },
+          bodyFont: { family: 'IBM Plex Sans', size: 10 }
         }
       },
       scales: {
         x: {
-          ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 }, maxRotation: 0, maxTicksLimit: 8 },
+          ticks: { color: '#aaa89f', font: { family: 'IBM Plex Sans', size: 8 }, maxRotation: 0, maxTicksLimit: 8 },
           grid: { color: 'rgba(0,0,0,0.05)' },
           border: { color: 'rgba(0,0,0,0.08)' }
         },
         y: {
           min: 1, max: 10,
-          ticks: { color: '#aaa89f', font: { family: 'DM Mono', size: 8 }, stepSize: 3 },
+          ticks: { color: '#aaa89f', font: { family: 'IBM Plex Sans', size: 8 }, stepSize: 3 },
           grid: { color: 'rgba(0,0,0,0.05)' },
           border: { color: 'rgba(0,0,0,0.08)' }
         }
@@ -1458,6 +1712,59 @@ async function exportCSV() {
 
   // Tareas: agregar/completar/eliminar ya llaman saveTasks → OK
 })();
+
+// ── THEME PICKER (index only) ────────────────────────────────────
+var TPICKER_THEMES = [
+  { id:'crema',   name:'Crema',   desc:'cálido · por defecto',    s:['#f5f3ef','#8a6a4a','#b09070','#1a1916'] },
+  { id:'bw',      name:'B & N',   desc:'sin color · minimalista', s:['#f7f7f7','#222222','#555555','#999999'] },
+  { id:'rosa',    name:'Rosa',    desc:'suave · femenino',        s:['#fff0f5','#c04878','#e080a8','#fde4ee'] },
+  { id:'salvia',  name:'Salvia',  desc:'verde · natural',         s:['#f2f5f0','#3d7050','#6a9870','#e6ede3'] },
+  { id:'noche',   name:'Noche',   desc:'azul · elegante',         s:['#eef2f8','#2a5298','#4a72c8','#dde6f2'] },
+  { id:'tierra',  name:'Tierra',  desc:'ocre · otoñal',           s:['#f4efe8','#a0521e','#c87840','#ece4d6'] },
+  { id:'lavanda', name:'Lavanda', desc:'lila · sereno',           s:['#f4f0fa','#6040a8','#8860c8','#ebe4f5'] },
+];
+
+function renderTpicker() {
+  var current = localStorage.getItem('tracker_color_theme') || 'crema';
+  var grid = document.getElementById('tpicker-grid');
+  if (!grid) return;
+  var html = '';
+  for (var i = 0; i < TPICKER_THEMES.length; i++) {
+    var t = TPICKER_THEMES[i];
+    var isActive = current === t.id;
+    var swatches = '';
+    for (var j = 0; j < t.s.length; j++) {
+      swatches += '<div class="tpicker-swatch" style="background:' + t.s[j] + '"></div>';
+    }
+    html += '<button class="tpicker-card' + (isActive ? ' tpactive' : '') + '" onclick="pickColorTheme(' + "'" + t.id + "'" + ')">'
+      + '<div class="tpicker-swatches">' + swatches + '</div>'
+      + '<div class="tpicker-info"><div class="tpicker-name">' + t.name + '</div>'
+      + '<div class="tpicker-desc">' + t.desc + '</div></div>'
+      + '<div class="tpicker-check">✓</div>'
+      + '</button>';
+  }
+  grid.innerHTML = html;
+}
+
+function openTpicker() {
+  renderTpicker();
+  document.getElementById('tpicker-overlay').classList.add('open');
+}
+
+function closeTpicker() {
+  document.getElementById('tpicker-overlay').classList.remove('open');
+}
+
+document.getElementById('tpicker-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeTpicker();
+});
+
+function pickColorTheme(id) {
+  setColorTheme(id);
+  renderTpicker();
+}
+// ────────────────────────────────────────────────────────────────
+
 </script>
 </body>
 </html>

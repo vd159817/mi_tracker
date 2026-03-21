@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>higiene · tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg: #f5f3ef;
@@ -42,18 +42,17 @@
     [data-theme="dark"] .log-stats,
     [data-theme="dark"] .day-name,
     [data-theme="dark"] .progress-pct { font-weight: 500; }
-
-    html, body { transition: background 0.2s, color 0.2s; }
-
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html { font-size: 24px; }
+    html { font-size: var(--fs, 16px); }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       min-height: 100vh;
       padding: 0 0 6rem;
+          font-size: 1rem;
+          font-weight: 600;
     }
 
     /* ── TOP BAR ── */
@@ -90,7 +89,7 @@
       border: 0.5px solid var(--border2);
       border-radius: var(--r-sm);
       color: var(--text2);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 11px;
       padding: 6px 12px;
       cursor: pointer;
@@ -105,7 +104,7 @@
       border: 0.5px solid var(--border);
       border-radius: var(--r-sm);
       color: var(--text3);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 11px;
       padding: 6px 12px;
       cursor: pointer;
@@ -138,7 +137,7 @@
     .tabs::-webkit-scrollbar { display: none; }
 
     .tab {
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 11px;
       color: var(--text3);
       background: none;
@@ -324,7 +323,7 @@
       padding: 2px 7px;
       border-radius: 999px;
       flex-shrink: 0;
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
     }
 
     .badge-alta {
@@ -440,7 +439,7 @@
       border: 0.5px solid var(--border);
       border-radius: var(--r-sm);
       color: var(--text3);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       padding: 4px 10px;
       cursor: pointer;
       transition: all 0.2s;
@@ -502,7 +501,7 @@
 
     .editor-section-header input {
       flex: 1;
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 12px;
       background: var(--surface);
       border: 0.5px solid var(--border2);
@@ -521,7 +520,7 @@
 
     .editor-item-row .col-name {
       flex: 2;
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 11px;
       background: var(--surface);
       border: 0.5px solid var(--border);
@@ -534,7 +533,7 @@
 
     .editor-item-row .col-meta {
       flex: 3;
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 11px;
       background: var(--surface);
       border: 0.5px solid var(--border);
@@ -546,7 +545,7 @@
     }
 
     .editor-item-row select {
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 10px;
       background: var(--surface);
       border: 0.5px solid var(--border);
@@ -573,7 +572,7 @@
 
     .btn-add-item {
       font-size: 11px;
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       background: none;
       border: 0.5px dashed var(--border2);
       border-radius: var(--r-sm);
@@ -598,7 +597,7 @@
 
     .btn-add-section {
       font-size: 11px;
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       background: none;
       border: 0.5px solid var(--border2);
       border-radius: var(--r-sm);
@@ -614,7 +613,7 @@
       color: var(--surface);
       border: none;
       border-radius: var(--r-sm);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 12px;
       font-weight: 500;
       padding: 8px 20px;
@@ -628,14 +627,14 @@
       border: 0.5px solid var(--border2);
       border-radius: var(--r-sm);
       color: var(--text2);
-      font-family: 'DM Mono', monospace;
+      font-family: 'IBM Plex Sans', sans-serif;
       font-size: 12px;
       padding: 8px 14px;
       cursor: pointer;
     }
 
     /* ── HAMBURGER MENU ── */
-    .menu-btn { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'DM Mono', monospace; font-size: 16px; padding: 5px 10px; cursor: pointer; transition: all 0.2s; line-height: 1; }
+    .menu-btn { background: none; border: 0.5px solid var(--border2); border-radius: var(--r-sm); color: var(--text2); font-family: 'IBM Plex Sans', sans-serif; font-size: 16px; padding: 5px 10px; cursor: pointer; transition: all 0.2s; line-height: 1; }
     .menu-btn:hover { color: var(--accent); border-color: var(--accent2); }
     .menu-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 300; }
     .menu-overlay.open { display: block; }
@@ -648,11 +647,136 @@
     .menu-section { padding: 0.75rem 0; border-bottom: 0.5px solid var(--border); }
     .menu-section:last-child { border-bottom: none; }
     .menu-section-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); padding: 0 1.25rem; margin-bottom: 4px; }
-    .menu-link { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; text-decoration: none; color: var(--text2); font-family: 'DM Mono', monospace; font-size: 13px; transition: all 0.15s; }
+    .menu-link { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; text-decoration: none; color: var(--text2); font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; transition: all 0.15s; }
     .menu-link:hover { background: var(--surface2); color: var(--text); }
     .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
+  
+    /* ── FONT SIZE CONTROL ── */
+    .font-size-ctrl {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .fs-btn {
+      background: var(--surface2, #f0ede8);
+      border: 0.5px solid var(--border2, rgba(0,0,0,0.15));
+      border-radius: 6px;
+      color: var(--text2, #6a6760);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .fs-btn:hover { color: var(--accent, #8a6a4a); border-color: var(--accent2, #b09070); }
+  
+    /* ═══════════════════════════════════════
+       COLOR THEMES — shared across all pages
+    ═══════════════════════════════════════ */
+
+    /* BW */
+    [data-color-theme="bw"]:root,
+    [data-color-theme="bw"] {
+      --bg: #f7f7f7; --surface: #ffffff; --surface2: #eeeeee;
+      --border: rgba(0,0,0,0.09); --border2: rgba(0,0,0,0.2);
+      --text: #111111; --text2: #444444; --text3: #999999;
+      --accent: #222222; --accent2: #555555;
+      --normal: #333333; --urgent: #000000;
+    }
+    [data-color-theme="bw"][data-theme="dark"] {
+      --bg: #0a0a0a; --surface: #141414; --surface2: #1e1e1e;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.18);
+      --text: #f0f0f0; --text2: #aaaaaa; --text3: #666666;
+      --accent: #dddddd; --accent2: #999999;
+      --normal: #bbbbbb; --urgent: #ffffff;
+    }
+
+    /* ROSA */
+    [data-color-theme="rosa"]:root,
+    [data-color-theme="rosa"] {
+      --bg: #fff0f5; --surface: #ffffff; --surface2: #fde4ee;
+      --border: rgba(220,100,140,0.12); --border2: rgba(220,100,140,0.28);
+      --text: #3a1528; --text2: #8a4060; --text3: #c090a8;
+      --accent: #c04878; --accent2: #e080a8;
+      --normal: #d4689a; --urgent: #e03060;
+    }
+    [data-color-theme="rosa"][data-theme="dark"] {
+      --bg: #1a0810; --surface: #260d18; --surface2: #341220;
+      --border: rgba(220,100,140,0.15); --border2: rgba(220,100,140,0.3);
+      --text: #fce8f0; --text2: #e090b8; --text3: #904060;
+      --accent: #e870a8; --accent2: #c05088;
+      --normal: #e090b8; --urgent: #ff5080;
+    }
+
+    /* SALVIA */
+    [data-color-theme="salvia"]:root,
+    [data-color-theme="salvia"] {
+      --bg: #f2f5f0; --surface: #ffffff; --surface2: #e6ede3;
+      --border: rgba(80,120,80,0.1); --border2: rgba(80,120,80,0.22);
+      --text: #1a2e1a; --text2: #4a6a4a; --text3: #90aa90;
+      --accent: #3d7050; --accent2: #6a9870;
+      --normal: #3d7050; --urgent: #8b2020;
+    }
+    [data-color-theme="salvia"][data-theme="dark"] {
+      --bg: #0d1a0d; --surface: #142014; --surface2: #1c2c1c;
+      --border: rgba(80,160,80,0.12); --border2: rgba(80,160,80,0.25);
+      --text: #e0f0e0; --text2: #90c890; --text3: #4a704a;
+      --accent: #70c870; --accent2: #50a050;
+      --normal: #70c870; --urgent: #e06060;
+    }
+
+    /* NOCHE */
+    [data-color-theme="noche"]:root,
+    [data-color-theme="noche"] {
+      --bg: #eef2f8; --surface: #ffffff; --surface2: #dde6f2;
+      --border: rgba(50,80,160,0.1); --border2: rgba(50,80,160,0.22);
+      --text: #0d1a38; --text2: #3a5088; --text3: #8090b8;
+      --accent: #2a5298; --accent2: #4a72c8;
+      --normal: #2a7848; --urgent: #c82828;
+    }
+    [data-color-theme="noche"][data-theme="dark"] {
+      --bg: #070d1c; --surface: #0e1830; --surface2: #162040;
+      --border: rgba(80,120,220,0.13); --border2: rgba(80,120,220,0.28);
+      --text: #d8e4ff; --text2: #7a9ae8; --text3: #3a5088;
+      --accent: #6a9af0; --accent2: #4a78d0;
+      --normal: #5ad890; --urgent: #ff6060;
+    }
+
+    /* TIERRA */
+    [data-color-theme="tierra"]:root,
+    [data-color-theme="tierra"] {
+      --bg: #f4efe8; --surface: #fdf8f2; --surface2: #ece4d6;
+      --border: rgba(140,90,40,0.1); --border2: rgba(140,90,40,0.22);
+      --text: #2c1a08; --text2: #7a5030; --text3: #b8956a;
+      --accent: #a0521e; --accent2: #c87840;
+      --normal: #5a7a30; --urgent: #c03020;
+    }
+    [data-color-theme="tierra"][data-theme="dark"] {
+      --bg: #120a02; --surface: #1e1008; --surface2: #2c1c0e;
+      --border: rgba(180,120,60,0.12); --border2: rgba(180,120,60,0.28);
+      --text: #f0e0c8; --text2: #d09060; --text3: #785030;
+      --accent: #e09050; --accent2: #c07030;
+      --normal: #90c050; --urgent: #ff6040;
+    }
+
+    /* LAVANDA */
+    [data-color-theme="lavanda"]:root,
+    [data-color-theme="lavanda"] {
+      --bg: #f4f0fa; --surface: #ffffff; --surface2: #ebe4f5;
+      --border: rgba(120,80,180,0.1); --border2: rgba(120,80,180,0.22);
+      --text: #1e1030; --text2: #604890; --text3: #a088c0;
+      --accent: #6040a8; --accent2: #8860c8;
+      --normal: #3a8860; --urgent: #c03060;
+    }
+    [data-color-theme="lavanda"][data-theme="dark"] {
+      --bg: #0e0818; --surface: #160d24; --surface2: #201430;
+      --border: rgba(160,120,220,0.13); --border2: rgba(160,120,220,0.28);
+      --text: #ecdeff; --text2: #c090f0; --text3: #6040a0;
+      --accent: #c090f0; --accent2: #9060c0;
+      --normal: #70d0a0; --urgent: #ff60a0;
+    }
+
   </style>
   <link rel="stylesheet" href="tracker.css" />
 </head>
@@ -708,7 +832,7 @@
   </div>
   <div class="top-actions">
     <button class="btn-reset" onclick="resetDay()">reiniciar día</button>
-    <button class="btn-back" onclick="toggleTheme()">◐</button>
+    <div class="font-size-ctrl"><button class="fs-btn" onclick="changeFontSize(-1)" title="letra más pequeña">A−</button><button class="fs-btn" onclick="changeFontSize(1)" title="letra más grande">A+</button></div><button class="btn-back" onclick="toggleTheme()">◐</button>
     <a class="btn-back" href="hoy.html">← hoy</a>
     <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
   </div>
@@ -767,6 +891,52 @@
   <!-- /content -->
 
 <script>
+
+// ── COLOR THEME ENGINE (all pages) ──────────────────────────────
+(function initColorTheme() {
+  var saved = localStorage.getItem('tracker_color_theme');
+  if (saved && saved !== 'crema') {
+    document.documentElement.setAttribute('data-color-theme', saved);
+  }
+})();
+
+function setColorTheme(name) {
+  localStorage.setItem('tracker_color_theme', name);
+  if (!name || name === 'crema') {
+    document.documentElement.removeAttribute('data-color-theme');
+  } else {
+    document.documentElement.setAttribute('data-color-theme', name);
+  }
+}
+// ────────────────────────────────────────────────────────────────
+
+// ── FONT SIZE ──
+(function() {
+  var saved = localStorage.getItem('tracker_fs');
+  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
+})();
+function changeFontSize(delta) {
+  var root = document.documentElement;
+  var cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
+  var next = Math.max(12, Math.min(26, cur + delta));
+  root.style.setProperty('--fs', next + 'px');
+  localStorage.setItem('tracker_fs', next);
+}
+
+
+// ── FONT SIZE ──
+(function() {
+  const saved = localStorage.getItem('tracker_fs');
+  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
+})();
+function changeFontSize(delta) {
+  const root = document.documentElement;
+  const cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
+  const next = Math.max(12, Math.min(26, cur + delta));
+  root.style.setProperty('--fs', next + 'px');
+  localStorage.setItem('tracker_fs', next);
+}
+
   const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
   const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
