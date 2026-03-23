@@ -226,6 +226,48 @@
     .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
     /* ── BOTÓN GUARDAR TODO ── */
+    .save-all-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0 3rem;
+    }
+    
+    .save-all-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 32px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.1em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .save-all-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .save-message {
+      font-size: 12px;
+      color: var(--normal);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      opacity: 0;
+      transition: opacity 0.3s;
+      min-height: 20px;
+    }
+    
+    .save-message.visible {
+      opacity: 1;
+    }
 
     /* ── NAV GRID ── */
     .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.5rem; }
@@ -493,17 +535,12 @@
 </div>
 
 <!-- TOP BAR -->
-<!-- TOP BAR -->
 <div class="top-bar">
-  <div class="top-bar-left">
+  <div>
     <div class="day-name">período · ciclo</div>
     <div class="full-date" id="full-date"></div>
   </div>
-  <div class="top-bar-right">
-    <span class="hero-saved" id="hero-saved">guardado ✓</span>
-    <button class="hero-save-btn" onclick="saveAll();heroSaveFlash()">guardar</button>
-    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
-  </div>
+  <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
 </div>
 
 <div class="content">
@@ -670,7 +707,12 @@
   </div>
 
   <!-- ══ 5. BOTÓN GUARDAR TODO ══ -->
-</div>
+  <div class="save-all-container">
+    <button class="save-all-btn" onclick="saveAll()">
+      guardar todo
+    </button>
+    <div id="save-message" class="save-message">guardado correctamente</div>
+  </div>
 
 </div>
 
@@ -1208,22 +1250,6 @@ function openMenu() { document.getElementById('menu-drawer').classList.add('open
 function closeMenu() { document.getElementById('menu-drawer').classList.remove('open'); document.getElementById('menu-overlay').classList.remove('open'); }
 </script>
 
-  <style>
-    /* ── TOP BAR LAYOUT ── */
-    .top-bar {
-      position: sticky !important;
-      top: 0 !important;
-      z-index: 200 !important;
-      background: var(--bg) !important;
-    }
-    .top-bar-left { display:flex; flex-direction:column; gap:1px; flex:1; min-width:0; }
-    .top-bar-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-    .hero-save-btn { background:var(--accent); color:#fff; border:none; border-radius:var(--r-sm,6px); font-family:'IBM Plex Sans',sans-serif; font-size:0.7rem; font-weight:700; padding:5px 11px; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; letter-spacing:0.02em; }
-    .hero-save-btn:hover { opacity:0.82; }
-    .hero-save-btn:active { transform:scale(0.96); }
-    .hero-saved { font-size:0.62rem; color:var(--normal); font-weight:700; opacity:0; pointer-events:none; transition:opacity 0.25s; white-space:nowrap; }
-    .hero-saved.show { opacity:1; }
-</style>
   <link rel="stylesheet" href="tracker.css" />
 
 <script>
@@ -1263,13 +1289,6 @@ function closeMenu() { document.getElementById('menu-drawer').classList.remove('
     window.setLikert = function(k, v) { _origSetLikert(k, v); autoEntry(); };
   }
 })();
-
-function heroSaveFlash() {
-  var el = document.getElementById('hero-saved');
-  if (!el) return;
-  el.classList.add('show');
-  setTimeout(function(){ el.classList.remove('show'); }, 1800);
-}
 </script>
 </body>
 </html>

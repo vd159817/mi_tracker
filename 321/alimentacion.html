@@ -214,21 +214,6 @@
     .menu-link-num { font-size: 10px; color: var(--text3); width: 20px; flex-shrink: 0; }
     .menu-link-text { flex: 1; }
     .menu-link-sub { font-size: 10px; color: var(--text3); }
-
-    /* ── TOP BAR LAYOUT ── */
-    .top-bar {
-      position: sticky !important;
-      top: 0 !important;
-      z-index: 200 !important;
-      background: var(--bg) !important;
-    }
-    .top-bar-left { display:flex; flex-direction:column; gap:1px; flex:1; min-width:0; }
-    .top-bar-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-    .hero-save-btn { background:var(--accent); color:#fff; border:none; border-radius:var(--r-sm,6px); font-family:'IBM Plex Sans',sans-serif; font-size:0.7rem; font-weight:700; padding:5px 11px; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; letter-spacing:0.02em; }
-    .hero-save-btn:hover { opacity:0.82; }
-    .hero-save-btn:active { transform:scale(0.96); }
-    .hero-saved { font-size:0.62rem; color:var(--normal); font-weight:700; opacity:0; pointer-events:none; transition:opacity 0.25s; white-space:nowrap; }
-    .hero-saved.show { opacity:1; }
 </style>
 </head>
 <body>
@@ -296,17 +281,12 @@
   </div>
 </div>
 
-<!-- TOP BAR -->
 <div class="top-bar">
-  <div class="top-bar-left">
-    <div class="day-name">alimentación</div>
+  <div>
+    <div class="day-name" id="day-name"></div>
     <div class="full-date" id="full-date"></div>
   </div>
-  <div class="top-bar-right">
-    <span class="hero-saved" id="hero-saved">guardado ✓</span>
-    <button class="hero-save-btn" onclick="saveAndRefresh();heroSaveFlash()">guardar</button>
-    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
-  </div>
+  <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
 </div>
 
 <div class="content">
@@ -612,13 +592,6 @@ function closeMenu() {
   document.getElementById('menu-overlay').classList.remove('open');
 }
 
-
-function heroSaveFlash() {
-  var el = document.getElementById('hero-saved');
-  if (!el) return;
-  el.classList.add('show');
-  setTimeout(function(){ el.classList.remove('show'); }, 1800);
-}
 </script>
 </body>
 </html>

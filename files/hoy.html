@@ -2,6 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="mi tracker">
+  <meta name="theme-color" content="#f5f3ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.json">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>hoy · tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
@@ -978,6 +985,34 @@
     .menu-link-sub { font-size: 10px; color: var(--text3); }
 
     /* ── GUARDAR TODO ── */
+    .save-all-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0 3rem;
+    }
+    
+    .save-all-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 32px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.1em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .save-all-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
     
     .save-message {
       font-size: 12px;
@@ -1182,73 +1217,186 @@
     }
     .menu-theme-btn:hover { color: var(--accent); border-color: var(--accent2); }
 
-    /* ── TOP BAR LAYOUT ── */
-    .top-bar-left { display:flex; flex-direction:column; gap:1px; flex:1; min-width:0; }
-    .top-bar-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+    /* ═══════════ SHARED OVERRIDES ═══════════ */
 
-    /* ── HERO SAVE ── */
-    .hero-save-btn { background:var(--accent); color:#fff; border:none; border-radius:var(--r-sm,6px); font-family:'IBM Plex Sans',sans-serif; font-size:0.7rem; font-weight:700; padding:5px 11px; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; letter-spacing:0.02em; }
-    .hero-save-btn:hover { opacity:0.82; }
-    .hero-save-btn:active { transform:scale(0.96); }
-    .hero-saved { font-size:0.62rem; color:var(--normal); font-weight:700; opacity:0; pointer-events:none; transition:opacity 0.25s; white-space:nowrap; }
-    .hero-saved.show { opacity:1; }
+    /* Standardize font */
+    html { font-size: var(--fs, 15px) !important; }
+    body {
+      font-family: 'IBM Plex Sans', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 0.933rem !important;
+    }
 
-    /* ── ANIMO ── */
-    .mood-row { display:flex; flex-direction:column; gap:0.875rem; }
-    .mood-track { display:flex; flex-direction:column; gap:6px; }
-    .mood-track-header { display:flex; justify-content:space-between; align-items:baseline; }
-    .mood-track-label { font-size:13px; color:var(--text2); }
-    .mood-value-label { color:var(--accent); font-style:italic; font-family:'Cormorant Garamond',serif; font-size:16px; }
-    input[type=range] { -webkit-appearance:none; appearance:none; width:100%; height:3px; border-radius:2px; outline:none; cursor:pointer; }
-    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent); cursor:pointer; border:2px solid var(--surface); box-shadow:0 0 0 1px var(--accent2); }
-    input[type=range]::-moz-range-thumb { width:20px; height:20px; border-radius:50%; background:var(--accent); cursor:pointer; border:2px solid var(--surface); }
-    .mood-scale-labels { display:flex; justify-content:space-between; margin-top:4px; }
-    .mood-scale-labels span { font-size:9px; color:var(--text3); }
-    /* ── FRASE ── */
-    .journal-area { display:flex; flex-direction:column; gap:8px; }
-    .journal-textarea { width:100%; min-height:80px; background:var(--surface2); border:0.5px solid var(--border); border-radius:var(--r-sm); color:var(--text); font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:300; line-height:1.6; padding:10px 12px; resize:none; outline:none; }
-    .journal-textarea::placeholder { color:var(--text3); font-style:italic; }
-    .journal-bottom { display:flex; gap:8px; align-items:center; }
-    .tag-field { flex:1; background:var(--surface2); border:0.5px solid var(--border); border-radius:var(--r-sm); color:var(--text2); font-family:'IBM Plex Sans',sans-serif; font-size:13px; padding:7px 10px; outline:none; }
-    .tag-field::placeholder { color:var(--text3); }
+    /* Sticky top-bar */
+    .top-bar {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 200 !important;
+      background: var(--bg) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
 
-    /* ── THEME PICKER ── */
-    .tpicker-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:500; align-items:flex-end; justify-content:center; }
-    .tpicker-overlay.open { display:flex; }
-    .tpicker-sheet { background:var(--surface); border:1px solid var(--border2); border-radius:18px 18px 0 0; padding:1.25rem 1.25rem 2.5rem; width:100%; max-width:500px; animation:tpSlideUp 0.22s ease; }
-    @keyframes tpSlideUp { from{transform:translateY(50px);opacity:0} to{transform:translateY(0);opacity:1} }
-    .tpicker-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.1rem; }
-    .tpicker-title { font-family:'Cormorant Garamond',serif; font-size:1.35rem; font-weight:400; color:var(--accent); font-style:italic; }
-    .tpicker-close { background:none; border:none; color:var(--text3); font-size:1.1rem; cursor:pointer; padding:4px; }
-    .tpicker-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
-    .tpicker-card { border:1.5px solid var(--border2); border-radius:10px; padding:11px 12px; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; gap:9px; background:transparent; width:100%; text-align:left; }
-    .tpicker-card:hover, .tpicker-card.tpactive { border-color:var(--accent); background:var(--surface2); }
-    .tpicker-swatches { display:flex; gap:3px; flex-shrink:0; }
-    .tpicker-swatch { width:13px; height:13px; border-radius:50%; border:0.5px solid rgba(0,0,0,0.1); }
-    .tpicker-info { flex:1; min-width:0; }
-    .tpicker-name { font-size:0.8rem; font-weight:700; color:var(--text); line-height:1.2; }
-    .tpicker-desc { font-size:0.62rem; color:var(--text3); margin-top:2px; }
-    .tpicker-check { font-size:0.8rem; color:var(--accent); opacity:0; transition:opacity 0.15s; flex-shrink:0; }
-    .tpicker-card.tpactive .tpicker-check { opacity:1; }
+    /* Hero save button */
+    .hero-save-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--r-sm, 6px);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 5px 11px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+    .hero-save-btn:hover { opacity: 0.82; }
+    .hero-save-btn:active { transform: scale(0.96); }
+    .hero-saved {
+      font-size: 0.62rem; color: var(--normal);
+      font-weight: 700; opacity: 0; pointer-events: none;
+      transition: opacity 0.25s; white-space: nowrap;
+    }
+    .hero-saved.show { opacity: 1; }
 
     /* ── COLLAPSIBLE ── */
-    .card-col-header { display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; padding-bottom:0.75rem; }
-    .card-col-arrow { color:var(--text3); font-size:0.55rem; transition:transform 0.22s ease; flex-shrink:0; margin-left:6px; display:inline-block; }
-    .card-col-body { overflow:hidden; transition:max-height 0.3s ease, opacity 0.25s ease; max-height:9999px; opacity:1; }
-    .card-col-body.closed { max-height:0 !important; opacity:0; pointer-events:none; }
-</style>
+    .card-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      cursor: pointer; user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    .card-header .section-label { margin: 0 !important; }
+    .card-chevron {
+      color: var(--text3); font-size: 0.55rem;
+      transition: transform 0.22s ease; flex-shrink: 0;
+      margin-left: 6px; line-height: 1;
+    }
+    .card-chevron.open { transform: rotate(180deg); }
+    .card-body {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.28s ease, opacity 0.22s ease;
+    }
+    .card-body.open { max-height: 9999px; opacity: 1; }
+    .card-body-inner { padding-top: 0.75rem; }
+
+    /* Make cards that are collapsed look tidy */
+    .card.collapsed { padding-bottom: 0.7rem; }
+
+  
+    /* ── TOP BAR LAYOUT ── */
+    .top-bar {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0.55rem 1rem !important;
+      border-bottom: 0.5px solid var(--border) !important;
+      gap: 8px;
+    }
+    .top-bar-left { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+    .top-bar-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .top-bar .day-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem; font-weight: 400; font-style: italic;
+      color: var(--accent); line-height: 1;
+    }
+    .top-bar .full-date {
+      font-size: 0.62rem; font-weight: 600;
+      color: var(--text3); line-height: 1;
+    }
+    .menu-btn {
+      background: none !important;
+      border: 0.5px solid var(--border2) !important;
+      border-radius: var(--r-sm) !important;
+      color: var(--text2) !important;
+      font-size: 0.95rem !important;
+      font-weight: 700 !important;
+      width: 32px; height: 32px;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+      cursor: pointer; transition: all 0.2s; line-height: 1; padding: 0 !important;
+    }
+    .menu-btn:hover { color: var(--accent) !important; border-color: var(--accent2) !important; }
+    .menu-settings-section {
+      padding: 0.6rem 1.25rem 0.5rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .menu-settings-label {
+      font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 5px;
+    }
+    .menu-settings-row {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 8px;
+      margin-bottom: 4px;
+    }
+    .menu-settings-row:last-child { margin-bottom: 0; }
+    .menu-settings-row-label { font-size: 0.75rem; font-weight: 600; color: var(--text2); }
+    .menu-fs-ctrl { display: flex; gap: 3px; }
+    .menu-fs-btn {
+      background: var(--surface2); border: 0.5px solid var(--border2);
+      border-radius: 5px; color: var(--text2);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 700;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .menu-fs-btn:hover { color: var(--accent); border-color: var(--accent2); }
+    .menu-theme-btn {
+      background: var(--surface2); border: 0.5px solid var(--border2);
+      border-radius: 5px; color: var(--text2);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 700;
+      padding: 3px 9px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .menu-theme-btn:hover { color: var(--accent); border-color: var(--accent2); }
+
+  </style>
   <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
 <!-- MENU OVERLAY -->
-<!-- HISTORIAL DE HÁBITOS -->
-<div class="habit-hist-overlay" id="habit-hist-overlay">
-  <div class="habit-hist-modal">
-    <div class="habit-hist-header">
-      <span class="habit-hist-title">historial de hábitos</span>
-      <button class="habit-hist-close" onclick="closeHabitHistory()">✕</button>
+<div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
+<!-- MENU DRAWER -->
+<div class="menu-drawer" id="menu-drawer">
+  <div class="menu-drawer-header">
+    <span class="menu-drawer-title">mi tracker</span>
+    <button class="menu-close" onclick="closeMenu()">✕</button>
+  </div>
+  <div class="menu-settings-section">
+    <div class="menu-settings-label">apariencia</div>
+    <div class="menu-settings-row">
+      <span class="menu-settings-row-label">letra</span>
+      <div class="menu-fs-ctrl">
+        <button class="menu-fs-btn" onclick="changeFontSize(-1)">A−</button>
+        <button class="menu-fs-btn" onclick="changeFontSize(1)">A+</button>
+      </div>
     </div>
-    <div class="habit-hist-body" id="habit-hist-body"></div>
+    <div class="menu-settings-row">
+      <span class="menu-settings-row-label">oscuro</span>
+      <button class="menu-theme-btn" onclick="toggleTheme();closeMenu()">◐ alternar</button>
+    </div>
+  </div>
+  <div class="menu-section">
+    <div class="menu-section-label">diario</div>
+    <a class="menu-link" href="index.html"><span class="menu-link-num">00</span><span class="menu-link-text">inicio</span><span class="menu-link-sub">dashboard</span></a>
+    <a class="menu-link" href="hoy.html"><span class="menu-link-num">01</span><span class="menu-link-text">hoy</span><span class="menu-link-sub">hábitos · sueño · ejercicio</span></a>
+    <a class="menu-link" href="higiene.html"><span class="menu-link-num">02</span><span class="menu-link-text">higiene</span><span class="menu-link-sub">rutinas de higiene</span></a>
+    <a class="menu-link" href="alimentacion.html"><span class="menu-link-num">03</span><span class="menu-link-text">alimentación</span><span class="menu-link-sub">dieta y macros</span></a>
+    <a class="menu-link" href="estudio.html"><span class="menu-link-num">04</span><span class="menu-link-text">estudio</span><span class="menu-link-sub">sesiones de estudio</span></a>
+  </div>
+  <div class="menu-section">
+    <div class="menu-section-label">registros</div>
+    <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
+    <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
+    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
   </div>
 </div>
 
@@ -1274,10 +1422,6 @@
       <span class="menu-settings-row-label">modo oscuro</span>
       <button class="menu-theme-btn" onclick="toggleTheme()">◐ alternar</button>
     </div>
-    <div class="menu-settings-row">
-      <span class="menu-settings-row-label">temas</span>
-      <button class="menu-theme-btn" onclick="openTpicker();closeMenu()">◈ elegir</button>
-    </div>
   </div>
 
   <div class="menu-section">
@@ -1296,17 +1440,6 @@
   </div>
 </div>
 
-<!-- THEME PICKER -->
-<div class="tpicker-overlay" id="tpicker-overlay">
-  <div class="tpicker-sheet">
-    <div class="tpicker-header">
-      <span class="tpicker-title">elige un tema</span>
-      <button class="tpicker-close" onclick="closeTpicker()">✕</button>
-    </div>
-    <div class="tpicker-grid" id="tpicker-grid"></div>
-  </div>
-</div>
-
 <!-- TOP BAR -->
 <div class="top-bar">
   <div class="top-bar-left">
@@ -1314,93 +1447,29 @@
     <div class="full-date" id="full-date"></div>
   </div>
   <div class="top-bar-right">
-    <span class="hero-saved" id="hero-saved">guardado ✓</span>
-    <button class="hero-save-btn" onclick="saveAll();heroSaveFlash()">guardar</button>
-    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
+    <button class="hero-save-btn" onclick="saveAll();heroFlash()">guardar todo</button>
+    <span class="hero-saved" id="hero-saved">✓</span>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
   </div>
+</div>
+    <div class="full-date" id="full-date"></div>
+  </div>
+  <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
 </div>
 
 <div class="content">
 
-  <!-- ANIMO -->
+  <!-- ══════════════════════════════════════
+       1. HÁBITOS DEL DÍA
+  ══════════════════════════════════════ -->
   <div>
-    <div class="card">
-      <div class="card-col-header" data-key="animo_energia" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding-bottom:0.75rem;">
-        <div class="section-label" style="margin:0">animo · energia · reactividad</div>
-        <span class="card-col-arrow open" style="color:var(--text3);font-size:0.6rem;transition:transform 0.22s;margin-left:6px;">&#9660;</span>
+    <div class="card ">
+      <div class="card-header" data-key="hoy_habitos">
+        <div class="section-label" style="margin:0">hábitos del día</div>
+        <span class="card-chevron open">▼</span>
       </div>
-      <div class="card-col-body">
-        <div class="mood-row">
-          <div class="mood-track">
-            <div class="mood-track-header">
-              <span class="mood-track-label">animo</span>
-              <span class="mood-value-label" id="mood-label">-</span>
-            </div>
-            <input type="range" id="mood-slider" min="1" max="10" value="5" step="1"
-              style="background:linear-gradient(to right,#6a4040,#8a5050,#7a6060,#707878,#7a9070,#8aaa78,#c0b060,#d4956a,#e0805a,#d06040);"
-              oninput="updateMood(this.value)" />
-            <div class="mood-scale-labels">
-              <span>depresion</span><span>tristeza</span><span>apatia</span><span>indiferencia</span><span>calma</span><span>bienestar</span><span>alegria</span><span>euforia</span><span>irritacion</span><span>enojo</span>
-            </div>
-          </div>
-          <div class="mood-track">
-            <div class="mood-track-header">
-              <span class="mood-track-label">energia</span>
-              <span class="mood-value-label" id="energy-label">-</span>
-            </div>
-            <input type="range" id="energy-slider" min="1" max="10" value="5" step="1"
-              style="background:linear-gradient(to right,#3a5068,#4a6070,#607868,#6a9058,#90b048,#c0a830,#d07030);"
-              oninput="updateEnergy(this.value)" />
-            <div class="mood-scale-labels">
-              <span>agotado</span><span>cansado</span><span>neutro</span><span>activo</span><span>enfocado</span><span>alerta</span><span>flujo</span>
-            </div>
-          </div>
-          <div class="mood-track">
-            <div class="mood-track-header">
-              <span class="mood-track-label">reactividad</span>
-              <span class="mood-value-label" id="react-label">-</span>
-            </div>
-            <input type="range" id="react-slider" min="1" max="10" value="5" step="1"
-              style="background:linear-gradient(to right,#5a7a8a,#7a9a8a,#9aaa80,#c0b060,#d09050,#c06040,#a04030);"
-              oninput="updateReact(this.value)" />
-            <div class="mood-scale-labels">
-              <span>nula</span><span></span><span>baja</span><span></span><span>media</span><span></span><span>alta reactividad</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FRASE DEL DIA -->
-  <div>
-    <div class="card">
-      <div class="card-col-header" data-key="frase_del_dia" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding-bottom:0.75rem;">
-        <div class="section-label" style="margin:0">frase del dia</div>
-        <span class="card-col-arrow open" style="color:var(--text3);font-size:0.6rem;transition:transform 0.22s;margin-left:6px;">&#9660;</span>
-      </div>
-      <div class="card-col-body">
-        <div class="journal-area">
-          <textarea class="journal-textarea" id="journal-text" placeholder="escribe algo sobre hoy..."></textarea>
-          <div class="journal-bottom">
-            <input class="tag-field" id="journal-tag" placeholder="#etiqueta" />
-            <button class="icon-btn" title="borrar" onclick="document.getElementById('journal-text').value=''">✕</button>
-            <button class="icon-btn" title="pegar" onclick="navigator.clipboard.readText().then(t=>document.getElementById('journal-text').value=t).catch(()=>{})">⎘</button>
-          </div>
-          <div class="save-status hidden" id="diary-save-status">guardado</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- HABITOS DEL DIA -->
-  <div>
-    <div class="card">
-      <div class="card-col-header" data-key="habitos_del_dia" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding-bottom:0.75rem;">
-        <div class="section-label" style="margin:0">habitos del dia</div>
-        <span class="card-col-arrow open" style="color:var(--text3);font-size:0.6rem;transition:transform 0.22s;margin-left:6px;">&#9660;</span>
-      </div>
-      <div class="card-col-body">
+      <div class="card-body open">
+        <div class="card-body-inner">
 
       <div class="habits-header">
         <span style="font-size:13px; color:var(--text2)" id="habits-summary">— hábitos</span>
@@ -1443,18 +1512,22 @@
         </div>
       </div>
 
-      </div><!-- /card-col-body -->
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- RUTINAS DE TRABAJO -->
+  <!-- ══════════════════════════════════════
+       2. WORK ROUTINES
+  ══════════════════════════════════════ -->
   <div>
-    <div class="card">
-      <div class="card-col-header" data-key="rutinas_de_trabajo" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding-bottom:0.75rem;">
+    <div class="card ">
+      <div class="card-header" data-key="hoy_rutinas">
         <div class="section-label" style="margin:0">rutinas de trabajo</div>
-        <span class="card-col-arrow open" style="color:var(--text3);font-size:0.6rem;transition:transform 0.22s;margin-left:6px;">&#9660;</span>
+        <span class="card-chevron open">▼</span>
       </div>
-      <div class="card-col-body">
+      <div class="card-body open">
+        <div class="card-body-inner">
 
       <div class="habits-header">
         <span style="font-size:13px; color:var(--text2)">rutinas configuradas</span>
@@ -1475,18 +1548,22 @@
         </div>
       </div>
 
-      </div><!-- /card-col-body -->
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- DESCANSO Y SUENOS -->
+  <!-- ══════════════════════════════════════
+       3. DESCANSO Y SUEÑOS
+  ══════════════════════════════════════ -->
   <div>
-    <div class="card">
-      <div class="card-col-header" data-key="descanso_y_suenos" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding-bottom:0.75rem;">
+    <div class="card ">
+      <div class="card-header" data-key="hoy_suenio">
         <div class="section-label" style="margin:0">descanso y sueños</div>
-        <span class="card-col-arrow open" style="color:var(--text3);font-size:0.6rem;transition:transform 0.22s;margin-left:6px;">&#9660;</span>
+        <span class="card-chevron open">▼</span>
       </div>
-      <div class="card-col-body">
+      <div class="card-body open">
+        <div class="card-body-inner">
 
       <!-- HORA DORMIR / DESPERTAR -->
       <div class="sleep-grid">
@@ -1590,18 +1667,22 @@
       <div style="margin-top:10px; display:flex; justify-content:flex-end;">
         <button class="btn-ghost" onclick="Historial.show('sleep')">📋 historial sueño</button>
       </div>
-      </div><!-- /card-col-body -->
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- EJERCICIO -->
+  <!-- ══════════════════════════════════════
+       4. EJERCICIO
+  ══════════════════════════════════════ -->
   <div>
-    <div class="card">
-      <div class="card-col-header" data-key="ejercicio" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding-bottom:0.75rem;">
+    <div class="card ">
+      <div class="card-header" data-key="hoy_ejercicio">
         <div class="section-label" style="margin:0">ejercicio</div>
-        <span class="card-col-arrow open" style="color:var(--text3);font-size:0.6rem;transition:transform 0.22s;margin-left:6px;">&#9660;</span>
+        <span class="card-chevron open">▼</span>
       </div>
-      <div class="card-col-body">
+      <div class="card-body open">
+        <div class="card-body-inner">
 
       <!-- META -->
       <div class="exercise-meta">
@@ -1688,48 +1769,101 @@
       <div style="margin-top:10px; display:flex; justify-content:flex-end;">
         <button class="btn-ghost" onclick="Historial.show('exercise')">📋 historial ejercicio</button>
       </div>
-      </div><!-- /card-col-body -->
+        </div>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- ══════════════════════════════════════
+       BOTÓN GUARDAR TODO (único)
+  ══════════════════════════════════════ -->
 
   <!-- /content -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
 
-// ── COLOR THEME ENGINE (all pages) ──────────────────────────────
-(function initColorTheme() {
-  var saved = localStorage.getItem('tracker_color_theme');
-  if (saved && saved !== 'crema') {
-    document.documentElement.setAttribute('data-color-theme', saved);
-  }
-})();
 
-function setColorTheme(name) {
-  localStorage.setItem('tracker_color_theme', name);
-  if (!name || name === 'crema') {
-    document.documentElement.removeAttribute('data-color-theme');
-  } else {
-    document.documentElement.setAttribute('data-color-theme', name);
-  }
-}
-// ────────────────────────────────────────────────────────────────
 
-// ── FONT SIZE ──
-(function() {
-  var saved = localStorage.getItem('tracker_fs');
-  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
+
+// ══ TRACKER SHARED ═══════════════════════════════════════════════
+
+// Font size
+(function(){
+  var s=localStorage.getItem('tracker_fs');
+  if(s) document.documentElement.style.setProperty('--fs',s+'px');
 })();
-function changeFontSize(delta) {
-  var root = document.documentElement;
-  var cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
-  var next = Math.max(12, Math.min(26, cur + delta));
-  root.style.setProperty('--fs', next + 'px');
-  localStorage.setItem('tracker_fs', next);
+function changeFontSize(d){
+  var r=document.documentElement;
+  var c=parseInt(getComputedStyle(r).getPropertyValue('--fs').trim())||15;
+  var n=Math.max(11,Math.min(24,c+d));
+  r.style.setProperty('--fs',n+'px');
+  localStorage.setItem('tracker_fs',n);
 }
 
+// Color theme
+(function(){
+  var s=localStorage.getItem('tracker_color_theme');
+  if(s&&s!=='crema') document.documentElement.setAttribute('data-color-theme',s);
+})();
+function setColorTheme(n){
+  localStorage.setItem('tracker_color_theme',n);
+  if(!n||n==='crema') document.documentElement.removeAttribute('data-color-theme');
+  else document.documentElement.setAttribute('data-color-theme',n);
+}
 
+// Dark mode
+(function(){
+  var s=localStorage.getItem('tracker_theme');
+  if(s) document.documentElement.setAttribute('data-theme',s);
+})();
+function toggleTheme(){
+  var h=document.documentElement;
+  var n=h.getAttribute('data-theme')==='dark'?'light':'dark';
+  h.setAttribute('data-theme',n);
+  localStorage.setItem('tracker_theme',n);
+}
+
+// Hero save flash
+function heroFlash(){
+  var el=document.getElementById('hero-saved');
+  if(!el) return;
+  el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},1600);
+}
+
+// Menu
+function openMenu(){
+  document.getElementById('menu-drawer').classList.add('open');
+  document.getElementById('menu-overlay').classList.add('open');
+  var ne=document.getElementById('menu-name-display');
+  if(ne) ne.textContent=localStorage.getItem('tracker_user_name')||'Victoria';
+}
+function closeMenu(){
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+
+// Collapsibles
+function initCards(){
+  document.querySelectorAll('.card-header').forEach(function(hdr){
+    var key='card_'+(hdr.dataset.key||hdr.textContent.trim().replace(/\s+/g,'_').slice(0,25));
+    var body=hdr.nextElementSibling;
+    var card=hdr.closest('.card');
+    var ch=hdr.querySelector('.card-chevron');
+    if(!body||!body.classList.contains('card-body')) return;
+    var isOpen=localStorage.getItem(key)!=='0';
+    function setState(open){
+      body.classList.toggle('open',open);
+      if(ch) ch.classList.toggle('open',open);
+      if(card) card.classList.toggle('collapsed',!open);
+      localStorage.setItem(key,open?'1':'0');
+    }
+    setState(isOpen);
+    hdr.addEventListener('click',function(){ setState(!body.classList.contains('open')); });
+  });
+}
+// ══════════════════════════════════════════════════════════════════
 // ── CONFIG & DATA ──
 const config = JSON.parse(localStorage.getItem('tracker_config') || '{}');
 const REPO = config.repo || 'vd159817/mi_tracker';
@@ -2489,128 +2623,15 @@ function habitAppliesOnDay(daysConfig, dayOfWeek) {
 }
 
 // ── MENU ──
-function openMenu() {
-  document.getElementById('menu-drawer').classList.add('open');
-  document.getElementById('menu-overlay').classList.add('open');
-}
-function closeMenu() {
-  document.getElementById('menu-drawer').classList.remove('open');
-  document.getElementById('menu-overlay').classList.remove('open');
-}
-function heroSaveFlash() {
-  var el = document.getElementById('hero-saved');
-  if (!el) return;
-  el.classList.add('show');
-  setTimeout(function(){ el.classList.remove('show'); }, 1800);
-}
-
-// ── ANIMO & FRASE ──
-var moodLabels   = ['','depresion','tristeza','apatia','indiferencia','calma','bienestar','alegria','euforia','irritacion','enojo'];
-var energyLabels = ['','agotado','agotado','cansado','cansado','neutro','activo','activo','enfocado','alerta','flujo'];
-var reactLabels  = ['','nula','nula','baja','baja','media','media','media-alta','media-alta','alta','alta reactividad'];
-function updateMood(v)   { var el=document.getElementById('mood-label');   if(el) el.textContent=moodLabels[v]+' · '+v; }
-function updateEnergy(v) { var el=document.getElementById('energy-label'); if(el) el.textContent=energyLabels[v]+' · '+v; }
-function updateReact(v)  { var el=document.getElementById('react-label');  if(el) el.textContent=reactLabels[v]+' · '+v; }
-function saveDiary() {
-  var now=new Date(), dateStr=now.toISOString().split('T')[0], timeStr=now.toTimeString().slice(0,5);
-  var data=JSON.parse(localStorage.getItem('tracker_diary')||'[]');
-  var ms=document.getElementById('mood-slider'), es=document.getElementById('energy-slider'), rs=document.getElementById('react-slider');
-  var jt=document.getElementById('journal-text'), jg=document.getElementById('journal-tag');
-  var entry={date:dateStr,time:timeStr,
-    mood:ms?parseInt(ms.value):5, energy:es?parseInt(es.value):5, reactivity:rs?parseInt(rs.value):5,
-    journal:jt?jt.value.trim():'', tag:jg?jg.value.replace(/^#/,'').trim():''};
-  var idx=data.findIndex(function(d){return d.date===dateStr;});
-  if(idx>=0) data[idx]=entry; else data.push(entry);
-  localStorage.setItem('tracker_diary',JSON.stringify(data));
-  var s=document.getElementById('diary-save-status');
-  if(s){s.classList.remove('hidden');setTimeout(function(){s.classList.add('hidden');},2000);}
-}
-(function(){
-  var today=new Date().toISOString().split('T')[0];
-  var data=JSON.parse(localStorage.getItem('tracker_diary')||'[]');
-  var entry=data.find(function(e){return e.date===today;});
-  if(entry){
-    var ms=document.getElementById('mood-slider');
-    var es=document.getElementById('energy-slider');
-    var rs=document.getElementById('react-slider');
-    var jt=document.getElementById('journal-text');
-    var jg=document.getElementById('journal-tag');
-    if(ms&&entry.mood){ms.value=entry.mood;updateMood(entry.mood);}else{updateMood(5);}
-    if(es&&entry.energy){es.value=entry.energy;updateEnergy(entry.energy);}else{updateEnergy(5);}
-    if(rs&&entry.reactivity){rs.value=entry.reactivity;updateReact(entry.reactivity);}else{updateReact(5);}
-    if(jt&&entry.journal) jt.value=entry.journal;
-    if(jg&&entry.tag) jg.value='#'+entry.tag;
-  } else { updateMood(5); updateEnergy(5); updateReact(5); }
-})();
-(function(){
-  var t;
-  function auto(){clearTimeout(t);t=setTimeout(saveDiary,1200);}
-  ['mood-slider','energy-slider','react-slider','journal-text','journal-tag'].forEach(function(id){
-    var el=document.getElementById(id); if(el) el.addEventListener('input',auto);
-  });
-})();
-
-// ── COLLAPSIBLE CARDS ──
-function initCollapsibles(){
-  document.querySelectorAll('.card-col-header').forEach(function(hdr){
-    var key='hoy_col_'+(hdr.dataset.key||Math.random().toString(36).slice(2));
-    var body=hdr.nextElementSibling;
-    var arrow=hdr.querySelector('.card-col-arrow');
-    if(!body||!body.classList.contains('card-col-body')) return;
-    var saved=localStorage.getItem(key);
-    var open=saved===null?true:saved==='1';
-    function setState(o){
-      body.classList.toggle('closed',!o);
-      if(arrow){arrow.style.transform=o?'rotate(0deg)':'rotate(-90deg)';}
-      localStorage.setItem(key,o?'1':'0');
-    }
-    setState(open);
-    hdr.addEventListener('click',function(e){
-      // don't collapse if clicking a button inside header
-      if(e.target.tagName==='BUTTON'||e.target.closest('button')) return;
-      setState(body.classList.contains('closed'));
-    });
-  });
-}
-// Run now (script is at end of body so DOM is ready) and also on DOMContentLoaded as fallback
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', initCollapsibles);
-} else {
-  initCollapsibles();
-}
-
-// ── THEME PICKER ──
-var TPICKER_THEMES = [
-  { id:'crema',   name:'Crema',   desc:'cálido · por defecto',    s:['#f5f3ef','#8a6a4a','#b09070','#1a1916'] },
-  { id:'bw',      name:'B & N',   desc:'sin color · minimalista', s:['#f7f7f7','#222222','#555555','#999999'] },
-  { id:'rosa',    name:'Rosa',    desc:'suave · femenino',        s:['#fff0f5','#c04878','#e080a8','#fde4ee'] },
-  { id:'salvia',  name:'Salvia',  desc:'verde · natural',         s:['#f2f5f0','#3d7050','#6a9870','#e6ede3'] },
-  { id:'noche',   name:'Noche',   desc:'azul · elegante',         s:['#eef2f8','#2a5298','#4a72c8','#dde6f2'] },
-  { id:'tierra',  name:'Tierra',  desc:'ocre · otoñal',           s:['#f4efe8','#a0521e','#c87840','#ece4d6'] },
-  { id:'lavanda', name:'Lavanda', desc:'lila · sereno',           s:['#f4f0fa','#6040a8','#8860c8','#ebe4f5'] },
-];
-function renderTpicker(){
-  var current=localStorage.getItem('tracker_color_theme')||'crema';
-  var grid=document.getElementById('tpicker-grid'); if(!grid) return;
-  var html='';
-  for(var i=0;i<TPICKER_THEMES.length;i++){
-    var t=TPICKER_THEMES[i], sw='';
-    for(var j=0;j<t.s.length;j++) sw+='<div class="tpicker-swatch" style="background:'+t.s[j]+'"></div>';
-    html+='<button class="tpicker-card'+(current===t.id?' tpactive':'')+' " data-tid="'+t.id+'" onclick="pickColorTheme(this.dataset.tid)">'
-      +'<div class="tpicker-swatches">'+sw+'</div>'
-      +'<div class="tpicker-info"><div class="tpicker-name">'+t.name+'</div><div class="tpicker-desc">'+t.desc+'</div></div>'
-      +'<div class="tpicker-check">✓</div></button>';
-  }
-  grid.innerHTML=html;
-}
-function openTpicker(){ renderTpicker(); document.getElementById('tpicker-overlay').classList.add('open'); }
-function closeTpicker(){ document.getElementById('tpicker-overlay').classList.remove('open'); }
-function pickColorTheme(id){ setColorTheme(id); renderTpicker(); }
-document.addEventListener('DOMContentLoaded',function(){
-  var ov=document.getElementById('tpicker-overlay');
-  if(ov) ov.addEventListener('click',function(e){ if(e.target===this) closeTpicker(); });
-});
 </script>
-  <script src="historial.js"></script>
+  <script src="historial.js">initCards();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
 </body>
 </html>

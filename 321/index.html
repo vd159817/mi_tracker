@@ -3,17 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="mi tracker">
-  <meta name="theme-color" content="#f5f3ef" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)">
-  <link rel="manifest" href="manifest.json">
   <title>mi tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
   <style>
-
     :root {
       --bg: #f5f3ef;
       --surface: #ffffff;
@@ -941,537 +933,7 @@
       color: var(--accent);
       letter-spacing: 0.04em;
     }
-
-    /* ═══════════ SHARED OVERRIDES ═══════════ */
-
-    /* Standardize font */
-    html { font-size: var(--fs, 15px) !important; }
-    body {
-      font-family: 'IBM Plex Sans', sans-serif !important;
-      font-weight: 600 !important;
-      font-size: 0.933rem !important;
-    }
-
-    /* Sticky top-bar */
-    .top-bar {
-      position: sticky !important;
-      top: 0 !important;
-      z-index: 200 !important;
-      background: var(--bg) !important;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    /* Hero save button */
-    .hero-save-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--r-sm, 6px);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 5px 11px;
-      cursor: pointer;
-      transition: opacity 0.15s;
-      white-space: nowrap;
-      letter-spacing: 0.02em;
-    }
-    .hero-save-btn:hover { opacity: 0.82; }
-    .hero-save-btn:active { transform: scale(0.96); }
-    .hero-saved {
-      font-size: 0.62rem; color: var(--normal);
-      font-weight: 700; opacity: 0; pointer-events: none;
-      transition: opacity 0.25s; white-space: nowrap;
-    }
-    .hero-saved.show { opacity: 1; }
-
-    /* ── COLLAPSIBLE ── */
-    .card-header {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      cursor: pointer; user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      padding-bottom: 0;
-      margin-bottom: 0;
-    }
-    .card-header .section-label { margin: 0 !important; }
-    .card-chevron {
-      color: var(--text3); font-size: 0.55rem;
-      transition: transform 0.22s ease; flex-shrink: 0;
-      margin-left: 6px; line-height: 1;
-    }
-    .card-chevron.open { transform: rotate(180deg); }
-    .card-body {
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.28s ease, opacity 0.22s ease;
-    }
-    .card-body.open { max-height: 9999px; opacity: 1; }
-    .card-body-inner { padding-top: 0.75rem; }
-
-    /* Make cards that are collapsed look tidy */
-    .card.collapsed { padding-bottom: 0.7rem; }
-
-  
-    /* ── TOP BAR LAYOUT ── */
-    .top-bar {
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      padding: 0.55rem 1rem !important;
-      border-bottom: 0.5px solid var(--border) !important;
-      gap: 8px;
-    }
-    .top-bar-left { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
-    .top-bar-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
-    .top-bar .welcome-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem; font-weight: 400; font-style: italic;
-      color: var(--accent); line-height: 1;
-    }
-    .top-bar .day-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 0.85rem; font-weight: 400; font-style: italic;
-      color: var(--accent); line-height: 1;
-    }
-    .top-bar .full-date {
-      font-size: 0.62rem; font-weight: 600;
-      color: var(--text3); line-height: 1;
-    }
-    .menu-btn {
-      background: none !important;
-      border: 0.5px solid var(--border2) !important;
-      border-radius: var(--r-sm) !important;
-      color: var(--text2) !important;
-      font-size: 0.95rem !important;
-      font-weight: 700 !important;
-      width: 32px; height: 32px;
-      display: flex !important; align-items: center !important; justify-content: center !important;
-      cursor: pointer; transition: all 0.2s; line-height: 1; padding: 0 !important;
-    }
-    .menu-btn:hover { color: var(--accent) !important; border-color: var(--accent2) !important; }
-
-    /* ── DASHBOARD WIDGETS ── */
-    .dash-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-    }
-    .dash-widget {
-      background: var(--surface2);
-      border-radius: var(--r-sm);
-      padding: 9px 10px;
-      cursor: pointer;
-      transition: border-color 0.15s;
-      border: 0.5px solid var(--border);
-      text-decoration: none;
-    }
-    .dash-widget:hover { border-color: var(--accent2); }
-    .dash-widget:active { opacity: 0.75; }
-    .dw-label {
-      font-size: 0.58rem; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 3px;
-    }
-    .dw-val {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.15rem; font-weight: 400;
-      color: var(--accent); line-height: 1.15;
-    }
-    .dw-sub {
-      font-size: 0.58rem; font-weight: 600;
-      color: var(--text3); margin-top: 2px;
-    }
-
-    /* ── MENU SETTINGS ── */
-    .menu-settings-section {
-      padding: 0.6rem 1.25rem 0.5rem;
-      border-bottom: 0.5px solid var(--border);
-    }
-    .menu-settings-label {
-      font-size: 0.58rem; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 5px;
-    }
-    .menu-settings-row {
-      display: flex; align-items: center;
-      justify-content: space-between; gap: 8px;
-      margin-bottom: 4px;
-    }
-    .menu-settings-row:last-child { margin-bottom: 0; }
-    .menu-settings-row-label { font-size: 0.75rem; font-weight: 600; color: var(--text2); }
-    .menu-fs-ctrl { display: flex; gap: 3px; }
-    .menu-fs-btn {
-      background: var(--surface2); border: 0.5px solid var(--border2);
-      border-radius: 5px; color: var(--text2);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.68rem; font-weight: 700;
-      width: 26px; height: 26px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.15s;
-    }
-    .menu-fs-btn:hover { color: var(--accent); border-color: var(--accent2); }
-    .menu-theme-btn {
-      background: var(--surface2); border: 0.5px solid var(--border2);
-      border-radius: 5px; color: var(--text2);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.68rem; font-weight: 700;
-      padding: 3px 9px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
-    }
-    .menu-theme-btn:hover { color: var(--accent); border-color: var(--accent2); }
-
-  
-    /* ═══════════ SHARED OVERRIDES ═══════════ */
-
-    /* Standardize font */
-    html { font-size: var(--fs, 15px) !important; }
-    body {
-      font-family: 'IBM Plex Sans', sans-serif !important;
-      font-weight: 600 !important;
-      font-size: 0.933rem !important;
-    }
-
-    /* Sticky top-bar */
-    .top-bar {
-      position: sticky !important;
-      top: 0 !important;
-      z-index: 200 !important;
-      background: var(--bg) !important;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-
-    /* Hero save button */
-    .hero-save-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--r-sm, 6px);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 5px 11px;
-      cursor: pointer;
-      transition: opacity 0.15s;
-      white-space: nowrap;
-      letter-spacing: 0.02em;
-    }
-    .hero-save-btn:hover { opacity: 0.82; }
-    .hero-save-btn:active { transform: scale(0.96); }
-    .hero-saved {
-      font-size: 0.62rem; color: var(--normal);
-      font-weight: 700; opacity: 0; pointer-events: none;
-      transition: opacity 0.25s; white-space: nowrap;
-    }
-    .hero-saved.show { opacity: 1; }
-
-    /* ── COLLAPSIBLE ── */
-    .card-header {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      cursor: pointer; user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      padding-bottom: 0;
-      margin-bottom: 0;
-    }
-    .card-header .section-label { margin: 0 !important; }
-    .card-chevron {
-      color: var(--text3); font-size: 0.55rem;
-      transition: transform 0.22s ease; flex-shrink: 0;
-      margin-left: 6px; line-height: 1;
-    }
-    .card-chevron.open { transform: rotate(180deg); }
-    .card-body {
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.28s ease, opacity 0.22s ease;
-    }
-    .card-body.open { max-height: 9999px; opacity: 1; }
-    .card-body-inner { padding-top: 0.75rem; }
-
-    /* Make cards that are collapsed look tidy */
-    .card.collapsed { padding-bottom: 0.7rem; }
-
-  
-    /* ── TOP BAR LAYOUT ── */
-    .top-bar {
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      padding: 0.55rem 1rem !important;
-      border-bottom: 0.5px solid var(--border) !important;
-      gap: 8px;
-    }
-    .top-bar-left { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
-    .top-bar-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
-    .top-bar .welcome-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem; font-weight: 400; font-style: italic;
-      color: var(--accent); line-height: 1;
-    }
-    .top-bar .day-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 0.85rem; font-weight: 400; font-style: italic;
-      color: var(--accent); line-height: 1;
-    }
-    .top-bar .full-date {
-      font-size: 0.62rem; font-weight: 600;
-      color: var(--text3); line-height: 1;
-    }
-    .menu-btn {
-      background: none !important;
-      border: 0.5px solid var(--border2) !important;
-      border-radius: var(--r-sm) !important;
-      color: var(--text2) !important;
-      font-size: 0.95rem !important;
-      font-weight: 700 !important;
-      width: 32px; height: 32px;
-      display: flex !important; align-items: center !important; justify-content: center !important;
-      cursor: pointer; transition: all 0.2s; line-height: 1; padding: 0 !important;
-    }
-    .menu-btn:hover { color: var(--accent) !important; border-color: var(--accent2) !important; }
-
-    /* ── DASHBOARD WIDGETS ── */
-    .dash-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-    }
-    .dash-widget {
-      background: var(--surface2);
-      border-radius: var(--r-sm);
-      padding: 9px 10px;
-      cursor: pointer;
-      transition: border-color 0.15s;
-      border: 0.5px solid var(--border);
-      text-decoration: none;
-    }
-    .dash-widget:hover { border-color: var(--accent2); }
-    .dash-widget:active { opacity: 0.75; }
-    .dw-label {
-      font-size: 0.58rem; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 3px;
-    }
-    .dw-val {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.15rem; font-weight: 400;
-      color: var(--accent); line-height: 1.15;
-    }
-    .dw-sub {
-      font-size: 0.58rem; font-weight: 600;
-      color: var(--text3); margin-top: 2px;
-    }
-
-    /* ── MENU SETTINGS ── */
-    .menu-settings-section {
-      padding: 0.6rem 1.25rem 0.5rem;
-      border-bottom: 0.5px solid var(--border);
-    }
-    .menu-settings-label {
-      font-size: 0.58rem; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--text3); margin-bottom: 5px;
-    }
-    .menu-settings-row {
-      display: flex; align-items: center;
-      justify-content: space-between; gap: 8px;
-      margin-bottom: 4px;
-    }
-    .menu-settings-row:last-child { margin-bottom: 0; }
-    .menu-settings-row-label { font-size: 0.75rem; font-weight: 600; color: var(--text2); }
-    .menu-fs-ctrl { display: flex; gap: 3px; }
-    .menu-fs-btn {
-      background: var(--surface2); border: 0.5px solid var(--border2);
-      border-radius: 5px; color: var(--text2);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.68rem; font-weight: 700;
-      width: 26px; height: 26px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.15s;
-    }
-    .menu-fs-btn:hover { color: var(--accent); border-color: var(--accent2); }
-    .menu-theme-btn {
-      background: var(--surface2); border: 0.5px solid var(--border2);
-      border-radius: 5px; color: var(--text2);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.68rem; font-weight: 700;
-      padding: 3px 9px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
-    }
-    .menu-theme-btn:hover { color: var(--accent); border-color: var(--accent2); }
-
-  
-
-    /* ════════════ OVERRIDES LIMPIOS ════════════ */
-
-    /* sticky top-bar */
-    .top-bar {
-      position: sticky !important;
-      top: 0; z-index: 200;
-      background: var(--bg) !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      padding: 0.6rem 1.1rem !important;
-      border-bottom: 0.5px solid var(--border) !important;
-      gap: 8px;
-    }
-    .top-bar-left { flex: 1; min-width: 0; }
-    .top-bar-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-    .top-bar .welcome-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem; font-style: italic; font-weight: 400;
-      color: var(--accent); line-height: 1.2;
-    }
-    .top-bar .day-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 0.88rem; font-style: italic; font-weight: 400;
-      color: var(--accent); line-height: 1.1;
-    }
-    .top-bar .full-date {
-      font-size: 0.7rem; color: var(--text3); font-weight: 500; margin-top: 1px;
-    }
-
-    /* autosave indicator — NO button visible */
-    .autosave-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--normal); opacity: 0;
-      transition: opacity 0.3s; flex-shrink: 0;
-    }
-    .autosave-dot.show { opacity: 1; }
-
-    /* ☰ hamburguesa */
-    .menu-btn {
-      background: none !important;
-      border: 0.5px solid var(--border2) !important;
-      border-radius: var(--r-sm) !important;
-      color: var(--text2) !important;
-      font-size: 1rem !important; font-weight: 700 !important;
-      width: 32px; height: 32px; padding: 0 !important;
-      display: flex !important; align-items: center !important;
-      justify-content: center !important;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .menu-btn:hover { color: var(--accent) !important; border-color: var(--accent2) !important; }
-
-    /* menú settings */
-    .menu-settings-section {
-      padding: 0.6rem 1.25rem 0.5rem;
-      border-bottom: 0.5px solid var(--border);
-    }
-    .menu-settings-label {
-      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em;
-      text-transform: uppercase; color: var(--text3); margin-bottom: 5px;
-    }
-    .menu-settings-row {
-      display: flex; align-items: center;
-      justify-content: space-between; gap: 8px; margin-bottom: 4px;
-    }
-    .menu-settings-row:last-child { margin-bottom: 0; }
-    .menu-settings-row-label { font-size: 0.75rem; font-weight: 600; color: var(--text2); }
-    .menu-fs-ctrl { display: flex; gap: 3px; }
-    .menu-fs-btn {
-      background: var(--surface2); border: 0.5px solid var(--border2);
-      border-radius: 5px; color: var(--text2);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.68rem; font-weight: 700; width: 26px; height: 26px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.15s;
-    }
-    .menu-fs-btn:hover { color: var(--accent); border-color: var(--accent2); }
-    .menu-theme-btn {
-      background: var(--surface2); border: 0.5px solid var(--border2);
-      border-radius: 5px; color: var(--text2);
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 0.68rem; font-weight: 700; padding: 3px 9px;
-      cursor: pointer; transition: all 0.15s; white-space: nowrap;
-    }
-    .menu-theme-btn:hover { color: var(--accent); border-color: var(--accent2); }
-
-    /* collapsible cards */
-    .card-header {
-      display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
-    }
-    .card-header .section-label { margin: 0 !important; }
-    .card-chevron {
-      color: var(--text3); font-size: 0.55rem;
-      transition: transform 0.22s ease; flex-shrink: 0; margin-left: 6px;
-    }
-    .card-chevron.open { transform: rotate(180deg); }
-    .card-body {
-      overflow: hidden; max-height: 0; opacity: 0;
-      transition: max-height 0.28s ease, opacity 0.22s ease;
-    }
-    .card-body.open { max-height: 9999px; opacity: 1; }
-    .card-body-inner { padding-top: 0.75rem; }
-
-    /* ── DASHBOARD ── */
-    .dash-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    }
-    .dash-widget {
-      background: var(--surface2); border-radius: var(--r-sm);
-      padding: 10px 12px; text-decoration: none; display: block;
-      border: 0.5px solid var(--border); transition: border-color 0.15s;
-    }
-    .dash-widget:hover { border-color: var(--accent2); }
-    .dash-widget:active { opacity: 0.75; }
-    .dw-label {
-      font-size: 0.57rem; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; color: var(--text3); margin-bottom: 4px;
-    }
-    .dw-val {
-      font-family: 'Cormorant Garamond', serif; font-size: 1.25rem;
-      font-weight: 400; color: var(--accent); line-height: 1.2;
-    }
-    .dw-sub {
-      font-size: 0.57rem; font-weight: 600; color: var(--text3); margin-top: 2px;
-    }
-
-    /* phase pill inside period widget */
-    .dw-phase {
-      display: inline-block; font-size: 0.57rem; font-weight: 700;
-      padding: 1px 6px; border-radius: 20px; margin-top: 3px;
-      letter-spacing: 0.04em;
-    }
-    .dw-phase.menstrual  { background:#fce4ec; color:#c04878; }
-    .dw-phase.folicular  { background:#e8f5e9; color:#2a7848; }
-    .dw-phase.ovulacion  { background:#e3f0fd; color:#2a5298; }
-    .dw-phase.lutea      { background:#fdf3e3; color:#9a6010; }
-
-    /* macro mini-bar */
-    .dw-macro-bars { display:flex; flex-direction:column; gap:3px; margin-top:5px; }
-    .dw-macro-row  { display:flex; align-items:center; gap:4px; }
-    .dw-macro-lbl  { font-size:0.52rem; font-weight:700; color:var(--text3); width:10px; }
-    .dw-macro-track {
-      flex:1; height:4px; background:var(--border2);
-      border-radius:2px; overflow:hidden;
-    }
-    .dw-macro-fill { height:100%; border-radius:2px; transition: width 0.4s; }
-
-    /* habit mini progress ring (CSS only) */
-    .dw-ring-wrap { display:flex; align-items:center; gap:8px; margin-top:4px; }
-    .dw-ring {
-      width:36px; height:36px; flex-shrink:0;
-    }
-    .dw-ring-track { fill:none; stroke:var(--border2); stroke-width:4; }
-    .dw-ring-fill  {
-      fill:none; stroke:var(--normal); stroke-width:4;
-      stroke-linecap:round; stroke-dasharray:100;
-      transform:rotate(-90deg); transform-origin:50% 50%;
-      transition: stroke-dashoffset 0.5s;
-    }
-
-    /* mood mini sparkline */
-    .dw-spark { width:100%; height:28px; margin-top:4px; }
-    .dw-spark path { fill:none; stroke:var(--accent); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
-    .dw-spark-area { fill:var(--accent); opacity:0.08; }
-
-  </style>
+</style>
   <link rel="stylesheet" href="tracker.css" />
 </head>
 <body>
@@ -1487,6 +949,7 @@
   </div>
 </div>
 
+
 <!-- MENU OVERLAY -->
 <div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
 
@@ -1496,6 +959,7 @@
     <span class="menu-drawer-title">mi tracker</span>
     <button class="menu-close" onclick="closeMenu()">✕</button>
   </div>
+
   <div class="menu-settings-section">
     <div class="menu-settings-label">apariencia</div>
     <div class="menu-settings-row">
@@ -1506,217 +970,247 @@
       </div>
     </div>
     <div class="menu-settings-row">
-      <span class="menu-settings-row-label">oscuro</span>
-      <button class="menu-theme-btn" onclick="toggleTheme();closeMenu()">◐ alternar</button>
-    </div>
-    <div class="menu-settings-row">
-      <span class="menu-settings-row-label">temas</span>
-      <button class="menu-theme-btn" onclick="openTpicker();closeMenu()">◈ elegir</button>
+      <span class="menu-settings-row-label">modo oscuro</span>
+      <button class="menu-theme-btn" onclick="toggleTheme()">◐ alternar</button>
     </div>
   </div>
-  <div class="menu-settings-section">
-    <div class="menu-settings-label">perfil</div>
-    <div class="menu-settings-row">
-      <span class="menu-settings-row-label" id="menu-name-display">Victoria</span>
-      <button class="menu-theme-btn" onclick="editWelcomeName()">✏ editar</button>
-    </div>
-  </div>
+
   <div class="menu-section">
     <div class="menu-section-label">diario</div>
-    <a class="menu-link" href="index.html"><span class="menu-link-num">00</span><span class="menu-link-text">inicio</span><span class="menu-link-sub">dashboard</span></a>
-    <a class="menu-link" href="hoy.html"><span class="menu-link-num">01</span><span class="menu-link-text">hoy</span><span class="menu-link-sub">hábitos · sueño · ejercicio</span></a>
-    <a class="menu-link" href="higiene.html"><span class="menu-link-num">02</span><span class="menu-link-text">higiene</span><span class="menu-link-sub">rutinas de higiene</span></a>
-    <a class="menu-link" href="alimentacion.html"><span class="menu-link-num">03</span><span class="menu-link-text">alimentación</span><span class="menu-link-sub">dieta y macros</span></a>
-    <a class="menu-link" href="estudio.html"><span class="menu-link-num">04</span><span class="menu-link-text">estudio</span><span class="menu-link-sub">sesiones de estudio</span></a>
+    <a class="menu-link" href="index.html">
+      <span class="menu-link-num">00</span>
+      <span class="menu-link-text">inicio</span>
+      <span class="menu-link-sub">dashboard</span>
+    </a>
+    <a class="menu-link" href="hoy.html">
+      <span class="menu-link-num">01</span>
+      <span class="menu-link-text">hoy</span>
+      <span class="menu-link-sub">registro del día</span>
+    </a>
+    <a class="menu-link" href="higiene.html">
+      <span class="menu-link-num">02</span>
+      <span class="menu-link-text">higiene</span>
+      <span class="menu-link-sub">rutinas de higiene</span>
+    </a>
+    <a class="menu-link" href="alimentacion.html">
+      <span class="menu-link-num">03</span>
+      <span class="menu-link-text">alimentación</span>
+      <span class="menu-link-sub">dieta y macros</span>
+    </a>
+    <a class="menu-link" href="estudio.html">
+      <span class="menu-link-num">04</span>
+      <span class="menu-link-text">estudio</span>
+      <span class="menu-link-sub">sesiones de estudio</span>
+    </a>
   </div>
+
   <div class="menu-section">
     <div class="menu-section-label">registros</div>
-    <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
-    <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
-    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
+    <a class="menu-link" href="registros.html">
+      <span class="menu-link-num">05</span>
+      <span class="menu-link-text">registros</span>
+      <span class="menu-link-sub">hábitos anuales · chess</span>
+    </a>
+    <a class="menu-link" href="finanzas.html">
+      <span class="menu-link-num">06</span>
+      <span class="menu-link-text">finanzas</span>
+      <span class="menu-link-sub">presupuesto y gastos</span>
+    </a>
+    <a class="menu-link" href="periodo.html">
+      <span class="menu-link-num">07</span>
+      <span class="menu-link-text">período</span>
+      <span class="menu-link-sub">ciclo · fases · síntomas</span>
+    </a>
   </div>
 </div>
 
 <!-- TOP BAR -->
 <div class="top-bar">
-  <div class="top-bar-left">
-    <div class="welcome-name" id="welcome-name">bienvenida, Victoria</div>
+  <div class="date-block">
+    <div class="welcome-name" id="welcome-name"></div>
     <div class="day-name" id="day-name"></div>
     <div class="full-date" id="full-date"></div>
   </div>
-  <div class="top-bar-right">
-    <div class="autosave-dot" id="autosave-dot"></div>
-    <button class="menu-btn" onclick="openMenu()">☰</button>
-  </div>
+  <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
 </div>
 
 <!-- MAIN -->
 <div class="content">
 
-  <!-- RESUMEN DEL DÍA -->
+  <!-- ÁNIMO Y ENERGÍA -->
   <div>
+    <div class="section-label">registro del día</div>
     <div class="card">
-      <div class="card-header" data-key="idx_dash">
-        <div class="section-label" style="margin:0">resumen del día</div>
-        <span class="card-chevron open">▼</span>
-      </div>
-      <div class="card-body open">
-        <div class="card-body-inner">
-          <div class="dash-grid">
+      <div class="mood-row">
 
-            <!-- PERÍODO -->
-            <a class="dash-widget" href="periodo.html">
-              <div class="dw-label">ciclo · fase</div>
-              <div class="dw-val" id="dw-period">—</div>
-              <div id="dw-period-pill"></div>
-              <div class="dw-sub" id="dw-period-sub">—</div>
-            </a>
-
-            <!-- ESTUDIO -->
-            <a class="dash-widget" href="estudio.html">
-              <div class="dw-label">estudio hoy</div>
-              <div class="dw-val" id="dw-study">0h</div>
-              <div class="dw-sub" id="dw-study-sub">semana: —</div>
-            </a>
-
-            <!-- CALORÍAS + macro bars -->
-            <a class="dash-widget" href="alimentacion.html">
-              <div class="dw-label">calorías</div>
-              <div class="dw-val" id="dw-kcal">— kcal</div>
-              <div class="dw-macro-bars" id="dw-macro-bars">
-                <div class="dw-macro-row"><span class="dw-macro-lbl">P</span><div class="dw-macro-track"><div class="dw-macro-fill" id="dw-bar-prot" style="width:0%;background:#3a7abd"></div></div></div>
-                <div class="dw-macro-row"><span class="dw-macro-lbl">C</span><div class="dw-macro-track"><div class="dw-macro-fill" id="dw-bar-carb" style="width:0%;background:#c9a030"></div></div></div>
-                <div class="dw-macro-row"><span class="dw-macro-lbl">G</span><div class="dw-macro-track"><div class="dw-macro-fill" id="dw-bar-fat"  style="width:0%;background:#7a5a9a"></div></div></div>
-              </div>
-            </a>
-
-            <!-- SUEÑO -->
-            <a class="dash-widget" href="hoy.html">
-              <div class="dw-label">sueño</div>
-              <div class="dw-val" id="dw-sleep">—</div>
-              <div class="dw-sub" id="dw-sleep-sub">anoche</div>
-            </a>
-
-            <!-- HÁBITOS + mini ring -->
-            <a class="dash-widget" href="hoy.html">
-              <div class="dw-label">hábitos hoy</div>
-              <div class="dw-ring-wrap">
-                <svg class="dw-ring" viewBox="0 0 36 36">
-                  <circle class="dw-ring-track" cx="18" cy="18" r="15.9"/>
-                  <circle class="dw-ring-fill"  cx="18" cy="18" r="15.9" id="dw-ring-fill" style="stroke-dashoffset:100"/>
-                </svg>
-                <div>
-                  <div class="dw-val" id="dw-habits">—</div>
-                  <div class="dw-sub" id="dw-habits-sub">—%</div>
-                </div>
-              </div>
-            </a>
-
-            <!-- FINANZAS -->
-            <a class="dash-widget" href="finanzas.html">
-              <div class="dw-label">balance mes</div>
-              <div class="dw-val" id="dw-finance">—</div>
-              <div class="dw-sub" id="dw-finance-sub">—</div>
-            </a>
-
+        <div class="mood-track">
+          <div class="mood-track-header">
+            <span class="mood-track-label">ánimo</span>
+            <span class="mood-value-label" id="mood-label">—</span>
           </div>
-
-          <!-- MINI SPARKLINE de ánimo (últimos 7 días) -->
-          <div style="margin-top:10px;">
-            <div class="dw-label" style="margin-bottom:4px;">ánimo últimos 7 días</div>
-            <svg class="dw-spark" id="dw-spark" viewBox="0 0 200 28" preserveAspectRatio="none">
-              <path class="dw-spark-area" id="dw-spark-area" d=""/>
-              <path id="dw-spark-line" d=""/>
-            </svg>
+          <div class="mood-slider-wrap">
+            <input type="range" id="mood-slider" min="1" max="10" value="5" step="1"
+              style="background: linear-gradient(to right, #6a4040, #8a5050, #7a6060, #707878, #7a9070, #8aaa78, #c0b060, #d4956a, #e0805a, #d06040);"
+              oninput="updateMood(this.value)" />
           </div>
-
+          <div class="mood-scale-labels">
+            <span>depresión</span><span>tristeza</span><span>apatía</span><span>indiferencia</span><span>calma</span><span>bienestar</span><span>alegría</span><span>euforia</span><span>irritación</span><span>enojo</span>
+          </div>
         </div>
+
+        <div class="mood-track">
+          <div class="mood-track-header">
+            <span class="mood-track-label">energía</span>
+            <span class="mood-value-label" id="energy-label">—</span>
+          </div>
+          <div class="mood-slider-wrap">
+            <input type="range" id="energy-slider" min="1" max="10" value="5" step="1"
+              style="background: linear-gradient(to right, #3a5068, #4a6070, #607868, #6a9058, #90b048, #c0a830, #d07030);"
+              oninput="updateEnergy(this.value)" />
+          </div>
+          <div class="mood-scale-labels">
+            <span>agotado</span><span>cansado</span><span>neutro</span><span>activo</span><span>enfocado</span><span>alerta</span><span>flujo</span>
+          </div>
+        </div>
+
+        <div class="mood-track">
+          <div class="mood-track-header">
+            <span class="mood-track-label">reactividad</span>
+            <span class="mood-value-label" id="react-label">—</span>
+          </div>
+          <div class="mood-slider-wrap">
+            <input type="range" id="react-slider" min="1" max="10" value="5" step="1"
+              style="background: linear-gradient(to right, #5a7a8a, #7a9a8a, #9aaa80, #c0b060, #d09050, #c06040, #a04030);"
+              oninput="updateReact(this.value)" />
+          </div>
+          <div class="mood-scale-labels">
+            <span>nula</span><span></span><span>baja</span><span></span><span>media</span><span></span><span>alta reactividad</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- JOURNAL -->
+  <div>
+    <div class="section-label">frase del día</div>
+    <div class="card">
+      <div class="journal-area">
+        <textarea class="journal-textarea" id="journal-text" placeholder="escribe algo sobre hoy..."></textarea>
+        <div class="journal-bottom">
+          <input class="tag-field" id="journal-tag" placeholder="#etiqueta" />
+          <button class="icon-btn" title="borrar" onclick="clearJournal()">✕</button>
+          <button class="icon-btn" title="pegar" onclick="pasteJournal()">⎘</button>
+                  </div>
+        <div class="save-status hidden" id="save-status">guardado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRÁFICOS -->
+  <div>
+    <div class="section-label">último mes</div>
+    <div class="card">
+      <div class="graphs-row">
+        <div class="chart-wrap">
+          <canvas id="moodChart"></canvas>
+        </div>
+        <div class="streak-box">
+          <div class="streak-num" id="streak-num">0</div>
+          <div class="streak-label">días con<br>frase</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAREAS DEL DÍA -->
+  <div>
+    <div class="section-label">pendientes de hoy</div>
+    <div class="card">
+      <div class="task-input-row">
+        <input class="task-input" id="task-input" placeholder="nueva tarea..." onkeydown="if(event.key==='Enter') addTask()" />
+        <button class="icon-btn" title="borrar campo" onclick="document.getElementById('task-input').value=''">✕</button>
+        <button class="icon-btn" title="pegar" onclick="pasteTask()">⎘</button>
+        <select class="priority-select" id="task-priority">
+          <option value="urgente">urgente</option>
+          <option value="importante" selected>importante</option>
+          <option value="normal">normal</option>
+        </select>
+        <button class="icon-btn" onclick="addTask()">+</button>
+      </div>
+      <div class="task-list" id="task-list">
+        <div class="tasks-empty" id="tasks-empty">sin pendientes por ahora</div>
       </div>
     </div>
   </div>
 
   <!-- EXPORTAR -->
   <div>
-    <div class="card">
-      <div class="card-header" data-key="idx_export">
-        <div class="section-label" style="margin:0">exportar datos</div>
-        <span class="card-chevron">▼</span>
+    <div class="section-label">exportar datos</div>
+    <div class="card" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">
+      <div style="font-size:12px; color:var(--text2); line-height:1.5;">
+        Descarga todos tus registros para análisis con IA.
       </div>
-      <div class="card-body">
-        <div class="card-body-inner">
-          <p style="font-size:0.75rem; color:var(--text2); margin-bottom:10px; line-height:1.5;">
-            Descarga todos tus registros para análisis con IA.
-          </p>
-          <div style="display:flex; gap:8px;">
-            <button class="btn-guardar" id="btn-export-csv" onclick="exportCSV()">↓ CSV</button>
-            <button class="btn-guardar" id="btn-export-json" onclick="exportJSON()">↓ JSON</button>
-          </div>
-        </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-guardar" id="btn-export-csv" onclick="exportCSV()">↓ exportar CSV</button>
+        <button class="btn-guardar" id="btn-export-json" onclick="exportJSON()">↓ exportar JSON</button>
       </div>
     </div>
   </div>
 
 </div>
 
+<!-- CHART.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
 <script>
 
-
-
-
-// ══ TRACKER SHARED ═══════════════════════════════════════════════
-
-// Font size
-(function(){
-  var s=localStorage.getItem('tracker_fs');
-  if(s) document.documentElement.style.setProperty('--fs',s+'px');
+// ── COLOR THEME ENGINE (all pages) ──────────────────────────────
+(function initColorTheme() {
+  var saved = localStorage.getItem('tracker_color_theme');
+  if (saved && saved !== 'crema') {
+    document.documentElement.setAttribute('data-color-theme', saved);
+  }
 })();
-function changeFontSize(d){
-  var r=document.documentElement;
-  var c=parseInt(getComputedStyle(r).getPropertyValue('--fs').trim())||15;
-  var n=Math.max(11,Math.min(24,c+d));
-  r.style.setProperty('--fs',n+'px');
-  localStorage.setItem('tracker_fs',n);
-}
 
-// Color theme
-(function(){
-  var s=localStorage.getItem('tracker_color_theme');
-  if(s&&s!=='crema') document.documentElement.setAttribute('data-color-theme',s);
+function setColorTheme(name) {
+  localStorage.setItem('tracker_color_theme', name);
+  if (!name || name === 'crema') {
+    document.documentElement.removeAttribute('data-color-theme');
+  } else {
+    document.documentElement.setAttribute('data-color-theme', name);
+  }
+}
+// ────────────────────────────────────────────────────────────────
+
+// ── FONT SIZE ──
+(function() {
+  var saved = localStorage.getItem('tracker_fs');
+  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
 })();
-function setColorTheme(n){
-  localStorage.setItem('tracker_color_theme',n);
-  if(!n||n==='crema') document.documentElement.removeAttribute('data-color-theme');
-  else document.documentElement.setAttribute('data-color-theme',n);
+function changeFontSize(delta) {
+  var root = document.documentElement;
+  var cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
+  var next = Math.max(12, Math.min(26, cur + delta));
+  root.style.setProperty('--fs', next + 'px');
+  localStorage.setItem('tracker_fs', next);
 }
 
-// Dark mode
-(function(){
-  var s=localStorage.getItem('tracker_theme');
-  if(s) document.documentElement.setAttribute('data-theme',s);
+
+// ── FONT SIZE ──
+(function() {
+  const saved = localStorage.getItem('tracker_fs');
+  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
 })();
-function toggleTheme(){
-  var h=document.documentElement;
-  var n=h.getAttribute('data-theme')==='dark'?'light':'dark';
-  h.setAttribute('data-theme',n);
-  localStorage.setItem('tracker_theme',n);
+function changeFontSize(delta) {
+  const root = document.documentElement;
+  const cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
+  const next = Math.max(12, Math.min(26, cur + delta));
+  root.style.setProperty('--fs', next + 'px');
+  localStorage.setItem('tracker_fs', next);
 }
 
-// Hero save flash
-// Menu
-function openMenu(){
-  document.getElementById('menu-drawer').classList.add('open');
-  document.getElementById('menu-overlay').classList.add('open');
-  var ne=document.getElementById('menu-name-display');
-  if(ne) ne.textContent=localStorage.getItem('tracker_user_name')||'Victoria';
-}
-function closeMenu(){
-  document.getElementById('menu-drawer').classList.remove('open');
-  document.getElementById('menu-overlay').classList.remove('open');
-}
-
-// Collapsibles
-// ══════════════════════════════════════════════════════════════════
 // ── CONFIG ──
 
 const config = {};  // sincronización eliminada — solo localStorage
@@ -1732,24 +1226,350 @@ function initDate() {
   document.getElementById('full-date').textContent = `${now.getDate()} de ${months[now.getMonth()]}, ${now.getFullYear()}`;
 }
 
+// ── MOOD ──
+const moodLabels = ['','depresión','tristeza','apatía','indiferencia','calma','bienestar','alegría','euforia','irritación','enojo'];
+const energyLabels = ['','agotado','agotado','cansado','cansado','neutro','activo','activo','enfocado','alerta','flujo'];
+const reactLabels = ['','nula','nula','baja','baja','media','media','media-alta','media-alta','alta','alta reactividad'];
+
+function updateMood(v) {
+  document.getElementById('mood-label').textContent = moodLabels[v] + ' · ' + v;
+}
+
+function updateEnergy(v) {
+  document.getElementById('energy-label').textContent = energyLabels[v] + ' · ' + v;
+}
+
+function updateReact(v) {
+  document.getElementById('react-label').textContent = reactLabels[v] + ' · ' + v;
+}
+
+// init sliders
+updateMood(document.getElementById('mood-slider').value);
+updateEnergy(document.getElementById('energy-slider').value);
+updateReact(document.getElementById('react-slider').value);
+
+// ── JOURNAL ACTIONS ──
+function clearJournal() {
+  document.getElementById('journal-text').value = '';
+  document.getElementById('journal-tag').value = '';
+}
+
+async function pasteTask() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('task-input').value = text;
+    document.getElementById('task-input').focus();
+  } catch(e) {
+    alert('Permite el acceso al portapapeles en tu navegador.');
+  }
+}
+
+async function pasteJournal() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('journal-text').value = text;
+  } catch(e) {
+    alert('Permite el acceso al portapapeles en tu navegador.');
+  }
+}
+
+// ── SAVE DAY ──
+async function saveDay() {
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0];
+  const timeStr = now.toTimeString().slice(0,5);
+
+  const entry = {
+    date: dateStr,
+    time: timeStr,
+    mood: parseInt(document.getElementById('mood-slider').value),
+    energy: parseInt(document.getElementById('energy-slider').value),
+    reactivity: parseInt(document.getElementById('react-slider').value),
+    journal: document.getElementById('journal-text').value.trim(),
+    tag: document.getElementById('journal-tag').value.replace(/^#/,'').trim()
+  };
+
+  // Update or add today's entry
+  const idx = diaryData.findIndex(d => d.date === dateStr);
+  if (idx >= 0) diaryData[idx] = entry;
+  else diaryData.push(entry);
+
+  localStorage.setItem('tracker_diary', JSON.stringify(diaryData));
+
+  // Save to GitHub if configured
+
+  showStatus();
+  renderChart();
+  renderStreak();
+
+  // Limpiar campos después de guardar
+  document.getElementById('journal-text').value = '';
+  document.getElementById('journal-tag').value = '';
+}
+
+function showStatus() {
+  const el = document.getElementById('save-status');
+  el.textContent = 'guardado ✓';
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 2500);
+}
+
+// ── CHART ──
+let chartInstance = null;
+
+function renderChart() {
+  const last30 = getLast30();
+  const labels = last30.map(d => d.date.slice(5));
+  const moods = last30.map(d => d.mood || null);
+  const energies = last30.map(d => d.energy || null);
+  const reacts = last30.map(d => d.reactivity || null);
+
+  const ctx = document.getElementById('moodChart').getContext('2d');
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'ánimo',
+          data: moods,
+          borderColor: '#8a6a4a',
+          backgroundColor: 'rgba(138,106,74,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          pointBackgroundColor: '#8a6a4a',
+          tension: 0.4,
+          spanGaps: true
+        },
+        {
+          label: 'energía',
+          data: energies,
+          borderColor: '#3a6a52',
+          backgroundColor: 'rgba(58,106,82,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          pointBackgroundColor: '#3a6a52',
+          tension: 0.4,
+          spanGaps: true
+        },
+        {
+          label: 'reactividad',
+          data: reacts,
+          borderColor: '#b84030',
+          backgroundColor: 'rgba(184,64,48,0.06)',
+          borderWidth: 1,
+          pointRadius: 2,
+          pointBackgroundColor: '#b84030',
+          tension: 0.4,
+          spanGaps: true,
+          borderDash: [3,3]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#6a6760',
+            font: { family: 'IBM Plex Sans', size: 9 },
+            boxWidth: 10,
+            padding: 8
+          }
+        },
+        tooltip: {
+          backgroundColor: '#ffffff',
+          titleColor: '#8a6a4a',
+          bodyColor: '#6a6760',
+          borderColor: 'rgba(0,0,0,0.1)',
+          borderWidth: 0.5,
+          titleFont: { family: 'IBM Plex Sans', size: 10 },
+          bodyFont: { family: 'IBM Plex Sans', size: 10 }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#aaa89f', font: { family: 'IBM Plex Sans', size: 8 }, maxRotation: 0, maxTicksLimit: 8 },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          border: { color: 'rgba(0,0,0,0.08)' }
+        },
+        y: {
+          min: 1, max: 10,
+          ticks: { color: '#aaa89f', font: { family: 'IBM Plex Sans', size: 8 }, stepSize: 3 },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          border: { color: 'rgba(0,0,0,0.08)' }
+        }
+      }
+    }
+  });
+}
+
+function getLast30() {
+  const result = [];
+  const today = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const entry = diaryData.find(e => e.date === dateStr) || { date: dateStr };
+    result.push(entry);
+  }
+  return result;
+}
+
+function renderStreak() {
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const entry = diaryData.find(e => e.date === dateStr && e.journal && e.journal.length > 0);
+    if (entry) streak++;
+    else if (i > 0) break;
+  }
+  document.getElementById('streak-num').textContent = streak;
+}
+
+// ── TASKS ──
+function addTask() {
+  const input = document.getElementById('task-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const priority = document.getElementById('task-priority').value;
+  const now = new Date();
+  const task = {
+    id: Date.now(),
+    text,
+    priority,
+    done: false,
+    date: now.toISOString().split('T')[0]
+  };
+
+  tasksData.unshift(task);
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+
+  input.value = '';
+  renderTasks();
+}
+
+function toggleTask(id) {
+  const t = tasksData.find(t => t.id === id);
+  if (t) { t.done = !t.done; }
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+  renderTasks();
+}
+
+function deleteTask(id) {
+  tasksData = tasksData.filter(t => t.id !== id);
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+  renderTasks();
+}
+
+function renderTasks() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayTasks = tasksData.filter(t => t.date === today || !t.done);
+
+  // Sort: urgente → importante → normal, done at bottom
+  const order = { urgente: 0, importante: 1, normal: 2 };
+  todayTasks.sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return order[a.priority] - order[b.priority];
+  });
+
+  const list = document.getElementById('task-list');
+  const empty = document.getElementById('tasks-empty');
+
+  if (todayTasks.length === 0) {
+    list.innerHTML = '';
+    list.appendChild(empty);
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.innerHTML = todayTasks.map(t => `
+    <div class="task-item p-${t.priority} ${t.done ? 'done' : ''}">
+      <div class="task-text" onclick="toggleTask(${t.id})">${t.text.replace(/</g,'&lt;')}</div>
+      <span class="task-priority-label">${t.priority}</span>
+      <button class="task-del" onclick="deleteTask(${t.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+// ── MENU ──
+function openMenu() {
+  document.getElementById('menu-drawer').classList.add('open');
+  document.getElementById('menu-overlay').classList.add('open');
+  const nameEl = document.getElementById('menu-name-display');
+  if (nameEl) nameEl.textContent = localStorage.getItem('tracker_user_name') || 'Victoria';
+}
+function closeMenu() {
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+
+// ── THEME ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('tracker_theme', next);
+}
+
+(function applyTheme() {
+  const saved = localStorage.getItem('tracker_theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+
+
 // ── WELCOME NAME ──
 function loadWelcomeName() {
-  var n = localStorage.getItem('tracker_user_name') || 'Victoria';
-  var el = document.getElementById('welcome-name');
-  if (el) el.textContent = 'bienvenida, ' + n;
+  const name = localStorage.getItem('tracker_user_name') || 'Victoria';
+  const el = document.getElementById('welcome-name');
+  if (el) el.textContent = 'bienvenida, ' + name;
 }
 function editWelcomeName() {
-  var cur = localStorage.getItem('tracker_user_name') || 'Victoria';
-  var n = prompt('¿Cómo te llamas?', cur);
-  if (n && n.trim()) { localStorage.setItem('tracker_user_name', n.trim()); loadWelcomeName(); }
+  const cur = localStorage.getItem('tracker_user_name') || 'Victoria';
+  const newName = prompt('¿Cómo te llamas?', cur);
+  if (newName && newName.trim()) {
+    localStorage.setItem('tracker_user_name', newName.trim());
+    loadWelcomeName();
+  }
   closeMenu();
 }
 
 // ── INIT ──
 initDate();
 loadWelcomeName();
+renderChart();
+renderStreak();
+renderTasks();
 
-
+// Load today's saved values if exist
+const todayStr = new Date().toISOString().split('T')[0];
+const todayEntry = diaryData.find(e => e.date === todayStr);
+if (todayEntry) {
+  if (todayEntry.mood) {
+    document.getElementById('mood-slider').value = todayEntry.mood;
+    updateMood(todayEntry.mood);
+  }
+  if (todayEntry.energy) {
+    document.getElementById('energy-slider').value = todayEntry.energy;
+    updateEnergy(todayEntry.energy);
+  }
+  if (todayEntry.reactivity) {
+    document.getElementById('react-slider').value = todayEntry.reactivity;
+    updateReact(todayEntry.reactivity);
+  }
+  if (todayEntry.journal) document.getElementById('journal-text').value = todayEntry.journal;
+  if (todayEntry.tag) document.getElementById('journal-tag').value = '#' + todayEntry.tag;
+}
 
 // ── EXPORT ──
 // Mapa completo lsKey → archivo GitHub
@@ -1944,6 +1764,28 @@ function exportCSV() {
 </script>
 
 <script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  const autoDay = debounce(saveDay, 1500);
+
+  // Sliders de ánimo, energía, reactividad
+  ['mood-slider','energy-slider','react-slider'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoDay);
+  });
+
+  // Journaling y etiqueta
+  ['journal-text','journal-tag'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoDay);
+  });
+
+  // Tareas: agregar/completar/eliminar ya llaman saveTasks → OK
+})();
+
 // ── THEME PICKER (index only) ────────────────────────────────────
 var TPICKER_THEMES = [
   { id:'crema',   name:'Crema',   desc:'cálido · por defecto',    s:['#f5f3ef','#8a6a4a','#b09070','#1a1916'] },
@@ -1995,187 +1837,6 @@ function pickColorTheme(id) {
   renderTpicker();
 }
 // ────────────────────────────────────────────────────────────────
-
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  });
-}
-</script>
-
-<script>
-// ── DASHBOARD EXTRA JS ──────────────────────────────────────────
-function heroFlash() {
-  var d = document.getElementById('autosave-dot');
-  if (!d) return;
-  d.classList.add('show');
-  setTimeout(function(){ d.classList.remove('show'); }, 1800);
-}
-
-function hm(h) {
-  if (!h || h < 0.01) return '0h';
-  var hh = Math.floor(h), mm = Math.round((h - hh) * 60);
-  return mm > 0 ? hh + 'h ' + mm + 'm' : hh + 'h';
-}
-
-function loadDash() {
-  var today = new Date().toISOString().split('T')[0];
-
-  // ── PERÍODO ──
-  try {
-    var pc = JSON.parse(localStorage.getItem('period_config') || 'null');
-    var pd = JSON.parse(localStorage.getItem('period_data') || '[]');
-    if (pc && pc.lastPeriod) {
-      var start = new Date(pc.lastPeriod), now = new Date();
-      var day = Math.floor((now - start) / 86400000) + 1;
-      var cyc = pc.cycleDays || 28, per = pc.periodDays || 5;
-      var phaseKey = 'lutea';
-      if (day <= per)      phaseKey = 'menstrual';
-      else if (day <= 13)  phaseKey = 'folicular';
-      else if (day <= 16)  phaseKey = 'ovulacion';
-      var phaseNames = {menstrual:'menstrual', folicular:'folicular', ovulacion:'ovulación', lutea:'lútea'};
-      document.getElementById('dw-period').textContent = 'día ' + day;
-      var pill = document.getElementById('dw-period-pill');
-      if (pill) pill.innerHTML = '<span class="dw-phase ' + phaseKey + '">' + phaseNames[phaseKey] + '</span>';
-      document.getElementById('dw-period-sub').textContent = 'ciclo de ' + cyc + ' días';
-    }
-    var tp = pd.find(function(e){ return e.date === today; });
-    if (tp && tp.perceivedPhase) {
-      document.getElementById('dw-period').textContent = 'día percibido';
-      var pill2 = document.getElementById('dw-period-pill');
-      var phaseMap = {'menstrual':'menstrual','folicular':'folicular','ovulación':'ovulacion','lútea':'lutea'};
-      var pk = phaseMap[tp.perceivedPhase] || 'lutea';
-      if (pill2) pill2.innerHTML = '<span class="dw-phase ' + pk + '">' + tp.perceivedPhase + ' ✓</span>';
-    }
-  } catch(e) {}
-
-  // ── ESTUDIO ──
-  try {
-    var sess = JSON.parse(localStorage.getItem('tracker_sessions_v2') || '[]');
-    var todH = sess.filter(function(s){ return s.date===today; }).reduce(function(a,s){ return a+(s.totalHours||0); },0);
-    var nw = new Date(), ws = new Date(nw); ws.setDate(nw.getDate()-nw.getDay());
-    var wkH = sess.filter(function(s){ return s.date>=ws.toISOString().split('T')[0]; }).reduce(function(a,s){ return a+(s.totalHours||0); },0);
-    document.getElementById('dw-study').textContent = hm(todH);
-    document.getElementById('dw-study-sub').textContent = 'semana: ' + hm(wkH);
-  } catch(e) {}
-
-  // ── CALORÍAS + macro bars ──
-  try {
-    var food = JSON.parse(localStorage.getItem('food_data') || '[]');
-    var targets = JSON.parse(localStorage.getItem('food_targets') || '{"kcal":1500,"prot":80,"carb":188,"fat":50}');
-    var tf = food.find(function(e){ return e.date===today; });
-    if (tf && tf.totals) {
-      var t = tf.totals;
-      document.getElementById('dw-kcal').textContent = Math.round(t.kcal||0) + ' kcal';
-      var pct = function(v,g){ return Math.min(100, Math.round((v||0)/(g||1)*100)); };
-      document.getElementById('dw-bar-prot').style.width = pct(t.prot, targets.prot) + '%';
-      document.getElementById('dw-bar-carb').style.width = pct(t.carb, targets.carb) + '%';
-      document.getElementById('dw-bar-fat' ).style.width = pct(t.fat,  targets.fat)  + '%';
-    }
-  } catch(e) {}
-
-  // ── SUEÑO ──
-  try {
-    var sl = JSON.parse(localStorage.getItem('tracker_sleep') || '[]');
-    var yest = new Date(); yest.setDate(yest.getDate()-1);
-    var yd = yest.toISOString().split('T')[0];
-    var se = sl.find(function(e){ return e.date===yd; }) || sl.find(function(e){ return e.date===today; });
-    if (se) {
-      document.getElementById('dw-sleep').textContent = (se.hours||0).toFixed(1) + 'h';
-      var qm = {1:'😴 mala', 2:'😐 regular', 3:'😊 buena'};
-      document.getElementById('dw-sleep-sub').textContent = qm[se.quality] || 'sin calidad';
-    }
-  } catch(e) {}
-
-  // ── HÁBITOS + ring ──
-  try {
-    var hc = JSON.parse(localStorage.getItem('tracker_habits_config') || '[]');
-    var hd = JSON.parse(localStorage.getItem('tracker_habits_data') || '{}');
-    var dnames = ['dom','lun','mar','mié','jue','vie','sáb'];
-    var dow = dnames[new Date().getDay()];
-    var todH2 = hc.filter(function(h){ return !h.days||h.days.includes(dow); });
-    var done = todH2.filter(function(h){ return hd[today+'_'+h.name]; }).length;
-    var pct2 = todH2.length ? Math.round(done/todH2.length*100) : 0;
-    document.getElementById('dw-habits').textContent = done + ' / ' + todH2.length;
-    document.getElementById('dw-habits-sub').textContent = pct2 + '%';
-    // ring: stroke-dashoffset = 100 - pct (circumference ~100 for r=15.9)
-    var ring = document.getElementById('dw-ring-fill');
-    if (ring) ring.style.strokeDashoffset = 100 - pct2;
-  } catch(e) {}
-
-  // ── FINANZAS ──
-  try {
-    var mv = JSON.parse(localStorage.getItem('finance_movements') || '[]');
-    var mon = new Date().toISOString().slice(0,7);
-    var mm = mv.filter(function(e){ return e.date&&e.date.startsWith(mon); });
-    var ing = mm.filter(function(e){ return e.type==='ingreso'; }).reduce(function(a,e){ return a+(e.amount||0); },0);
-    var gas = mm.filter(function(e){ return e.type==='gasto'; }).reduce(function(a,e){ return a+(e.amount||0); },0);
-    var bal = ing - gas;
-    var fm = function(n){ return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('es-MX'); };
-    document.getElementById('dw-finance').textContent = fm(bal);
-    document.getElementById('dw-finance').style.color = bal >= 0 ? 'var(--normal)' : 'var(--urgent)';
-    document.getElementById('dw-finance-sub').textContent = '↑'+fm(ing)+' ↓'+fm(gas);
-  } catch(e) {}
-
-  // ── SPARKLINE de ánimo 7 días ──
-  try {
-    var diary = JSON.parse(localStorage.getItem('tracker_diary') || '[]');
-    var pts = [];
-    for (var i=6; i>=0; i--) {
-      var d2 = new Date(); d2.setDate(d2.getDate()-i);
-      var ds = d2.toISOString().split('T')[0];
-      var e2 = diary.find(function(x){ return x.date===ds; });
-      pts.push(e2 && e2.mood ? e2.mood : null);
-    }
-    var validPts = pts.filter(function(p){ return p!==null; });
-    if (validPts.length >= 2) {
-      var W=200, H=28, pad=4;
-      var xs = pts.map(function(_,i){ return Math.round(pad + i*(W-pad*2)/6); });
-      // build path skipping nulls
-      var lineParts=[], areaCmd='';
-      var firstX=null, lastX=null;
-      for (var j=0; j<pts.length; j++) {
-        if (pts[j]===null) continue;
-        var x=xs[j], y=Math.round(H-pad-(pts[j]-1)/(10-1)*(H-pad*2));
-        if (firstX===null) { lineParts.push('M'+x+','+y); firstX=x; areaCmd='L'+x+','+(H-pad); }
-        else lineParts.push('L'+x+','+y);
-        lastX=x; lastY=y;
-      }
-      if (firstX!==null) {
-        document.getElementById('dw-spark-line').setAttribute('d', lineParts.join(' '));
-        document.getElementById('dw-spark-area').setAttribute('d',
-          'M'+firstX+','+(H-pad)+' ' + lineParts.join(' ') + ' L'+lastX+','+(H-pad)+' Z');
-      }
-    }
-  } catch(e) {}
-}
-
-// ── COLLAPSIBLES ──
-function initCards() {
-  document.querySelectorAll('.card-header').forEach(function(hdr) {
-    var key = 'card_' + (hdr.dataset.key || hdr.textContent.trim().replace(/\s+/g,'_').slice(0,25));
-    var body = hdr.nextElementSibling;
-    var card = hdr.closest('.card');
-    var ch   = hdr.querySelector('.card-chevron');
-    if (!body || !body.classList.contains('card-body')) return;
-    var isOpen = localStorage.getItem(key) !== '0';
-    function setState(open) {
-      body.classList.toggle('open', open);
-      if (ch)   ch.classList.toggle('open', open);
-      if (card) card.classList.toggle('collapsed', !open);
-      localStorage.setItem(key, open ? '1' : '0');
-    }
-    setState(isOpen);
-    hdr.addEventListener('click', function() { setState(!body.classList.contains('open')); });
-  });
-}
-
-// ── INIT (all functions now defined) ──
-loadDash();
-initCards();
-
 
 </script>
 </body>

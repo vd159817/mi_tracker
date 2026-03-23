@@ -1635,6 +1635,115 @@
     </div>
   </div>
 
+  <!-- ÁNIMO Y ENERGÍA (a la página hoy.html) -->
+  <div>
+    <div class="card">
+      <div class="card-header" data-key="idx_animo">
+        <div class="section-label" style="margin:0">ánimo · energía · reactividad</div>
+        <span class="card-chevron open">▼</span>
+      </div>
+      <div class="card-body open">
+        <div class="card-body-inner">
+          <div class="mood-row">
+            <div class="mood-track">
+              <div class="mood-track-header">
+                <span class="mood-track-label">ánimo</span>
+                <span class="mood-value-label" id="mood-label">—</span>
+              </div>
+              <div class="mood-slider-wrap">
+                <input type="range" id="mood-slider" min="1" max="10" value="5" step="1"
+                  style="background: linear-gradient(to right, #6a4040, #8a5050, #7a6060, #707878, #7a9070, #8aaa78, #c0b060, #d4956a, #e0805a, #d06040);"
+                  oninput="updateMood(this.value)" />
+              </div>
+              <div class="mood-scale-labels">
+                <span>depresión</span><span>tristeza</span><span>apatía</span><span>indiferencia</span><span>calma</span><span>bienestar</span><span>alegría</span><span>euforia</span><span>irritación</span><span>enojo</span>
+              </div>
+            </div>
+            <div class="mood-track">
+              <div class="mood-track-header">
+                <span class="mood-track-label">energía</span>
+                <span class="mood-value-label" id="energy-label">—</span>
+              </div>
+              <div class="mood-slider-wrap">
+                <input type="range" id="energy-slider" min="1" max="10" value="5" step="1"
+                  style="background: linear-gradient(to right, #3a5068, #4a6070, #607868, #6a9058, #90b048, #c0a830, #d07030);"
+                  oninput="updateEnergy(this.value)" />
+              </div>
+              <div class="mood-scale-labels">
+                <span>agotado</span><span>cansado</span><span>neutro</span><span>activo</span><span>enfocado</span><span>alerta</span><span>flujo</span>
+              </div>
+            </div>
+            <div class="mood-track">
+              <div class="mood-track-header">
+                <span class="mood-track-label">reactividad</span>
+                <span class="mood-value-label" id="react-label">—</span>
+              </div>
+              <div class="mood-slider-wrap">
+                <input type="range" id="react-slider" min="1" max="10" value="5" step="1"
+                  style="background: linear-gradient(to right, #5a7a8a, #7a9a8a, #9aaa80, #c0b060, #d09050, #c06040, #a04030);"
+                  oninput="updateReact(this.value)" />
+              </div>
+              <div class="mood-scale-labels">
+                <span>nula</span><span></span><span>baja</span><span></span><span>media</span><span></span><span>alta reactividad</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRASE DEL DÍA -->
+  <div>
+    <div class="card">
+      <div class="card-header" data-key="idx_journal">
+        <div class="section-label" style="margin:0">frase del día</div>
+        <span class="card-chevron open">▼</span>
+      </div>
+      <div class="card-body open">
+        <div class="card-body-inner">
+          <div class="journal-area">
+            <textarea class="journal-textarea" id="journal-text" placeholder="escribe algo sobre hoy..."></textarea>
+            <div class="journal-bottom">
+              <input class="tag-field" id="journal-tag" placeholder="#etiqueta" />
+              <button class="icon-btn" title="borrar" onclick="clearJournal()">✕</button>
+              <button class="icon-btn" title="pegar" onclick="pasteJournal()">⎘</button>
+            </div>
+            <div class="save-status hidden" id="save-status">guardado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PENDIENTES -->
+  <div>
+    <div class="card">
+      <div class="card-header" data-key="idx_tareas">
+        <div class="section-label" style="margin:0">pendientes de hoy</div>
+        <span class="card-chevron open">▼</span>
+      </div>
+      <div class="card-body open">
+        <div class="card-body-inner">
+          <div class="task-input-row">
+            <input class="task-input" id="task-input" placeholder="nueva tarea..." onkeydown="if(event.key==='Enter') addTask()" />
+            <button class="icon-btn" title="borrar" onclick="document.getElementById('task-input').value=''">✕</button>
+            <button class="icon-btn" title="pegar" onclick="pasteTask()">⎘</button>
+            <select class="priority-select" id="task-priority">
+              <option value="urgente">urgente</option>
+              <option value="importante" selected>importante</option>
+              <option value="normal">normal</option>
+            </select>
+            <button class="icon-btn" onclick="addTask()">+</button>
+          </div>
+          <div class="task-list" id="task-list">
+            <div class="tasks-empty" id="tasks-empty">sin pendientes por ahora</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- EXPORTAR -->
   <div>
     <div class="card">
@@ -1658,6 +1767,7 @@
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
 <script>
 
@@ -1703,6 +1813,13 @@ function toggleTheme(){
 }
 
 // Hero save flash
+function heroFlash(){
+  var el=document.getElementById('hero-saved');
+  if(!el) return;
+  el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},1600);
+}
+
 // Menu
 function openMenu(){
   document.getElementById('menu-drawer').classList.add('open');
@@ -1716,7 +1833,26 @@ function closeMenu(){
 }
 
 // Collapsibles
+function initCards(){
+  document.querySelectorAll('.card-header').forEach(function(hdr){
+    var key='card_'+(hdr.dataset.key||hdr.textContent.trim().replace(/\s+/g,'_').slice(0,25));
+    var body=hdr.nextElementSibling;
+    var card=hdr.closest('.card');
+    var ch=hdr.querySelector('.card-chevron');
+    if(!body||!body.classList.contains('card-body')) return;
+    var isOpen=localStorage.getItem(key)!=='0';
+    function setState(open){
+      body.classList.toggle('open',open);
+      if(ch) ch.classList.toggle('open',open);
+      if(card) card.classList.toggle('collapsed',!open);
+      localStorage.setItem(key,open?'1':'0');
+    }
+    setState(isOpen);
+    hdr.addEventListener('click',function(){ setState(!body.classList.contains('open')); });
+  });
+}
 // ══════════════════════════════════════════════════════════════════
+═══
 // ── CONFIG ──
 
 const config = {};  // sincronización eliminada — solo localStorage
@@ -1732,24 +1868,545 @@ function initDate() {
   document.getElementById('full-date').textContent = `${now.getDate()} de ${months[now.getMonth()]}, ${now.getFullYear()}`;
 }
 
+// ── MOOD ──
+const moodLabels = ['','depresión','tristeza','apatía','indiferencia','calma','bienestar','alegría','euforia','irritación','enojo'];
+const energyLabels = ['','agotado','agotado','cansado','cansado','neutro','activo','activo','enfocado','alerta','flujo'];
+const reactLabels = ['','nula','nula','baja','baja','media','media','media-alta','media-alta','alta','alta reactividad'];
+
+function updateMood(v) {
+  document.getElementById('mood-label').textContent = moodLabels[v] + ' · ' + v;
+}
+
+function updateEnergy(v) {
+  document.getElementById('energy-label').textContent = energyLabels[v] + ' · ' + v;
+}
+
+function updateReact(v) {
+  document.getElementById('react-label').textContent = reactLabels[v] + ' · ' + v;
+}
+
+// init sliders
+updateMood(document.getElementById('mood-slider').value);
+updateEnergy(document.getElementById('energy-slider').value);
+updateReact(document.getElementById('react-slider').value);
+
+// ── JOURNAL ACTIONS ──
+function clearJournal() {
+  // fields preserved
+}
+
+async function pasteTask() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('task-input').value = text;
+    document.getElementById('task-input').focus();
+  } catch(e) {
+    alert('Permite el acceso al portapapeles en tu navegador.');
+  }
+}
+
+async function pasteJournal() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('journal-text').value = text;
+  } catch(e) {
+    alert('Permite el acceso al portapapeles en tu navegador.');
+  }
+}
+
+// ── SAVE DAY ──
+async function saveDay() {
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0];
+  const timeStr = now.toTimeString().slice(0,5);
+
+  const entry = {
+    date: dateStr,
+    time: timeStr,
+    mood: parseInt(document.getElementById('mood-slider').value),
+    energy: parseInt(document.getElementById('energy-slider').value),
+    reactivity: parseInt(document.getElementById('react-slider').value),
+    journal: document.getElementById('journal-text').value.trim(),
+    tag: document.getElementById('journal-tag').value.replace(/^#/,'').trim()
+  };
+
+  // Update or add today's entry
+  const idx = diaryData.findIndex(d => d.date === dateStr);
+  if (idx >= 0) diaryData[idx] = entry;
+  else diaryData.push(entry);
+
+  localStorage.setItem('tracker_diary', JSON.stringify(diaryData));
+
+  // Save to GitHub if configured
+
+  showStatus();
+  renderChart();
+  renderStreak();
+
+  // Limpiar campos después de guardar
+  // fields preserved
+}
+
+function showStatus() {
+  const el = document.getElementById('save-status');
+  el.textContent = 'guardado ✓';
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 2500);
+}
+
+// ── CHART ──
+let chartInstance = null;
+
+function renderChart() {
+  const last30 = getLast30();
+  const labels = last30.map(d => d.date.slice(5));
+  const moods = last30.map(d => d.mood || null);
+  const energies = last30.map(d => d.energy || null);
+  const reacts = last30.map(d => d.reactivity || null);
+
+  const ctx = document.getElementById('moodChart').getContext('2d');
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'ánimo',
+          data: moods,
+          borderColor: '#8a6a4a',
+          backgroundColor: 'rgba(138,106,74,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          pointBackgroundColor: '#8a6a4a',
+          tension: 0.4,
+          spanGaps: true
+        },
+        {
+          label: 'energía',
+          data: energies,
+          borderColor: '#3a6a52',
+          backgroundColor: 'rgba(58,106,82,0.06)',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          pointBackgroundColor: '#3a6a52',
+          tension: 0.4,
+          spanGaps: true
+        },
+        {
+          label: 'reactividad',
+          data: reacts,
+          borderColor: '#b84030',
+          backgroundColor: 'rgba(184,64,48,0.06)',
+          borderWidth: 1,
+          pointRadius: 2,
+          pointBackgroundColor: '#b84030',
+          tension: 0.4,
+          spanGaps: true,
+          borderDash: [3,3]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#6a6760',
+            font: { family: 'IBM Plex Sans', size: 9 },
+            boxWidth: 10,
+            padding: 8
+          }
+        },
+        tooltip: {
+          backgroundColor: '#ffffff',
+          titleColor: '#8a6a4a',
+          bodyColor: '#6a6760',
+          borderColor: 'rgba(0,0,0,0.1)',
+          borderWidth: 0.5,
+          titleFont: { family: 'IBM Plex Sans', size: 10 },
+          bodyFont: { family: 'IBM Plex Sans', size: 10 }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#aaa89f', font: { family: 'IBM Plex Sans', size: 8 }, maxRotation: 0, maxTicksLimit: 8 },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          border: { color: 'rgba(0,0,0,0.08)' }
+        },
+        y: {
+          min: 1, max: 10,
+          ticks: { color: '#aaa89f', font: { family: 'IBM Plex Sans', size: 8 }, stepSize: 3 },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          border: { color: 'rgba(0,0,0,0.08)' }
+        }
+      }
+    }
+  });
+}
+
+function getLast30() {
+  const result = [];
+  const today = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const entry = diaryData.find(e => e.date === dateStr) || { date: dateStr };
+    result.push(entry);
+  }
+  return result;
+}
+
+function renderStreak() {
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split('T')[0];
+    const entry = diaryData.find(e => e.date === dateStr && e.journal && e.journal.length > 0);
+    if (entry) streak++;
+    else if (i > 0) break;
+  }
+  document.getElementById('streak-num').textContent = streak;
+}
+
+// ── TASKS ──
+function addTask() {
+  const input = document.getElementById('task-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const priority = document.getElementById('task-priority').value;
+  const now = new Date();
+  const task = {
+    id: Date.now(),
+    text,
+    priority,
+    done: false,
+    date: now.toISOString().split('T')[0]
+  };
+
+  tasksData.unshift(task);
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+
+  input.value = '';
+  renderTasks();
+}
+
+function toggleTask(id) {
+  const t = tasksData.find(t => t.id === id);
+  if (t) { t.done = !t.done; }
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+  renderTasks();
+}
+
+function deleteTask(id) {
+  tasksData = tasksData.filter(t => t.id !== id);
+  localStorage.setItem('tracker_tasks', JSON.stringify(tasksData));
+  renderTasks();
+}
+
+function renderTasks() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayTasks = tasksData.filter(t => t.date === today || !t.done);
+
+  // Sort: urgente → importante → normal, done at bottom
+  const order = { urgente: 0, importante: 1, normal: 2 };
+  todayTasks.sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return order[a.priority] - order[b.priority];
+  });
+
+  const list = document.getElementById('task-list');
+  const empty = document.getElementById('tasks-empty');
+
+  if (todayTasks.length === 0) {
+    list.innerHTML = '';
+    list.appendChild(empty);
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  list.innerHTML = todayTasks.map(t => `
+    <div class="task-item p-${t.priority} ${t.done ? 'done' : ''}">
+      <div class="task-text" onclick="toggleTask(${t.id})">${t.text.replace(/</g,'&lt;')}</div>
+      <span class="task-priority-label">${t.priority}</span>
+      <button class="task-del" onclick="deleteTask(${t.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+// ── MENU ──
+
+
+
+
 // ── WELCOME NAME ──
 function loadWelcomeName() {
-  var n = localStorage.getItem('tracker_user_name') || 'Victoria';
-  var el = document.getElementById('welcome-name');
-  if (el) el.textContent = 'bienvenida, ' + n;
+  const name = localStorage.getItem('tracker_user_name') || 'Victoria';
+  const el = document.getElementById('welcome-name');
+  if (el) el.textContent = 'bienvenida, ' + name;
 }
 function editWelcomeName() {
-  var cur = localStorage.getItem('tracker_user_name') || 'Victoria';
-  var n = prompt('¿Cómo te llamas?', cur);
-  if (n && n.trim()) { localStorage.setItem('tracker_user_name', n.trim()); loadWelcomeName(); }
+  const cur = localStorage.getItem('tracker_user_name') || 'Victoria';
+  const newName = prompt('¿Cómo te llamas?', cur);
+  if (newName && newName.trim()) {
+    localStorage.setItem('tracker_user_name', newName.trim());
+    loadWelcomeName();
+  }
   closeMenu();
+}
+
+
+// ── DASHBOARD ──
+function loadWelcomeName(){
+  var n=localStorage.getItem('tracker_user_name')||'Victoria';
+  var el=document.getElementById('welcome-name');
+  if(el) el.textContent='bienvenida, '+n;
+}
+function editName(){
+  var cur=localStorage.getItem('tracker_user_name')||'Victoria';
+  var n=prompt('¿Cómo te llamas?',cur);
+  if(n&&n.trim()){localStorage.setItem('tracker_user_name',n.trim());loadWelcomeName();}
+  closeMenu();
+}
+function hm(h){
+  if(!h||h<0.01) return '0 h';
+  var hh=Math.floor(h),mm=Math.round((h-hh)*60);
+  return mm>0?hh+'h '+mm+'m':hh+'h';
+}
+function loadDash(){
+  var today=new Date().toISOString().split('T')[0];
+  // Período
+  try{
+    var pc=JSON.parse(localStorage.getItem('period_config')||'null');
+    var pd=JSON.parse(localStorage.getItem('period_data')||'[]');
+    if(pc&&pc.lastPeriod){
+      var start=new Date(pc.lastPeriod),now=new Date();
+      var day=Math.floor((now-start)/86400000)+1;
+      var cyc=pc.cycleDays||28,per=pc.periodDays||5;
+      var phase='lútea',col='var(--accent)';
+      if(day<=per){phase='menstrual';col='#c04878';}
+      else if(day<=13){phase='folicular';col='#2a7848';}
+      else if(day<=16){phase='ovulación';col='#2a5298';}
+      var pEl=document.getElementById('dw-period');
+      if(pEl){pEl.textContent=phase;pEl.style.color=col;}
+      var ps=document.getElementById('dw-period-sub');
+      if(ps) ps.textContent='día '+day+' de '+cyc;
+    }
+    var tp=pd.find(function(e){return e.date===today;});
+    if(tp&&tp.perceivedPhase){
+      var pe=document.getElementById('dw-period');
+      if(pe) pe.textContent=tp.perceivedPhase+' ✓';
+    }
+  }catch(e){}
+  // Estudio
+  try{
+    var sess=JSON.parse(localStorage.getItem('tracker_sessions_v2')||'[]');
+    var todH=sess.filter(function(s){return s.date===today;}).reduce(function(a,s){return a+(s.totalHours||0);},0);
+    var now2=new Date(),ws=new Date(now2);
+    ws.setDate(now2.getDate()-now2.getDay());
+    var wsStr=ws.toISOString().split('T')[0];
+    var wkH=sess.filter(function(s){return s.date>=wsStr;}).reduce(function(a,s){return a+(s.totalHours||0);},0);
+    var sv=document.getElementById('dw-study'),ss=document.getElementById('dw-study-sub');
+    if(sv) sv.textContent=hm(todH);
+    if(ss) ss.textContent='semana: '+hm(wkH);
+  }catch(e){}
+  // Calorías
+  try{
+    var food=JSON.parse(localStorage.getItem('food_data')||'[]');
+    var tf=food.find(function(e){return e.date===today;});
+    if(tf&&tf.totals){
+      var t=tf.totals;
+      var kv=document.getElementById('dw-kcal'),mv=document.getElementById('dw-macros');
+      if(kv) kv.textContent=Math.round(t.kcal||0)+' kcal';
+      if(mv) mv.textContent='P '+Math.round(t.prot||0)+'g · C '+Math.round(t.carb||0)+'g · G '+Math.round(t.fat||0)+'g';
+    }
+  }catch(e){}
+  // Sueño
+  try{
+    var sl=JSON.parse(localStorage.getItem('tracker_sleep')||'[]');
+    var yest=new Date();yest.setDate(yest.getDate()-1);
+    var yd=yest.toISOString().split('T')[0];
+    var se=sl.find(function(e){return e.date===yd;})||sl.find(function(e){return e.date===today;});
+    if(se){
+      var sv2=document.getElementById('dw-sleep'),ss2=document.getElementById('dw-sleep-sub');
+      if(sv2) sv2.textContent=(se.hours||0).toFixed(1)+'h';
+      var qm={1:'mala',2:'regular',3:'buena'};
+      if(ss2) ss2.textContent='calidad: '+(qm[se.quality]||'—');
+    }
+  }catch(e){}
+  // Hábitos
+  try{
+    var hc=JSON.parse(localStorage.getItem('tracker_habits_config')||'[]');
+    var hd=JSON.parse(localStorage.getItem('tracker_habits_data')||'{}');
+    var dnames=['dom','lun','mar','mié','jue','vie','sáb'];
+    var dow=dnames[new Date().getDay()];
+    var todH2=hc.filter(function(h){return !h.days||h.days.includes(dow);});
+    var done=todH2.filter(function(h){return hd[today+'_'+h.name];}).length;
+    var hv=document.getElementById('dw-habits'),hs=document.getElementById('dw-habits-sub');
+    if(hv) hv.textContent=done+' / '+todH2.length;
+    var pct=todH2.length?Math.round(done/todH2.length*100):0;
+    if(hs) hs.textContent=pct+'% completados';
+  }catch(e){}
+  // Finanzas
+  try{
+    var mv=JSON.parse(localStorage.getItem('finance_movements')||'[]');
+    var mon=new Date().toISOString().slice(0,7);
+    var mm=mv.filter(function(e){return e.date&&e.date.startsWith(mon);});
+    var ing=mm.filter(function(e){return e.type==='ingreso';}).reduce(function(a,e){return a+(e.amount||0);},0);
+    var gas=mm.filter(function(e){return e.type==='gasto';}).reduce(function(a,e){return a+(e.amount||0);},0);
+    var bal=ing-gas;
+    var fm=function(n){return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('es-MX');};
+    var fv=document.getElementById('dw-finance'),fs=document.getElementById('dw-finance-sub');
+    if(fv) fv.textContent=fm(bal);
+    if(fs) fs.textContent='↑'+fm(ing)+' ↓'+fm(gas);
+  }catch(e){}
+}
+
+
+// ── DASHBOARD ──
+function loadWelcomeName(){
+  var n=localStorage.getItem('tracker_user_name')||'Victoria';
+  var el=document.getElementById('welcome-name');
+  if(el) el.textContent='bienvenida, '+n;
+}
+function editName(){
+  var cur=localStorage.getItem('tracker_user_name')||'Victoria';
+  var n=prompt('¿Cómo te llamas?',cur);
+  if(n&&n.trim()){localStorage.setItem('tracker_user_name',n.trim());loadWelcomeName();}
+  closeMenu();
+}
+function hm(h){
+  if(!h||h<0.01) return '0 h';
+  var hh=Math.floor(h),mm=Math.round((h-hh)*60);
+  return mm>0?hh+'h '+mm+'m':hh+'h';
+}
+function loadDash(){
+  var today=new Date().toISOString().split('T')[0];
+  // Período
+  try{
+    var pc=JSON.parse(localStorage.getItem('period_config')||'null');
+    var pd=JSON.parse(localStorage.getItem('period_data')||'[]');
+    if(pc&&pc.lastPeriod){
+      var start=new Date(pc.lastPeriod),now=new Date();
+      var day=Math.floor((now-start)/86400000)+1;
+      var cyc=pc.cycleDays||28,per=pc.periodDays||5;
+      var phase='lútea',col='var(--accent)';
+      if(day<=per){phase='menstrual';col='#c04878';}
+      else if(day<=13){phase='folicular';col='#2a7848';}
+      else if(day<=16){phase='ovulación';col='#2a5298';}
+      var pEl=document.getElementById('dw-period');
+      if(pEl){pEl.textContent=phase;pEl.style.color=col;}
+      var ps=document.getElementById('dw-period-sub');
+      if(ps) ps.textContent='día '+day+' de '+cyc;
+    }
+    var tp=pd.find(function(e){return e.date===today;});
+    if(tp&&tp.perceivedPhase){
+      var pe=document.getElementById('dw-period');
+      if(pe) pe.textContent=tp.perceivedPhase+' ✓';
+    }
+  }catch(e){}
+  // Estudio
+  try{
+    var sess=JSON.parse(localStorage.getItem('tracker_sessions_v2')||'[]');
+    var todH=sess.filter(function(s){return s.date===today;}).reduce(function(a,s){return a+(s.totalHours||0);},0);
+    var now2=new Date(),ws=new Date(now2);
+    ws.setDate(now2.getDate()-now2.getDay());
+    var wsStr=ws.toISOString().split('T')[0];
+    var wkH=sess.filter(function(s){return s.date>=wsStr;}).reduce(function(a,s){return a+(s.totalHours||0);},0);
+    var sv=document.getElementById('dw-study'),ss=document.getElementById('dw-study-sub');
+    if(sv) sv.textContent=hm(todH);
+    if(ss) ss.textContent='semana: '+hm(wkH);
+  }catch(e){}
+  // Calorías
+  try{
+    var food=JSON.parse(localStorage.getItem('food_data')||'[]');
+    var tf=food.find(function(e){return e.date===today;});
+    if(tf&&tf.totals){
+      var t=tf.totals;
+      var kv=document.getElementById('dw-kcal'),mv=document.getElementById('dw-macros');
+      if(kv) kv.textContent=Math.round(t.kcal||0)+' kcal';
+      if(mv) mv.textContent='P '+Math.round(t.prot||0)+'g · C '+Math.round(t.carb||0)+'g · G '+Math.round(t.fat||0)+'g';
+    }
+  }catch(e){}
+  // Sueño
+  try{
+    var sl=JSON.parse(localStorage.getItem('tracker_sleep')||'[]');
+    var yest=new Date();yest.setDate(yest.getDate()-1);
+    var yd=yest.toISOString().split('T')[0];
+    var se=sl.find(function(e){return e.date===yd;})||sl.find(function(e){return e.date===today;});
+    if(se){
+      var sv2=document.getElementById('dw-sleep'),ss2=document.getElementById('dw-sleep-sub');
+      if(sv2) sv2.textContent=(se.hours||0).toFixed(1)+'h';
+      var qm={1:'mala',2:'regular',3:'buena'};
+      if(ss2) ss2.textContent='calidad: '+(qm[se.quality]||'—');
+    }
+  }catch(e){}
+  // Hábitos
+  try{
+    var hc=JSON.parse(localStorage.getItem('tracker_habits_config')||'[]');
+    var hd=JSON.parse(localStorage.getItem('tracker_habits_data')||'{}');
+    var dnames=['dom','lun','mar','mié','jue','vie','sáb'];
+    var dow=dnames[new Date().getDay()];
+    var todH2=hc.filter(function(h){return !h.days||h.days.includes(dow);});
+    var done=todH2.filter(function(h){return hd[today+'_'+h.name];}).length;
+    var hv=document.getElementById('dw-habits'),hs=document.getElementById('dw-habits-sub');
+    if(hv) hv.textContent=done+' / '+todH2.length;
+    var pct=todH2.length?Math.round(done/todH2.length*100):0;
+    if(hs) hs.textContent=pct+'% completados';
+  }catch(e){}
+  // Finanzas
+  try{
+    var mv=JSON.parse(localStorage.getItem('finance_movements')||'[]');
+    var mon=new Date().toISOString().slice(0,7);
+    var mm=mv.filter(function(e){return e.date&&e.date.startsWith(mon);});
+    var ing=mm.filter(function(e){return e.type==='ingreso';}).reduce(function(a,e){return a+(e.amount||0);},0);
+    var gas=mm.filter(function(e){return e.type==='gasto';}).reduce(function(a,e){return a+(e.amount||0);},0);
+    var bal=ing-gas;
+    var fm=function(n){return (n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('es-MX');};
+    var fv=document.getElementById('dw-finance'),fs=document.getElementById('dw-finance-sub');
+    if(fv) fv.textContent=fm(bal);
+    if(fs) fs.textContent='↑'+fm(ing)+' ↓'+fm(gas);
+  }catch(e){}
 }
 
 // ── INIT ──
 initDate();
 loadWelcomeName();
+loadDash();
+loadDash();
+renderChart();
+renderStreak();
+renderTasks();
+initCards();
+initCards();
 
-
+// Load today's saved values if exist
+const todayStr = new Date().toISOString().split('T')[0];
+const todayEntry = diaryData.find(e => e.date === todayStr);
+if (todayEntry) {
+  if (todayEntry.mood) {
+    document.getElementById('mood-slider').value = todayEntry.mood;
+    updateMood(todayEntry.mood);
+  }
+  if (todayEntry.energy) {
+    document.getElementById('energy-slider').value = todayEntry.energy;
+    updateEnergy(todayEntry.energy);
+  }
+  if (todayEntry.reactivity) {
+    document.getElementById('react-slider').value = todayEntry.reactivity;
+    updateReact(todayEntry.reactivity);
+  }
+  if (todayEntry.journal) document.getElementById('journal-text').value = todayEntry.journal;
+  if (todayEntry.tag) document.getElementById('journal-tag').value = '#' + todayEntry.tag;
+}
 
 // ── EXPORT ──
 // Mapa completo lsKey → archivo GitHub
@@ -1944,6 +2601,28 @@ function exportCSV() {
 </script>
 
 <script>
+// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
+(function() {
+  function debounce(fn, ms) {
+    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
+  }
+  const autoDay = debounce(saveDay, 1500);
+
+  // Sliders de ánimo, energía, reactividad
+  ['mood-slider','energy-slider','react-slider'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoDay);
+  });
+
+  // Journaling y etiqueta
+  ['journal-text','journal-tag'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoDay);
+  });
+
+  // Tareas: agregar/completar/eliminar ya llaman saveTasks → OK
+})();
+
 // ── THEME PICKER (index only) ────────────────────────────────────
 var TPICKER_THEMES = [
   { id:'crema',   name:'Crema',   desc:'cálido · por defecto',    s:['#f5f3ef','#8a6a4a','#b09070','#1a1916'] },
@@ -2172,11 +2851,25 @@ function initCards() {
   });
 }
 
-// ── INIT (all functions now defined) ──
+// ── AUTOSAVE: show dot on any change ──
+(function() {
+  function flash() { heroFlash(); saveDay(); }
+  function debounce(fn, ms) { var t; return function() { clearTimeout(t); t=setTimeout(fn,ms); }; }
+  var autoSave = debounce(flash, 1200);
+  ['mood-slider','energy-slider','react-slider'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoSave);
+  });
+  ['journal-text','journal-tag'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', autoSave);
+  });
+})();
+
+// ── INIT CALLS ──
+loadWelcomeName();
 loadDash();
 initCards();
-
-
 </script>
 </body>
 </html>

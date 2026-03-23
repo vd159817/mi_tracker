@@ -2,6 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="mi tracker">
+  <meta name="theme-color" content="#f5f3ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.json">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>período · tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
@@ -226,6 +233,48 @@
     .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 
     /* ── BOTÓN GUARDAR TODO ── */
+    .save-all-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2rem 0 3rem;
+    }
+    
+    .save-all-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 12px 32px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.1em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .save-all-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .save-message {
+      font-size: 12px;
+      color: var(--normal);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      opacity: 0;
+      transition: opacity 0.3s;
+      min-height: 20px;
+    }
+    
+    .save-message.visible {
+      opacity: 1;
+    }
 
     /* ── NAV GRID ── */
     .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 1.5rem; }
@@ -447,12 +496,189 @@
       cursor: pointer; transition: all 0.2s;
     }
     .menu-theme-btn:hover { color: var(--accent); border-color: var(--accent2); }
-</style>
+
+    /* ═══════════ SHARED OVERRIDES ═══════════ */
+
+    /* Standardize font */
+    html { font-size: var(--fs, 15px) !important; }
+    body {
+      font-family: 'IBM Plex Sans', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 0.933rem !important;
+    }
+
+    /* Sticky top-bar */
+    .top-bar {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 200 !important;
+      background: var(--bg) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Hero save button */
+    .hero-save-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--r-sm, 6px);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 5px 11px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+    .hero-save-btn:hover { opacity: 0.82; }
+    .hero-save-btn:active { transform: scale(0.96); }
+    .hero-saved {
+      font-size: 0.62rem; color: var(--normal);
+      font-weight: 700; opacity: 0; pointer-events: none;
+      transition: opacity 0.25s; white-space: nowrap;
+    }
+    .hero-saved.show { opacity: 1; }
+
+    /* ── COLLAPSIBLE ── */
+    .card-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      cursor: pointer; user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    .card-header .section-label { margin: 0 !important; }
+    .card-chevron {
+      color: var(--text3); font-size: 0.55rem;
+      transition: transform 0.22s ease; flex-shrink: 0;
+      margin-left: 6px; line-height: 1;
+    }
+    .card-chevron.open { transform: rotate(180deg); }
+    .card-body {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.28s ease, opacity 0.22s ease;
+    }
+    .card-body.open { max-height: 9999px; opacity: 1; }
+    .card-body-inner { padding-top: 0.75rem; }
+
+    /* Make cards that are collapsed look tidy */
+    .card.collapsed { padding-bottom: 0.7rem; }
+
+  
+    /* ── TOP BAR LAYOUT ── */
+    .top-bar {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0.55rem 1rem !important;
+      border-bottom: 0.5px solid var(--border) !important;
+      gap: 8px;
+    }
+    .top-bar-left { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+    .top-bar-right { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .top-bar .day-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem; font-weight: 400; font-style: italic;
+      color: var(--accent); line-height: 1;
+    }
+    .top-bar .full-date {
+      font-size: 0.62rem; font-weight: 600;
+      color: var(--text3); line-height: 1;
+    }
+    .menu-btn {
+      background: none !important;
+      border: 0.5px solid var(--border2) !important;
+      border-radius: var(--r-sm) !important;
+      color: var(--text2) !important;
+      font-size: 0.95rem !important;
+      font-weight: 700 !important;
+      width: 32px; height: 32px;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+      cursor: pointer; transition: all 0.2s; line-height: 1; padding: 0 !important;
+    }
+    .menu-btn:hover { color: var(--accent) !important; border-color: var(--accent2) !important; }
+    .menu-settings-section {
+      padding: 0.6rem 1.25rem 0.5rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .menu-settings-label {
+      font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 5px;
+    }
+    .menu-settings-row {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 8px;
+      margin-bottom: 4px;
+    }
+    .menu-settings-row:last-child { margin-bottom: 0; }
+    .menu-settings-row-label { font-size: 0.75rem; font-weight: 600; color: var(--text2); }
+    .menu-fs-ctrl { display: flex; gap: 3px; }
+    .menu-fs-btn {
+      background: var(--surface2); border: 0.5px solid var(--border2);
+      border-radius: 5px; color: var(--text2);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 700;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .menu-fs-btn:hover { color: var(--accent); border-color: var(--accent2); }
+    .menu-theme-btn {
+      background: var(--surface2); border: 0.5px solid var(--border2);
+      border-radius: 5px; color: var(--text2);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 700;
+      padding: 3px 9px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .menu-theme-btn:hover { color: var(--accent); border-color: var(--accent2); }
+
+  </style>
 </head>
 <body>
-
 <!-- MENU OVERLAY -->
 <div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
+<!-- MENU DRAWER -->
+<div class="menu-drawer" id="menu-drawer">
+  <div class="menu-drawer-header">
+    <span class="menu-drawer-title">mi tracker</span>
+    <button class="menu-close" onclick="closeMenu()">✕</button>
+  </div>
+  <div class="menu-settings-section">
+    <div class="menu-settings-label">apariencia</div>
+    <div class="menu-settings-row">
+      <span class="menu-settings-row-label">letra</span>
+      <div class="menu-fs-ctrl">
+        <button class="menu-fs-btn" onclick="changeFontSize(-1)">A−</button>
+        <button class="menu-fs-btn" onclick="changeFontSize(1)">A+</button>
+      </div>
+    </div>
+    <div class="menu-settings-row">
+      <span class="menu-settings-row-label">oscuro</span>
+      <button class="menu-theme-btn" onclick="toggleTheme();closeMenu()">◐ alternar</button>
+    </div>
+  </div>
+  <div class="menu-section">
+    <div class="menu-section-label">diario</div>
+    <a class="menu-link" href="index.html"><span class="menu-link-num">00</span><span class="menu-link-text">inicio</span><span class="menu-link-sub">dashboard</span></a>
+    <a class="menu-link" href="hoy.html"><span class="menu-link-num">01</span><span class="menu-link-text">hoy</span><span class="menu-link-sub">hábitos · sueño · ejercicio</span></a>
+    <a class="menu-link" href="higiene.html"><span class="menu-link-num">02</span><span class="menu-link-text">higiene</span><span class="menu-link-sub">rutinas de higiene</span></a>
+    <a class="menu-link" href="alimentacion.html"><span class="menu-link-num">03</span><span class="menu-link-text">alimentación</span><span class="menu-link-sub">dieta y macros</span></a>
+    <a class="menu-link" href="estudio.html"><span class="menu-link-num">04</span><span class="menu-link-text">estudio</span><span class="menu-link-sub">sesiones de estudio</span></a>
+  </div>
+  <div class="menu-section">
+    <div class="menu-section-label">registros</div>
+    <a class="menu-link" href="registros.html"><span class="menu-link-num">05</span><span class="menu-link-text">registros</span><span class="menu-link-sub">hábitos anuales · chess</span></a>
+    <a class="menu-link" href="finanzas.html"><span class="menu-link-num">06</span><span class="menu-link-text">finanzas</span><span class="menu-link-sub">presupuesto y gastos</span></a>
+    <a class="menu-link" href="periodo.html"><span class="menu-link-num">07</span><span class="menu-link-text">período</span><span class="menu-link-sub">ciclo · fases · síntomas</span></a>
+  </div>
+</div>
+
 
 <!-- MENU DRAWER -->
 <div class="menu-drawer" id="menu-drawer">
@@ -493,25 +719,33 @@
 </div>
 
 <!-- TOP BAR -->
-<!-- TOP BAR -->
 <div class="top-bar">
   <div class="top-bar-left">
-    <div class="day-name">período · ciclo</div>
+    <div class="day-name" style="font-style:italic">período · ciclo</div>
     <div class="full-date" id="full-date"></div>
   </div>
   <div class="top-bar-right">
-    <span class="hero-saved" id="hero-saved">guardado ✓</span>
-    <button class="hero-save-btn" onclick="saveAll();heroSaveFlash()">guardar</button>
-    <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
+    <button class="hero-save-btn" onclick="saveAll();heroFlash()">guardar</button>
+    <span class="hero-saved" id="hero-saved">✓</span>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
   </div>
+</div>
+    <div class="full-date" id="full-date"></div>
+  </div>
+  <button class="menu-btn" onclick="openMenu()" title="menú">☰</button>
 </div>
 
 <div class="content">
 
   <!-- ══ 1. ESTADO ACTUAL DEL CICLO ══ -->
   <div>
-    <div class="section-label">ciclo actual</div>
-    <div class="card">
+    <div class="card ">
+      <div class="card-header" data-key="per_ciclo">
+        <div class="section-label" style="margin:0">ciclo actual</div>
+        <span class="card-chevron open">▼</span>
+      </div>
+      <div class="card-body open">
+        <div class="card-body-inner">
       <div class="cycle-ring-wrap">
         <svg class="cycle-ring-svg" viewBox="0 0 200 200" id="cycle-svg"></svg>
         <div class="phase-info">
@@ -550,13 +784,20 @@
           </div>
         </div>
       </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ══ 2. REGISTRO DEL DÍA ══ -->
   <div>
-    <div class="section-label">registro de hoy</div>
-    <div class="card">
+    <div class="card ">
+      <div class="card-header" data-key="per_hoy">
+        <div class="section-label" style="margin:0">registro de hoy</div>
+        <span class="card-chevron open">▼</span>
+      </div>
+      <div class="card-body open">
+        <div class="card-body-inner">
 
       <!-- Fase percibida -->
       <div style="margin-bottom:1rem;">
@@ -632,13 +873,20 @@
       <div style="display:flex; gap:8px; align-items:center;">
         <button class="btn-ghost" onclick="openHistory()">📋 historial</button>
       </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ══ 3. CALCULADORA ══ -->
   <div>
-    <div class="section-label">calculadora del ciclo</div>
-    <div class="card">
+    <div class="card collapsed">
+      <div class="card-header" data-key="per_calc">
+        <div class="section-label" style="margin:0">calculadora del ciclo</div>
+        <span class="card-chevron ">▼</span>
+      </div>
+      <div class="card-body ">
+        <div class="card-body-inner">
       <div id="calc-results"></div>
       <div class="legend">
         <div class="legend-item"><div class="legend-dot" style="background:var(--menstrual)"></div>menstrual</div>
@@ -646,13 +894,20 @@
         <div class="legend-item"><div class="legend-dot" style="background:var(--ovulacion)"></div>ovulación</div>
         <div class="legend-item"><div class="legend-dot" style="background:var(--lutea)"></div>lútea</div>
       </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ══ 4. CALENDARIO ══ -->
   <div>
-    <div class="section-label">calendario del ciclo</div>
-    <div class="card">
+    <div class="card collapsed">
+      <div class="card-header" data-key="per_cal">
+        <div class="section-label" style="margin:0">calendario del ciclo</div>
+        <span class="card-chevron ">▼</span>
+      </div>
+      <div class="card-body ">
+        <div class="card-body-inner">
       <div class="cal-nav">
         <button class="cal-nav-btn" onclick="changeCalMonth(-1)">‹</button>
         <span class="cal-month-label" id="cal-month-label"></span>
@@ -666,11 +921,12 @@
         <div class="legend-item"><div class="legend-dot" style="background:var(--lutea)"></div>lútea</div>
         <div class="legend-item" style="opacity:0.5;">● predicción</div>
       </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ══ 5. BOTÓN GUARDAR TODO ══ -->
-</div>
 
 </div>
 
@@ -687,57 +943,88 @@
 
 <script>
 
-// ── COLOR THEME ENGINE (all pages) ──────────────────────────────
-(function initColorTheme() {
-  var saved = localStorage.getItem('tracker_color_theme');
-  if (saved && saved !== 'crema') {
-    document.documentElement.setAttribute('data-color-theme', saved);
-  }
-})();
 
-function setColorTheme(name) {
-  localStorage.setItem('tracker_color_theme', name);
-  if (!name || name === 'crema') {
-    document.documentElement.removeAttribute('data-color-theme');
-  } else {
-    document.documentElement.setAttribute('data-color-theme', name);
-  }
-}
-// ────────────────────────────────────────────────────────────────
 
-// ── FONT SIZE ──
-(function() {
-  var saved = localStorage.getItem('tracker_fs');
-  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
+// ══ TRACKER SHARED ═══════════════════════════════════════════════
+
+// Font size
+(function(){
+  var s=localStorage.getItem('tracker_fs');
+  if(s) document.documentElement.style.setProperty('--fs',s+'px');
 })();
-function changeFontSize(delta) {
-  var root = document.documentElement;
-  var cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
-  var next = Math.max(12, Math.min(26, cur + delta));
-  root.style.setProperty('--fs', next + 'px');
-  localStorage.setItem('tracker_fs', next);
+function changeFontSize(d){
+  var r=document.documentElement;
+  var c=parseInt(getComputedStyle(r).getPropertyValue('--fs').trim())||15;
+  var n=Math.max(11,Math.min(24,c+d));
+  r.style.setProperty('--fs',n+'px');
+  localStorage.setItem('tracker_fs',n);
 }
 
-
-// ── FONT SIZE ──
-(function() {
-  const saved = localStorage.getItem('tracker_fs');
-  if (saved) document.documentElement.style.setProperty('--fs', saved + 'px');
+// Color theme
+(function(){
+  var s=localStorage.getItem('tracker_color_theme');
+  if(s&&s!=='crema') document.documentElement.setAttribute('data-color-theme',s);
 })();
-function changeFontSize(delta) {
-  const root = document.documentElement;
-  const cur = parseInt(getComputedStyle(root).getPropertyValue('--fs').trim()) || 16;
-  const next = Math.max(12, Math.min(26, cur + delta));
-  root.style.setProperty('--fs', next + 'px');
-  localStorage.setItem('tracker_fs', next);
+function setColorTheme(n){
+  localStorage.setItem('tracker_color_theme',n);
+  if(!n||n==='crema') document.documentElement.removeAttribute('data-color-theme');
+  else document.documentElement.setAttribute('data-color-theme',n);
 }
 
+// Dark mode
+(function(){
+  var s=localStorage.getItem('tracker_theme');
+  if(s) document.documentElement.setAttribute('data-theme',s);
+})();
+function toggleTheme(){
+  var h=document.documentElement;
+  var n=h.getAttribute('data-theme')==='dark'?'light':'dark';
+  h.setAttribute('data-theme',n);
+  localStorage.setItem('tracker_theme',n);
+}
+
+// Hero save flash
+function heroFlash(){
+  var el=document.getElementById('hero-saved');
+  if(!el) return;
+  el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},1600);
+}
+
+// Menu
+function openMenu(){
+  document.getElementById('menu-drawer').classList.add('open');
+  document.getElementById('menu-overlay').classList.add('open');
+  var ne=document.getElementById('menu-name-display');
+  if(ne) ne.textContent=localStorage.getItem('tracker_user_name')||'Victoria';
+}
+function closeMenu(){
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+
+// Collapsibles
+function initCards(){
+  document.querySelectorAll('.card-header').forEach(function(hdr){
+    var key='card_'+(hdr.dataset.key||hdr.textContent.trim().replace(/\s+/g,'_').slice(0,25));
+    var body=hdr.nextElementSibling;
+    var card=hdr.closest('.card');
+    var ch=hdr.querySelector('.card-chevron');
+    if(!body||!body.classList.contains('card-body')) return;
+    var isOpen=localStorage.getItem(key)!=='0';
+    function setState(open){
+      body.classList.toggle('open',open);
+      if(ch) ch.classList.toggle('open',open);
+      if(card) card.classList.toggle('collapsed',!open);
+      localStorage.setItem(key,open?'1':'0');
+    }
+    setState(isOpen);
+    hdr.addEventListener('click',function(){ setState(!body.classList.contains('open')); });
+  });
+}
+// ══════════════════════════════════════════════════════════════════
 // ── THEME ──────────────────────────────────────────────────────────────────
-function toggleTheme() {
-  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('tracker_theme', next);
-}
+
 (function(){ const t = localStorage.getItem('tracker_theme'); if(t) document.documentElement.setAttribute('data-theme', t); })();
 
 // ── DATE ───────────────────────────────────────────────────────────────────
@@ -1204,71 +1491,14 @@ function init() {
 init();
 
 // ── MENU ───────────────────────────────────────────────────────────────────
-function openMenu() { document.getElementById('menu-drawer').classList.add('open'); document.getElementById('menu-overlay').classList.add('open'); }
-function closeMenu() { document.getElementById('menu-drawer').classList.remove('open'); document.getElementById('menu-overlay').classList.remove('open'); }
+)();
+initCards();
 </script>
-
-  <style>
-    /* ── TOP BAR LAYOUT ── */
-    .top-bar {
-      position: sticky !important;
-      top: 0 !important;
-      z-index: 200 !important;
-      background: var(--bg) !important;
-    }
-    .top-bar-left { display:flex; flex-direction:column; gap:1px; flex:1; min-width:0; }
-    .top-bar-right { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-    .hero-save-btn { background:var(--accent); color:#fff; border:none; border-radius:var(--r-sm,6px); font-family:'IBM Plex Sans',sans-serif; font-size:0.7rem; font-weight:700; padding:5px 11px; cursor:pointer; transition:opacity 0.15s; white-space:nowrap; letter-spacing:0.02em; }
-    .hero-save-btn:hover { opacity:0.82; }
-    .hero-save-btn:active { transform:scale(0.96); }
-    .hero-saved { font-size:0.62rem; color:var(--normal); font-weight:700; opacity:0; pointer-events:none; transition:opacity 0.25s; white-space:nowrap; }
-    .hero-saved.show { opacity:1; }
-</style>
-  <link rel="stylesheet" href="tracker.css" />
-
 <script>
-// ── AUTOGUARDADO ──────────────────────────────────────────────────────────
-(function() {
-  function debounce(fn, ms) {
-    let t; return function() { clearTimeout(t); t = setTimeout(fn, ms); };
-  }
-  const autoEntry  = debounce(saveEntry,       1500);
-  const autoConfig = debounce(saveCycleConfig, 1000);
-
-  // Campos de configuración del ciclo
-  ['last-period-date','cycle-length','period-length','felt-phase'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.addEventListener('input', autoConfig); el.addEventListener('change', autoConfig); }
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
   });
-
-  // Notas del día
-  const notes = document.getElementById('period-notes');
-  if (notes) notes.addEventListener('input', autoEntry);
-
-  // Fase percibida, flujo y síntomas — parchear funciones
-  const _origPhase = window.selectPerceivedPhase;
-  if (typeof _origPhase === 'function') {
-    window.selectPerceivedPhase = function(p) { _origPhase(p); autoEntry(); };
-  }
-  const _origFlow = window.selectFlow;
-  if (typeof _origFlow === 'function') {
-    window.selectFlow = function(v) { _origFlow(v); autoEntry(); };
-  }
-  const _origToggleSym = window.toggleSymptom;
-  if (typeof _origToggleSym === 'function') {
-    window.toggleSymptom = function(s) { _origToggleSym(s); autoEntry(); };
-  }
-  const _origSetLikert = window.setLikert;
-  if (typeof _origSetLikert === 'function') {
-    window.setLikert = function(k, v) { _origSetLikert(k, v); autoEntry(); };
-  }
-})();
-
-function heroSaveFlash() {
-  var el = document.getElementById('hero-saved');
-  if (!el) return;
-  el.classList.add('show');
-  setTimeout(function(){ el.classList.remove('show'); }, 1800);
 }
 </script>
 </body>
