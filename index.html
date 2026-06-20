@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Control - Ingenierización Humana</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0d;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0d0d0d; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #333; }
+    </style>
+</head>
+<body class="text-gray-300 p-6 min-h-screen selection:bg-red-900 selection:text-white">
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="max-w-[1800px] mx-auto grid grid-cols-1 xl:grid-cols-4 gap-6 items-start">
+        
+        <!-- ================= COLUMNA 1: BLOQUES DE ESTUDIO Y RENDIMIENTO REPETITIVO ================= -->
+        <div class="space-y-6">
+            <!-- Bloque AM/PM - Inglés -->
+            <div class="bg-[#141414] border border-[#222] rounded-lg p-5 shadow-xl">
+                <div class="text-xs text-gray-500 font-mono mb-2">// AM/PM - Inglés</div>
+                <h3 class="text-sm font-semibold text-gray-400 border-b border-[#222] pb-1 mb-3">Revisión Matutina (40m)</h3>
+                <ul class="space-y-1.5 text-xs text-gray-400 pl-2">
+                    <li class="flex items-center text-gray-200"><span class="text-blue-500 mr-2">▪</span> 15m Grammar Exercises</li>
+                    <li class="flex items-center"><span class="text-blue-400 mr-2">▪</span> 15m Vocabulary</li>
+                    <li class="flex items-center text-gray-500 italic pl-4">Personalizado (Cuaderno de errores)</li>
+                </ul>
+                
+                <h3 class="text-sm font-semibold text-gray-400 border-b border-[#222] pb-1 mt-4 mb-3">Revisión Vespertina (Lu, Mi, Vi, Do) (30m)</h3>
+                <ul class="space-y-1.5 text-xs text-gray-400 pl-2">
+                    <li class="flex items-center"><span class="text-purple-500 mr-2">▪</span> 15m Listening Practice</li>
+                    <li class="flex items-center"><span class="text-purple-500 mr-2">▪</span> 15m Phrasal Verbs</li>
+                </ul>
+
+                <h3 class="text-sm font-semibold text-gray-400 border-b border-[#222] pb-1 mt-4 mb-3">Revisión Vespertina (Ma, Ju, Sá) (30m)</h3>
+                <ul class="space-y-1.5 text-xs text-gray-400 pl-2">
+                    <li class="flex items-center"><span class="text-purple-400 mr-2">▪</span> 15m Irregular Verbs</li>
+                    <li class="flex items-center"><span class="text-purple-400 mr-2">▪</span> 15m Phonetics IPA</li>
+                </ul>
+            </div>
+
+            <!-- Bloque AM - Estudio Autónomo de Psicología -->
+            <div class="bg-[#141414] border border-[#222] rounded-lg p-5 shadow-xl">
+                <div class="text-xs text-gray-500 font-mono mb-2">// AM - Estudio Autónomo de Psicología</div>
+                <ul class="space-y-2 text-xs">
+                    <li class="font-medium text-gray-200"><span class="text-red-500 mr-2">●</span> Principal - DSM Terms</li>
+                    <li class="font-medium text-gray-200"><span class="text-red-500 mr-2">●</span> Principal - DSM Trastornos</li>
+                    <li class="font-medium text-gray-200"><span class="text-red-500 mr-2">●</span> Principal - Gleitman</li>
+                    <li class="text-gray-400 pt-1 border-t border-[#1a1a1a]"><span class="text-gray-600 mr-2">○</span> Secundario - Estadística</li>
+                    <li class="text-gray-400"><span class="text-gray-600 mr-2">○</span> Secundario - Partes del cerebro</li>
+                    <li class="text-gray-400"><span class="text-gray-600 mr-2">○</span> Secundario - Pavlov - Conditioned Reflexes</li>
+                    <li class="text-gray-400"><span class="text-gray-600 mr-2">○</span> Secundario - Pruebas paramétricas y proyectivas</li>
+                    <li class="text-gray-400"><span class="text-gray-600 mr-2">○</span> Secundario - Skinner</li>
+                </ul>
+            </div>
+
+            <!-- Gráfico de Barras Semanal -->
+            <div class="bg-[#141414] border border-[#222] rounded-lg p-4 shadow-xl">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-mono text-gray-500">Distribución Semanal</span>
+                    <div class="flex space-x-2 text-[10px] font-mono">
+                        <span class="flex items-center"><span class="w-2 h-2 bg-blue-600 rounded-full mr-1"></span> ANKI</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-orange-700 rounded-full mr-1"></span> Pasiva</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-purple-800 rounded-full mr-1"></span> Audio</span>
+                    </div>
+                </div>
+                <div class="h-56">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Gráfico de Radar: Salud y Rendimiento Físico/Mental -->
+            <div class="bg-[#141414] border border-[#222] rounded-lg p-4 shadow-xl">
+                <span class="text-xs font-mono text-gray-500 block mb-2">Métricas Biométricas & Estado</span>
+                <div class="h-64 flex justify-center">
+                    <canvas id="biometricChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= COLUMNA 2: AVATAR, ÁREAS DE VIDA Y LECTURA ================= -->
+        <div class="space-y-6 flex flex-col items-center">
+            <!-- Avatar Táctico Minimalista -->
+            <div class="relative group w-full max-w-[280px] aspect-[3/4] rounded-lg overflow-hidden border border-[#333] shadow-2xl bg-[#111]">
+                <img src="a.jpg" 
+                     alt="Tactical Avatar" 
+                     class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                <div class="absolute bottom-3 left-3 font-mono text-[10px] text-gray-400 tracking-wider">OPERATIVE NODE</div>
+            </div>
+
+            <!-- Áreas de Vida -->
+            <div class="bg-[#141414] border border-[#222] rounded-lg p-4 w-full shadow-xl">
+                <div class="text-center mb-1">
+                    <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Áreas de vida</h4>
+                    <p class="text-[10px] text-gray-500 font-mono">Calificación subjetiva (Meta vs Anual)</p>
+                </div>
+                <div class="h-56 flex justify-center">
+                    <canvas id="lifeAreasChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Listas de Libros y Prioridades Rápidas -->
+            <div class="bg-[#141414] border border-[#222] rounded-lg p-5 w-full text-xs space-y-4 shadow-xl">
+                <div>
+                    <h4 class="font-bold text-gray-300 border-b border-[#222] pb-1 mb-2">Libros en curso:</h4>
+                    <ul class="space-y-1 text-gray-400 list-disc pl-4 font-mono text-[11px]">
+                        <li>Walden two</li>
+                        <li>Crimen y Castigo</li>
+                        <li>Integración del Conocimiento</li>
+                        <li>Psicometría</li>
+                        <li>Schedules of Reinforcement</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-300 border-b border-[#222] pb-1 mb-1">Importante:</h4>
+                    <p class="text-blue-400 font-medium pl-2">Lo que sea pero en inglés</p>
+                </div>
+                <div class="pt-2 border-t border-[#222]">
+                    <h4 class="font-bold text-red-400 uppercase tracking-tight mb-2">Urgente (fuera de la rutina diaria):</h4>
+                    <ul class="space-y-2 text-[11px]">
+                        <li class="bg-red-950/30 border border-red-900/50 p-2 rounded text-red-200">
+                           <strong class="text-red-400">Curso PIRC UNRC:</strong> ingreso a law & criminology <span class="block text-[10px] font-mono text-red-500 font-bold">(límite 28 jun)</span>
+                        </li>
+                        <li class="bg-amber-950/20 border border-amber-900/40 p-2 rounded text-amber-200">
+                            Materia final de psicología + pago 5to semestre en julio
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= COLUMNA 3: TRACKER DE HÁBITOS INTERACTIVO ================= -->
+        <div class="space-y-6">
+            <div class="bg-[#141414] border border-[#222] rounded-lg p-4 shadow-xl space-y-5">
+                
+                <!-- Selector de Modo / Herramienta Activa -->
+                <div class="flex items-center justify-between border-b border-[#222] pb-3">
+                    <span class="text-xs font-mono text-gray-400">Herramienta:</span>
+                    <div class="flex space-x-1" id="modeSelector">
+                        <button onclick="setMode('select')" id="btn-mode-select" class="px-2.5 py-1 rounded text-[11px] font-mono bg-red-800 text-white font-medium border border-red-700 transition">Marcar</button>
+                        <button onclick="setMode('eraser')" id="btn-mode-eraser" class="px-2.5 py-1 rounded text-[11px] font-mono bg-[#1a1a1a] text-gray-400 hover:text-white border border-[#2d2d2d] transition">Borrador</button>
+                        <button onclick="clearAllHistory()" class="px-2.5 py-1 rounded text-[11px] font-mono bg-zinc-900 text-red-400 border border-zinc-800 hover:bg-red-950/40 transition">Limpiar Todo</button>
+                    </div>
+                </div>
+
+                <!-- Tracker 1: Descanso -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-mono uppercase text-gray-400 tracking-wider">Descanso</span>
+                        <div class="flex space-x-2 text-[10px]" id="legend-descanso">
+                            <button onclick="setSubState('descanso', 'bien')" id="leg-descanso-bien" class="flex items-center px-1.5 py-0.5 rounded border border-red-900 bg-red-950/40 text-red-200 font-bold"><span class="w-2 h-2 bg-red-900 rounded-sm mr-1"></span> Bien</button>
+                            <button onclick="setSubState('descanso', 'mal')" id="leg-descanso-mal" class="flex items-center px-1.5 py-0.5 rounded border border-transparent text-gray-400"><span class="w-2 h-2 bg-red-600 rounded-sm mr-1"></span> Mal</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-[10px] font-mono text-center" id="grid-descanso"></div>
+                </div>
+
+                <!-- Tracker 2: Alimentación -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-mono uppercase text-gray-400 tracking-wider">Alimentación</span>
+                        <div class="flex space-x-1.5 text-[10px]" id="legend-alimentacion">
+                            <button onclick="setSubState('alimentacion', 'low')" id="leg-alimentacion-low" class="flex items-center px-1.5 py-0.5 rounded border border-zinc-700 bg-zinc-800 text-zinc-200 font-bold"><span class="w-2 h-2 bg-zinc-700 rounded-sm mr-1"></span> &lt;1500</button>
+                            <button onclick="setSubState('alimentacion', 'mid')" id="leg-alimentacion-mid" class="flex items-center px-1.5 py-0.5 rounded border border-transparent text-gray-400"><span class="w-2 h-2 bg-zinc-500 rounded-sm mr-1"></span> 1500</button>
+                            <button onclick="setSubState('alimentacion', 'high')" id="leg-alimentacion-high" class="flex items-center px-1.5 py-0.5 rounded border border-transparent text-gray-400"><span class="w-2 h-2 bg-red-600 rounded-sm mr-1"></span> +1500</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-[10px] font-mono text-center" id="grid-alimentacion"></div>
+                </div>
+
+                <!-- Tracker 3: Productividad -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-mono uppercase text-gray-400 tracking-wider">Productividad</span>
+                        <div class="flex space-x-2 text-[10px]" id="legend-productividad">
+                            <button onclick="setSubState('productividad', 'cumpli')" id="leg-productividad-cumpli" class="flex items-center px-1.5 py-0.5 rounded border border-red-400 bg-red-400/20 text-red-300 font-bold"><span class="w-2 h-2 bg-red-400 rounded-sm mr-1"></span> Cumplí</button>
+                            <button onclick="setSubState('productividad', 'nocumpli')" id="leg-productividad-nocumpli" class="flex items-center px-1.5 py-0.5 rounded border border-transparent text-gray-400"><span class="w-2 h-2 bg-red-900 rounded-sm mr-1"></span> No cumplí</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-[10px] font-mono text-center" id="grid-productividad"></div>
+                </div>
+
+                <!-- Tracker 4: Ciclo Menstrual -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-mono uppercase text-gray-400 tracking-wider">Ciclo Menstrual</span>
+                        <div class="flex space-x-2 text-[10px]" id="legend-menstrual">
+                            <button onclick="setSubState('menstrual', 'ovulacion')" id="leg-menstrual-ovulacion" class="flex items-center px-1.5 py-0.5 rounded border border-red-400 bg-red-400/20 text-red-300 font-bold"><span class="w-2 h-2 bg-red-400 rounded-sm mr-1"></span> Ovul.</button>
+                            <button onclick="setSubState('menstrual', 'menstruacion')" id="leg-menstrual-menstruacion" class="flex items-center px-1.5 py-0.5 rounded border border-transparent text-gray-400"><span class="w-2 h-2 bg-red-900 rounded-sm mr-1"></span> Mens.</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-[10px] font-mono text-center" id="grid-menstrual"></div>
+                </div>
+
+                <!-- Tracker 5: Ejercicio -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-mono uppercase text-gray-400 tracking-wider">Ejercicio</span>
+                        <div class="flex space-x-2 text-[10px]" id="legend-ejercicio">
+                            <button onclick="setSubState('ejercicio', 'cumpli')" id="leg-ejercicio-cumpli" class="flex items-center px-1.5 py-0.5 rounded border border-red-600 bg-red-600/20 text-red-200 font-bold"><span class="w-2 h-2 bg-red-600 rounded-sm mr-1"></span> Hice</button>
+                            <button onclick="setSubState('ejercicio', 'nocumpli')" id="leg-ejercicio-nocumpli" class="flex items-center px-1.5 py-0.5 rounded border border-transparent text-gray-400"><span class="w-2 h-2 bg-zinc-800 rounded-sm mr-1"></span> No hice</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-[10px] font-mono text-center" id="grid-ejercicio"></div>
+                </div>
+
+                <!-- Panel de Métricas Rápidas / Estadísticas -->
+                <div class="border-t border-[#222] pt-3">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-mono text-gray-400">Panel de Estadísticas Mensuales</span>
+                        <button onclick="toggleStats()" class="text-[10px] font-mono text-red-400 bg-red-950/20 px-2 py-0.5 border border-red-900/40 rounded hover:bg-red-900/30 transition">Ver / Ocultar</button>
+                    </div>
+                    <div id="statsPanel" class="bg-[#0a0a0a] border border-[#1a1a1a] rounded p-3 text-[11px] font-mono space-y-1.5 text-gray-400 hidden">
+                        <div class="flex justify-between"><span>Descanso Óptimo:</span> <span id="stat-descanso" class="text-white font-bold">0%</span></div>
+                        <div class="flex justify-between"><span>Cumplimiento Productivo:</span> <span id="stat-productividad" class="text-white font-bold">0%</span></div>
+                        <div class="flex justify-between"><span>Control Calórico (&lt;1500 o 1500):</span> <span id="stat-alimentacion" class="text-white font-bold">0%</span></div>
+                        <div class="flex justify-between"><span>Consistencia de Ejercicio:</span> <span id="stat-ejercicio" class="text-white font-bold">0%</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cita Filosófica -->
+            <div class="text-center p-4 border border-dashed border-[#333] rounded-lg bg-[#0a0a0a]">
+                <p class="italic text-gray-400 text-sm font-serif">"Hombre soy; nada de lo humano me es ajeno"</p>
+                <span class="text-[10px] font-mono text-gray-600 mt-1 block">— Terence II a.C</span>
+            </div>
+        </div>
+
+        <!-- ================= COLUMNA 4: ARQUITECTURA DE MAPA COGNITIVO DE TIEMPO ================= -->
+        <div class="space-y-4 bg-[#141414] border border-[#222] rounded-lg p-5 shadow-xl">
+            <span class="text-xs font-mono text-gray-500 block mb-3">// Arquitectura de Distribución de Tiempo</span>
+            
+            <div class="bg-gradient-to-r from-purple-900 to-pink-800 text-white p-2.5 rounded-md text-center font-bold text-xs tracking-widest uppercase shadow-md">
+                Tiempo Total Disponible
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 pt-3">
+                <!-- Bloque: Tareas Principales -->
+                <div class="border border-[#333] bg-[#111] p-3 rounded-md space-y-3">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-red-400 font-bold block">▲ Tareas Principales</span>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-2 bg-[#1a1a1a] border-l-2 border-blue-500 rounded">
+                            <span class="font-semibold block text-gray-200">Inglés</span>
+                            <span class="text-[11px] text-gray-400">Anki L-V · Rutina L-V · Tareas Sabatinas</span>
+                        </div>
+                        <div class="p-2 bg-[#1a1a1a] border-l-2 border-red-500 rounded">
+                            <span class="font-semibold block text-gray-200">Psicología</span>
+                            <span class="text-[11px] text-gray-400">UAS (Obligatorio) · Anki · Teoría · Entregables · Profundización Opcional · Estudio Autónomo</span>
+                        </div>
+                        <div class="p-2 bg-[#1a1a1a] border-l-2 border-amber-600 rounded">
+                            <span class="font-semibold block text-gray-200">Derecho y Criminología</span>
+                            <span class="text-[11px] text-gray-400">Anki · Teoría · Entregables · Profundización Opcional</span>
+                        </div>
+                        <div class="p-2 bg-[#1a1a1a] border-l-2 border-green-600 rounded">
+                            <span class="font-semibold block text-gray-200">Software</span>
+                            <span class="text-[11px] text-gray-400">Anki · Teoría · Entregables · Práctica Experimental</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloque: Tareas Secundarias / Negocio -->
+                <div class="border border-[#333] bg-[#111] p-3 rounded-md space-y-2">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-purple-400 font-bold block">◆ Tareas Secundarias</span>
+                    <div class="text-xs space-y-1 text-gray-400 font-mono pl-1">
+                        <div>• <strong class="text-gray-200">Negocio:</strong> Asistencia Virtual / Invitaciones</div>
+                        <div>• Ejercicio y Alimentos</div>
+                        <div>• Tareas Acumuladas del Notion</div>
+                    </div>
+                </div>
+
+                <!-- Bloque: Pasatiempos & Distribución de Energía Cognitiva -->
+                <div class="border border-[#333] bg-[#111] p-3 rounded-md space-y-3">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-bold block">■ Gestión de Pasatiempos por Energía</span>
+                    <div class="space-y-2 text-xs">
+                        <div class="bg-zinc-900/60 p-2 rounded border border-zinc-800">
+                            <span class="text-[11px] text-red-400 font-medium block mb-1">Alta Energía Cognitiva:</span>
+                            <ul class="grid grid-cols-2 gap-1 text-[10px] font-mono text-gray-400">
+                                <li>• Casos Clínicos DSM</li>
+                                <li>• Leer (Listas B, C, D)</li>
+                                <li>• Ajedrez</li>
+                                <li>• ANKI (Hacer)</li>
+                                <li>• Libro de mates</li>
+                                <li>• Ejercicios Kvashchev's</li>
+                                <li>• Revisar las noticias</li>
+                                <li>• Investigar temas (Notion)</li>
+                                <li>• Ensayos argumentativos</li>
+                                <li>• Dibujar croquis</li>
+                            </ul>
+                        </div>
+                        <div class="bg-zinc-900/60 p-2 rounded border border-zinc-800">
+                            <span class="text-[11px] text-blue-400 font-medium block mb-1">Baja Energía Cognitiva:</span>
+                            <ul class="grid grid-cols-2 gap-1 text-[10px] font-mono text-gray-400">
+                                <li>• Escritura/Journaling</li>
+                                <li>• Ver pelis, series o anime</li>
+                                <li>• Organizar mi Notion</li>
+                                <li>• Revisar notas del archivador</li>
+                                <li>• Ver por la ventana</li>
+                                <li>• Costura</li>
+                                <li>• Google Earth</li>
+                                <li>• Cómics / Substack</li>
+                                <li>• Tvgarden</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="pt-2 text-center text-[10px] font-mono tracking-widest text-gray-600 uppercase italic">
+                Ingenierización Humana © 2026
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= CONTEXTO DE INTERACTIVIDAD & SCRIPTING ================= -->
+    <script>
+        // Estado de la aplicación e interacciones de usuario
+        let currentMode = 'select'; // 'select' o 'eraser'
+        let subStates = {
+            descanso: 'bien',        // 'bien' o 'mal'
+            alimentacion: 'low',     // 'low', 'mid', 'high'
+            productividad: 'cumpli', // 'cumpli' o 'nocumpli'
+            menstrual: 'ovulacion',  // 'ovulacion' o 'menstruacion'
+            ejercicio: 'cumpli'      // 'cumpli' o 'nocumpli'
+        };
+
+        // Estructura de persistencia local en memoria
+        let habitData = JSON.parse(localStorage.getItem('operative_habits_v3')) || {
+            descanso: {},
+            alimentacion: {},
+            productividad: {},
+            menstrual: {},
+            ejercicio: {}
+        };
+
+        // Guardado persistente local
+        function saveData() {
+            localStorage.setItem('operative_habits_v3', JSON.stringify(habitData));
+            calculateStats();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-mode-select').className = mode === 'select' ? 'px-2.5 py-1 rounded text-[11px] font-mono bg-red-800 text-white font-medium border border-red-700 transition' : 'px-2.5 py-1 rounded text-[11px] font-mono bg-[#1a1a1a] text-gray-400 hover:text-white border border-[#2d2d2d] transition';
+            document.getElementById('btn-mode-eraser').className = mode === 'eraser' ? 'px-2.5 py-1 rounded text-[11px] font-mono bg-amber-700 text-white font-medium border border-amber-600 transition' : 'px-2.5 py-1 rounded text-[11px] font-mono bg-[#1a1a1a] text-gray-400 hover:text-white border border-[#2d2d2d] transition';
+        }
+
+        function setSubState(category, subType) {
+            subStates[category] = subType;
+            // Actualizar estilo visual en botones de selección
+            const container = document.getElementById(`legend-${category}`);
+            const buttons = container.getElementsByTagName('button');
+            for (let btn of buttons) {
+                btn.classList.remove('border-red-900', 'border-zinc-700', 'border-red-400', 'border-red-600', 'bg-red-950/40', 'bg-zinc-800', 'bg-red-400/20', 'bg-red-600/20', 'text-red-200', 'text-zinc-200', 'text-red-300', 'font-bold');
+                btn.classList.add('border-transparent', 'text-gray-400');
+            }
+            
+            const targetBtn = document.getElementById(`leg-${category}-${subType}`);
+            targetBtn.classList.remove('border-transparent', 'text-gray-400');
+            if (category === 'descanso') {
+                targetBtn.classList.add(subType === 'bien' ? 'border-red-900' : 'border-red-600', 'bg-red-950/40', 'text-red-200', 'font-bold');
+            } else if (category === 'alimentacion') {
+                targetBtn.classList.add('border-zinc-700', 'bg-zinc-800', 'text-zinc-200', 'font-bold');
+            } else if (category === 'productividad') {
+                targetBtn.classList.add(subType === 'cumpli' ? 'border-red-400' : 'border-red-900', 'bg-red-400/20', 'text-red-300', 'font-bold');
+            } else if (category === 'menstrual') {
+                targetBtn.classList.add(subType === 'ovulacion' ? 'border-red-400' : 'border-red-900', 'bg-red-400/20', 'text-red-300', 'font-bold');
+            } else if (category === 'ejercicio') {
+                targetBtn.classList.add(subType === 'cumpli' ? 'border-red-600' : 'border-zinc-800', 'bg-red-600/20', 'text-red-200', 'font-bold');
+            }
+        }
+
+        // Renderizador Dinámico de Celdas
+        function renderGrids() {
+            const categories = ['descanso', 'alimentacion', 'productividad', 'menstrual', 'ejercicio'];
+            categories.forEach(cat => {
+                const grid = document.getElementById(`grid-${cat}`);
+                grid.innerHTML = '';
+                for(let i = 1; i <= 30; i++) {
+                    const cell = document.createElement('div');
+                    cell.innerText = i;
+                    cell.className = getCellClass(cat, i);
+                    cell.onclick = () => handleCellClick(cat, i);
+                    grid.appendChild(cell);
+                }
+            });
+        }
+
+        function getCellClass(category, day) {
+            let base = "p-1.5 rounded cursor-pointer transition-all duration-200 select-none ";
+            const val = habitData[category][day];
+            
+            if (!val) return base + "bg-[#1a1a1a] hover:bg-[#252525] text-gray-500";
+            
+            if (category === 'descanso') {
+                return base + (val === 'bien' ? 'bg-red-950 text-red-400 border border-red-900/60 font-medium' : 'bg-red-600 text-white font-bold');
+            } else if (category === 'alimentacion') {
+                if (val === 'low') return base + 'bg-zinc-800 text-zinc-400 border border-zinc-700';
+                if (val === 'mid') return base + 'bg-zinc-500 text-white';
+                if (val === 'high') return base + 'bg-red-600 text-white font-bold';
+            } else if (category === 'productividad') {
+                return base + (val === 'cumpli' ? 'bg-red-400 text-black font-bold shadow-sm' : 'bg-red-900 text-red-200 line-through');
+            } else if (category === 'menstrual') {
+                return base + (val === 'ovulacion' ? 'bg-red-400 text-black font-bold shadow-sm' : 'bg-red-900 text-white font-bold');
+            } else if (category === 'ejercicio') {
+                return base + (val === 'cumpli' ? 'bg-red-600 text-white font-bold' : 'bg-zinc-800 text-zinc-500 border border-zinc-700 line-through');
+            }
+            return base;
+        }
+
+        function handleCellClick(category, day) {
+            if (currentMode === 'eraser') {
+                delete habitData[category][day];
+            } else {
+                habitData[category][day] = subStates[category];
+            }
+            saveData();
+            renderGrids();
+        }
+
+        function clearAllHistory() {
+            if(confirm('¿Seguro que deseas vaciar por completo todo tu historial de hábitos grabados?')) {
+                habitData = { descanso: {}, alimentacion: {}, productividad: {}, menstrual: {}, ejercicio: {} };
+                saveData();
+                renderGrids();
+            }
+        }
+
+        function toggleStats() {
+            const panel = document.getElementById('statsPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function calculateStats() {
+            const getMetrics = (cat, cond) => {
+                const vals = Object.values(habitData[cat]);
+                if(vals.length === 0) return '0%';
+                const matches = vals.filter(v => cond(v)).length;
+                return Math.round((matches / vals.length) * 100) + '%';
+            };
+
+            document.getElementById('stat-descanso').innerText = getMetrics('descanso', v => v === 'bien');
+            document.getElementById('stat-productividad').innerText = getMetrics('productividad', v => v === 'cumpli');
+            document.getElementById('stat-alimentacion').innerText = getMetrics('alimentacion', v => v !== 'high');
+            document.getElementById('stat-ejercicio').innerText = getMetrics('ejercicio', v => v === 'cumpli');
+        }
+
+        // Inicialización
+        renderGrids();
+        calculateStats();
+
+        // Configuración de Gráficos Estáticos (Chart.js)
+        Chart.defaults.color = '#71717a';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 10;
+
+        const ctxWeekly = document.getElementById('weeklyChart').getContext('2d');
+        new Chart(ctxWeekly, {
+            type: 'bar',
+            data: {
+                labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                datasets: [
+                    { label: 'ANKI', data: [30, 40, 35, 50, 45, 20], backgroundColor: '#2563eb' },
+                    { label: 'Lectura Pasiva', data: [40, 20, 30, 15, 25, 40], backgroundColor: '#9a3412' },
+                    { label: 'Audio Pasivo', data: [20, 30, 15, 25, 20, 10], backgroundColor: '#6b21a8' }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, max: 100, grid: { color: '#1a1a1a' } } } }
+        });
+
+        const ctxBiometric = document.getElementById('biometricChart').getContext('2d');
+        new Chart(ctxBiometric, {
+            type: 'radar',
+            data: {
+                labels: ['Concentración', 'Peso', 'Grasa', 'Músculo', 'Salud', 'Fuerza', 'Agilidad', 'Energía', 'Sueño', 'Dolor', 'Ánimo'],
+                datasets: [
+                    { label: 'Estado Actual', data: [8, 6, 4, 7, 8, 6, 7, 5, 8, 2, 7], borderColor: '#dc2626', backgroundColor: 'rgba(220, 38, 38, 0.15)', borderWidth: 1.5, pointRadius: 2 },
+                    { label: 'Línea Base', data: [6, 5, 5, 6, 6, 5, 5, 6, 5, 4, 5], borderColor: '#581c87', backgroundColor: 'rgba(88, 28, 135, 0.1)', borderWidth: 1, pointRadius: 0, borderDash: [3, 3] }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { angleLines: { color: '#222' }, grid: { color: '#222' }, pointLabels: { color: '#a1a1aa', font: { size: 9 } }, ticks: { display: false }, suggestedMin: 0, suggestedMax: 10 } } }
+        });
+
+        const ctxLife = document.getElementById('lifeAreasChart').getContext('2d');
+        new Chart(ctxLife, {
+            type: 'radar',
+            data: {
+                labels: ['Personal', 'Salud', 'Educación', 'Finanzas', 'Social'],
+                datasets: [
+                    { label: 'Meta (2026)', data: [9, 8, 9, 7, 6], borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', borderWidth: 1.5 },
+                    { label: 'Anual (25/26)', data: [7, 6, 8, 5, 5], borderColor: '#dc2626', backgroundColor: 'rgba(220, 38, 38, 0.15)', borderWidth: 1.5 }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { angleLines: { color: '#222' }, grid: { color: '#222' }, pointLabels: { color: '#a1a1aa' }, ticks: { display: false }, suggestedMin: 0, suggestedMax: 10 } } }
+        });
+    </script>
+</body>
+</html>
